@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">		
+		<title>{{name}} - {{desc}}</title>
+		<link rel="stylesheet" href="css/bootstrap.css">
+		<link rel="stylesheet" href="css/bootstrap-responsive.css">
+		<!--[if lt IE 9]>
+		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		{{{css}}}
+	</head>
+	<body>
+		<div class="container">
+			<blibb:menuBar/>			
+			<div class="row">
+				<div class="offset2 span8">
+					<div class="page-header">
+  						<h1>{{name}} <small>{{desc}}</small> <a href="#" id="follow-button" class="btn pull-right">Follow</a></h1>
+					</div>
+				</div>
+			</div>
+			<div id="entries">
+			{{#ENTRIES}}
+				<div class="row">
+					<div class="offset3 span1 post-aside">
+						<h4>{{month}}</h4>
+						<h2>{{day}}</h2>
+						<div class="comments-overview">
+							<h2>{{cc}}</h2>
+							<p>comments</p>
+						</div>
+						<div class="post-aside-extra">
+							<a href="#" class="" id="like-button" rel="tooltip" title="Like!"><i class="icon-heart"></i></a>
+							<a href="#" class="" id="dislike-button" rel="tooltip" title="Sucks!"><i class="icon-fire"></i></a>
+						</div>
+					</div>
+					<div class="span5 post-content">
+						<h2>{{title}}</h2>
+						{{{body}}}
+						<a href="blitem?i={{id}}" class="readmore-link">Read more &gt&gt</a>
+						<hr>
+						<!-- Tags html -->
+
+						<h4>Tags:</h4>
+						{{#TAGS}}
+							<a href="#">{{.}}</a> 
+						{{/TAGS}}
+						<hr>
+						<h3>Comments</h3>
+						<br>
+						{{#COMMENTS}}
+							<div class="post-comment">
+								<div class="thumbnail span1 pull-right"><img src="{{th}}" alt=""></div>
+								<h3>{{u}} <small>{{comment_date}}</small></h3>
+								{{t}}
+							</div>
+						{{/COMMENTS}}
+						<div>
+							<h3>Write your comment</h3>
+							<form action="addComment" method="post">
+								<input type="hidden" name="k" value="{{key}}" />
+								<input type="hidden" name="pid" value="{{id}}" />
+								<input type="hidden" name="parent" value="i" />
+								<input type="hidden" name="b" value="{{bid}}" />
+								<textarea  class="span5" name="comment" rows="4"></textarea>
+								<input type="submit" name="postComment" value="Send" class="btn btn-primary pull-right">
+							</form>
+						</div>
+					</div> <!-- span5 post-content -->
+				</div> <!-- end row -->
+			{{/ENTRIES}}
+			</div> <!-- end entries -->
+		</div> <!-- end container -->
+	<blibb:footer/>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script type="text/javascript" src="js/bootstrap-tooltip.js"></script>
+
+
+
+		<script type="text/javascript">
+			$('#like-button').tooltip({placement: 'left'});
+			$('#dislike-button').tooltip({placement: 'left'});
+
+			$('#like-button').click(function() {
+				if ($('#like-button').hasClass('badge badge-success')) {
+					$('#like-button').removeClass('badge badge-success');
+					$('#like-button').children().removeClass('icon-white ');
+				} else {
+					$('#like-button').addClass('badge badge-success');
+					$('#like-button').children().addClass('icon-white ');
+					$('#dislike-button').removeClass('badge badge-error');
+					$('#dislike-button').children().removeClass('icon-white');
+				}
+			});
+
+			$('#dislike-button').click(function() {
+				if ($('#dislike-button').hasClass('badge badge-error')) {
+					$('#dislike-button').removeClass('badge badge-error');
+					$('#dislike-button').children().removeClass('icon-white');
+				} else {
+					$('#dislike-button').addClass('badge badge-error');
+					$('#dislike-button').children().addClass('icon-white');
+					$('#like-button').removeClass('badge badge-success');
+					$('#like-button').children().removeClass('icon-white ')
+				}
+			});
+
+			$('#follow-button').click(function() {
+				if ($('#follow-button').hasClass('btn-primary')) {
+					$('#follow-button').removeClass('btn-primary');
+					$('#follow-button').addClass('btn-success');
+					$('#follow-button').html("Following");
+				} else {
+					$('#follow-button').removeClass('btn-success');
+					$('#follow-button').removeClass('btn-danger');
+					$('#follow-button').addClass('btn-primary');
+					$('#follow-button').html("Follow :blibb");
+				}
+			});
+
+			$('#follow-button').mouseenter(function(event) {
+				if ($('#follow-button').hasClass('btn-success')) {
+					$('#follow-button').removeClass('btn-success');
+					$('#follow-button').addClass('btn-danger');
+					$('#follow-button').html("Unfollow");
+				}
+				
+			});
+
+			$('#follow-button').mouseout(function(event) {
+				if ($('#follow-button').hasClass('btn-danger')) {
+					$('#follow-button').removeClass('btn-danger');
+					$('#follow-button').addClass('btn-success');
+					$('#follow-button').html("Following");
+				}
+			});
+
+		</script>
+	</body>
+</html>

@@ -1,0 +1,31 @@
+.post-aside {
+	text-align: center;
+}
+
+.comments-overview {
+	border-top: 1px solid #EEE;
+}
+
+.post-content {
+	margin-bottom: 50px;
+}
+
+.post-content h2 {
+	text-align: right;
+	border-bottom: 1px solid #EEE;
+	margin-top: 18px;
+	margin-bottom: 25px;
+}
+
+.post-content p {
+	text-align: justify;
+	line-height: 1.5em;
+}
+
+.post-content .thumbnail {
+	margin-bottom: 10px;
+}
+.post-comment {
+	min-height: 80px;
+	margin-bottom: 25px;
+}

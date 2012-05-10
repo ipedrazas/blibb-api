@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		
+		<title>{{name}} - {{desc}}</title>
+		
+		<link rel="stylesheet" href="css/bootstrap.css">
+		<link rel="stylesheet" href="css/bootstrap-responsive.css">
+		
+		<!--[if lt IE 9]>
+		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<style type="text/css">
+			
+		</style>
+		{{{css}}}
+	</head>
+	
+	<body>
+		<div class="container">
+			<blibb:menuBar/>	
+			<div class="page-header">
+  				<h1>{{name}} <small>{{desc}}</small><a href="#" id="follow-button" class="btn pull-right">Follow :blibb</a></h1>
+			</div>
+			
+			<div class="row">
+				<div id="entries">				
+				<div class="span2">
+					<ul class="nav nav-list well">
+						<li class="nav-header">
+					 		Tags List
+					  	</li>
+					  	<li class="active">
+					    	<a href="#">All</a>
+					  	</li>
+					  	{{#TAGLIST}}
+							<li><a href="#">{{.}}</a> </li>
+						{{/TAGLIST}}					  	
+					</ul>
+				</div>
+				<div class="span9">
+					<table class="table table-striped">
+						<thead>
+					    	<tr>
+					      		<th>Title</th>
+					      		<th>Website</th>
+					      		<th>Tags</th>
+					    	</tr>
+					  	</thead>
+					  	<tbody>
+					  		{{#ENTRIES}}
+						    	<tr>
+						    		{{#BOOKMARK}}
+						      		<td><a href="{{url}}">{{title}}</a></td>
+						      		<td>{{domain}}</td>
+						      		{{/BOOKMARK}}
+						      		<td>
+						      			{{#TAGS}}
+											<a href="#">{{.}}</a> 
+										{{/TAGS}}
+						      		</td>
+						      		<td>
+						      			<div class="btn-group">
+										  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+										    Action
+										    <span class="caret"></span>
+										  </a>
+										  <ul class="dropdown-menu">
+										    <li><a href="#">Read it</a></li>
+										    <li><a href="#">Share on Twitter</a></li>
+										  </ul>
+										</div>
+						      		</td>
+						    	</tr>
+					    	{{/ENTRIES}}
+					  	</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script type="text/javascript" src="js/bootstrap-dropdown.js"></script>
+
+		<script type="text/javascript">
+			$('.dropdown-toggle').dropdown();
+
+			$('#follow-button').click(function() {
+				if ($('#follow-button').hasClass('btn-success') || $('#follow-button').hasClass('btn-danger')) {
+					$('#follow-button').removeClass('btn-success');
+					$('#follow-button').removeClass('btn-danger');
+					$('#follow-button').html("Follow :blibb");
+				} else {
+					$('#follow-button').addClass('btn-success');
+					$('#follow-button').html("Following");
+					
+				}
+			});
+
+			$('#follow-button').mouseenter(function(event) {
+				if ($('#follow-button').hasClass('btn-success')) {
+					$('#follow-button').removeClass('btn-success');
+					$('#follow-button').addClass('btn-danger');
+					$('#follow-button').html("Unfollow");
+				}
+				
+			});
+
+			$('#follow-button').mouseout(function(event) {
+				if ($('#follow-button').hasClass('btn-danger')) {
+					$('#follow-button').removeClass('btn-danger');
+					$('#follow-button').addClass('btn-success');
+					$('#follow-button').html("Following");
+				}
+			});
+		</script>		
+	</body>
+</html>

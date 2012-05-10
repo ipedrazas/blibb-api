@@ -1,0 +1,11 @@
+.navbar-inner {
+		border-radius: 0;
+		-webkit-border-radius: 0;
+		background-color: #B21006;
+		background-image: none;
+	}
+
+
+.page-header {
+	padding-top: 65px;
+}
