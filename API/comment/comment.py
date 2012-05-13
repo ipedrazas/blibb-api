@@ -11,7 +11,6 @@ from API.base import BaseObject
 from bson.objectid import ObjectId
 import json
 
-
 class Comment(BaseObject):
 
 	def __init__(self):
@@ -38,21 +37,18 @@ class Comment(BaseObject):
 
 	def getCommentsById(self, obj_id, asJson=False):
 		docs = self.objects.find({ 'p': obj_id}).sort("c", -1)
-		if asJson:
-			return self.cleanUp(self.resultSetToJson(docs))
-		else:
-			ddocs = []
-			for d in docs:
-				doc = dict()
-				doc['id'] = d['_id']
-				doc['parent'] = d['p']
-				doc['user'] = d['u']
-				doc['comment'] = d['t']
-				if 'ut' in doc:
-					doc['user_image'] = d['ut']
-				ddocs.append(doc)
-			return str(ddocs)
-
+		ddocs = []
+		for d in docs:
+			doc = dict()
+			doc['id'] = str(d['_id'])
+			doc['parent'] = d['p']
+			doc['user'] = d['u']
+			doc['comment'] = d['t']
+			if 'ut' in doc:
+				doc['user_image'] = d['ut']
+			ddocs.append(doc)
+		return ddocs
+		
 	
 
 	

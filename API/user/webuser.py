@@ -18,9 +18,34 @@ def hello_world():
 ###### USERS  #######
 #####################
 
+@mod.route('/<username>/<slug>', methods=['POST'])
+def getBlibbBySlugWithParams(username=None, slug=None):	
+	if username is None:
+		abort(404)
+	if slug is None:
+		abort(404)
+
+	if 'template' in request.form:
+		template = request.form['template']
+	if 'items' in request.form:
+		items = request.form['items']
+	b = Blibb()
+	jres =  b.getBySlug(username,slug)
+	dres = json.loads(jres)
+	results = dres.get('results')
+	count = dres.get('count')
+	ret = dict()
+	if count == 1:
+		jblibb = results[0]
+		bid = jblibb['id']
+		ret['blibb'] = jblibb
+
+	return str(ret) + "\n"
+
+
+
 @mod.route('/<username>/<slug>', methods=['GET'])
 def getBlibbBySlug(username=None, slug=None):	
-
 	'''
 		
 		Pass a blibb_id, get the blibb data
@@ -45,13 +70,14 @@ def getBlibbBySlug(username=None, slug=None):
 		bid = jblibb['id']
 		ret['blibb'] = jblibb
 		bl = Blitem()
-		jitems = bl.getAllItemsFlat(bid)
+		jitems = bl.getAllItemsFlat2(bid)
 		rs_items = json.loads(jitems)
 		for i in rs_items:
 			pass
 		ret['items'] = rs_items['items']
 	e.save()
 	return json.dumps(ret)
+
 
 
 @mod.route('/user/<user_id>', methods=['GET'])

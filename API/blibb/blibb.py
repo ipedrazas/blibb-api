@@ -176,6 +176,7 @@ class Blibb(BaseObject):
 
 
 	def getBySlug(self,username, slug):
+		
 		r = self._objects.find({  u'u': username, u's': slug },{u't' : 0}).sort("c", -1)
 		rs = []
 		count = 0
@@ -211,6 +212,3 @@ class Blibb(BaseObject):
 		result = self._objects.find({ u'gu': username },{u't' : 0}).sort("c", -1)
 		return self.resultSetToJson(result)
 
-
-	
-	

@@ -117,7 +117,8 @@ class Blitem(BaseObject):
 			for r in i:
 				blitem[r['s']] = r['v']
 			# pull the comments
-			blitem['cs'] = self.getComments(iid)
+			comments = self.getComments(iid)
+			blitem['cs'] = comments
 
 		return json.dumps(blitem,default=json_util.default)
 
@@ -163,6 +164,35 @@ class Blitem(BaseObject):
 
 		return json.dumps(result,default=json_util.default)
 
+
+	def getAllItemsFlat2(self,blibb_id):
+		docs = self.objects.find({u'b': ObjectId(blibb_id)},{'i':1, 'tg': 1}).sort("c", -1)
+		result = dict()
+		blitems = []
+		slugs = []
+		types = []
+		
+		for d in docs:
+			blitem = dict()
+			iid = str(d['_id'])
+			blitem['id'] = iid
+			i = d['i']
+			for r in i:
+				if r['s'] not in slugs:
+					slugs.append(r['s'])
+				blitem[r['s']] = r['v']
+			blitem['cs'] = self.getComments(iid)
+			if 'tg' in d:
+				blitem['tags'] = d['tg']
+
+			blitems.append(blitem)
+
+		result['b_id'] = blibb_id
+		result['count'] = len(blitems)
+		result['items'] = blitems
+		result['fields'] = slugs
+
+		return json.dumps(result,default=json_util.default)
 
 	
 		
