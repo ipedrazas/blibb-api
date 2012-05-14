@@ -119,7 +119,7 @@ class Blibb(BaseObject):
 		return labels
 		 
 	def getTemplateView(self, obj_id, view='Default'):
-		res =  self._objects.find_one({ u'_id': ObjectId(obj_id)}, {'t.v': 1, 'n':1, 'd':1, 'c':1, 'u':1, 'tg':1})
+		res =  self.objects.find_one({ u'_id': ObjectId(obj_id)}, {'t.v': 1, 'n':1, 'd':1, 'c':1, 'u':1, 'tg':1})
 		buf = dict()
 		if '_id' in res:
 			t = res['t']
@@ -141,7 +141,7 @@ class Blibb(BaseObject):
 		for param in listparams:
 			p[param] = 1
 		
-		doc = self._objects.find_one({ u'_id': ObjectId(obj_id)	}, p)
+		doc = self.objects.find_one({ u'_id': ObjectId(obj_id)	}, p)
 		return json.dumps(doc,default=json_util.default)
 
 	def stripslashes(self,s):
@@ -151,7 +151,7 @@ class Blibb(BaseObject):
 		return r
 
 	def getByUser(self,username):
-		r = self._objects.find({ u'u': username },{u't' : 0}).sort("c", -1)
+		r = self.objects.find({ u'u': username },{u't' : 0}).sort("c", -1)
 		rs = []
 		count = 0
 		for result in r:
@@ -177,7 +177,7 @@ class Blibb(BaseObject):
 
 	def getBySlug(self,username, slug):
 		
-		r = self._objects.find({  u'u': username, u's': slug },{u't' : 0}).sort("c", -1)
+		r = self.objects.find({  u'u': username, u's': slug },{u't' : 0}).sort("c", -1)
 		rs = []
 		count = 0
 		for result in r:
@@ -201,7 +201,7 @@ class Blibb(BaseObject):
 		return json.dumps(resp)
 
 	def getIdBySlug(self,username, slug):
-		r = self._objects.find_one({  u'u': username, u's': slug },{u'_id' : 1})
+		r = self.objects.find_one({  u'u': username, u's': slug },{u'_id' : 1})
 		oid = r.get('_id')
 		res = dict()
 		res['id'] = str(oid)
@@ -209,6 +209,6 @@ class Blibb(BaseObject):
 
 
 	def getByGroupUser(self,username):
-		result = self._objects.find({ u'gu': username },{u't' : 0}).sort("c", -1)
+		result = self.objects.find({ u'gu': username },{u't' : 0}).sort("c", -1)
 		return self.resultSetToJson(result)
 

@@ -7,6 +7,8 @@
 
 from datetime import datetime
 from API.base import BaseObject
+from API.contenttypes.picture import Picture
+from bson.objectid import ObjectId
 import json
 import hashlib
 import redis
@@ -139,5 +141,30 @@ class User(BaseObject):
 		r.expire(idkey,expire)
 
 		return userkey
+
+
+	def getByName(self,username):
+		r = self.objects.find_one({ 'n': username },{ 'n': 1, 'e': 1, 'i': 1})
+		res = dict()
+		res['id'] = str(r.get('_id'))
+		res['name'] = r.get('n')
+		res['email'] = r.get('e')
+		if 'i' in r:
+			image = r.get('i')
+			res['t60'] = '/actions/getImage?i=60&id=' + image.get('id')
+			res['t160'] = '/actions/getImage?i=16&0id=' + image.get('id')
+			res['t260'] = '/actions/getImage?i=260&id=' + image.get('id')
 		
+
+
+		return res
+
+
+	def addPicture(self, user_id, picture_id):
+		if picture_id is not None:
+			p = Picture()
+			image = p.dumpImage(picture_id)
+			self.objects.update({ u'_id': ObjectId(user_id)}, {"$set": {'i': image}}, True)
+			return user_id
+		return 'error'
 

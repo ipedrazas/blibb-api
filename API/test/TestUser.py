@@ -31,4 +31,12 @@ class TestUser(unittest.TestCase):
 
 	def test_Authenticte(self):
 		u = User()
-		print u.autheticate('ipedrazas','ivan')
+		# print u.autheticate('ipedrazas','ivan')
+
+
+	def test_getByName(self):
+		u = User()
+		user =  u.getByName('ipedrazas')
+		uid  = user.get('id')
+		print user
+		# print u.addPicture(uid, '4fb120ce2ba78b09f7000048')

@@ -53,7 +53,7 @@ def getBlibbBySlug(username=None, slug=None):
 		blibb info and all the flat items
 
 	'''
-	e = Event('web.blibb.getBlibbBySlug')
+	e = Event('web.user.blibb.getBlibbBySlug')
 	b = Blibb()
 	if username is None:
 		abort(404)
@@ -79,10 +79,20 @@ def getBlibbBySlug(username=None, slug=None):
 	return json.dumps(ret)
 
 
+@mod.route('/user/name/<user_name>', methods=['GET'])
+def getUserByName(user_name=None):	
+	e = Event('web.user.getUserByName')
+	if user_name is None:
+		abort(404)
+	user = User()
+	u = user.getByName(user_name)
+	res = json.dumps(u)
+	e.save()
+	return res
 
 @mod.route('/user/<user_id>', methods=['GET'])
 def getUser(user_id=None):	
-	e = Event('web.getUser')
+	e = Event('web.user.getUser')
 	if user_id is None:
 		abort(404)
 	user = User()
@@ -93,7 +103,7 @@ def getUser(user_id=None):
 
 @mod.route('/user/image', methods=['POST'])
 def setImageUser():	
-	e = Event('web.getUser')
+	e = Event('web.user.getUser')
 	user_id = request.form['user_id']
 	image_id = request.form['image_id']
 	if user_id is None:
