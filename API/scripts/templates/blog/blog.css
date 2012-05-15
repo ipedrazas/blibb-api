@@ -1,10 +1,78 @@
 .navbar-inner {
-		border-radius: 0;
-		-webkit-border-radius: 0;
-		background-color: #B21006;
-		background-image: none;
-	}
+	border-radius: 0;
+	-webkit-border-radius: 0;
+	background-color: #B21006;
+	background-image: none;
+}
 
+.post-aside {
+	text-align: center;
+}
+
+.post-aside-box {
+	border-top: 1px solid #EEE;
+}
+
+.post-aside-extra {
+	border-top: 1px solid #EEE;
+	padding-top: 5px;
+}
+
+.post-aside-extra a {
+	display: block;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.post-content {
+	margin-bottom: 50px;
+}
+
+.post-content h2 {
+	text-align: right;
+	border-bottom: 1px solid #EEE;
+	margin-top: 18px;
+	margin-bottom: 25px;
+}
+
+.post-content p {
+	text-align: justify;
+	line-height: 1.5em;
+}
+
+.post-content .thumbnail {
+	margin-bottom: 10px;
+}
+
+.post-comment {
+	min-height: 80px;
+	margin-bottom: 25px;
+}
+
+#addItem-btn {
+	margin-right: 10px;
+}
+
+a {
+	color: #9D261D;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #5C1611;
+	text-decoration: underline;
+}
+
+.nav-list .active > a, .nav-list .active > a:hover {
+	color: white;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
+	background-color: #9D261D;
+}
+
+.nav > li > a:hover {
+	text-decoration: none;
+	background-color: #EEE;
+}
 
 .page-header {
 	padding-top: 65px;
