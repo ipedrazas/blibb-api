@@ -11,6 +11,7 @@ from API.base import BaseObject
 from bson.objectid import ObjectId
 import json
 
+
 class Comment(BaseObject):
 
 	def __init__(self):
@@ -44,11 +45,13 @@ class Comment(BaseObject):
 			doc['parent'] = d['p']
 			doc['user'] = d['u']
 			doc['comment'] = d['t']
+			dd = str(d['c'])
+			pos = dd.index('.')
+			doc['date'] = dd[:pos]			 
 			if 'ut' in doc:
 				doc['user_image'] = d['ut']
 			ddocs.append(doc)
 		return ddocs
-		
-	
 
+	
 	

@@ -36,8 +36,8 @@ def createBlogTemplate():
 
 	rb = readFile('/templates/blog/blog.html')
 	sb = readFile('/templates/blog/blog.css')
-	ri = readFile('/templates/blog/blog-entry.html')
-	si = readFile('/templates/blog/blog-entry.css')
+	ri = ''#readFile('/templates/blog/blog-entry.html')
+	si = ''#readFile('/templates/blog/blog-entry.css')
 	template.addView(new_id, 'Default', rb, sb, ri, si)
 
 def createBookmarkTemplate():
@@ -63,5 +63,5 @@ def addControl(self, cid, tid, name, help, order, view, slug, ctype, typex):
 		self.objects.update({ u'_id': ObjectId(tid)}, {"$push": {'i': view}}, True)
 		return cid
 
-# createBlogTemplate()
+createBlogTemplate()
 createBookmarkTemplate()

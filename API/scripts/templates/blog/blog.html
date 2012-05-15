@@ -41,33 +41,12 @@
 						{{{body}}}
 						<a href="blitem?i={{id}}" class="readmore-link">Read more &gt&gt</a>
 						<hr>
-						<!-- Tags html -->
-
 						<h4>Tags:</h4>
-						{{#TAGS}}
-							<a href="#">{{.}}</a> 
-						{{/TAGS}}
+						<blibb:tags/>
 						<hr>
-						<h3>Comments</h3>
-						<br>
-						{{#COMMENTS}}
-							<div class="post-comment">
-								<div class="thumbnail span1 pull-right"><img src="{{th}}" alt=""></div>
-								<h3>{{u}} <small>{{comment_date}}</small></h3>
-								{{t}}
-							</div>
-						{{/COMMENTS}}
-						<div>
-							<h3>Write your comment</h3>
-							<form action="addComment" method="post">
-								<input type="hidden" name="k" value="{{key}}" />
-								<input type="hidden" name="pid" value="{{id}}" />
-								<input type="hidden" name="parent" value="i" />
-								<input type="hidden" name="b" value="{{bid}}" />
-								<textarea  class="span5" name="comment" rows="4"></textarea>
-								<input type="submit" name="postComment" value="Send" class="btn btn-primary pull-right">
-							</form>
-						</div>
+						
+						<blibb:comments/>
+						
 					</div> <!-- span5 post-content -->
 				</div> <!-- end row -->
 			{{/ENTRIES}}
