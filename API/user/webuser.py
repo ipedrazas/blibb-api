@@ -103,15 +103,16 @@ def getUser(user_id=None):
 
 @mod.route('/user/image', methods=['POST'])
 def setImageUser():	
-	e = Event('web.user.getUser')
+	e = Event('web.user.setImageUser')
 	user_id = request.form['user_id']
 	image_id = request.form['image_id']
 	if user_id is None:
 		abort(404)
 	user = User()
-	user.updateImageProfile(image_id)	
+	user.addPicture(user_id, image_id)	
 	e.save()
-	return ''
+	return 'ok'
+
 
 @mod.route('/user/login', methods=['POST'])
 def doLogin():

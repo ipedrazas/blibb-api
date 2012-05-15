@@ -115,29 +115,35 @@ class User(BaseObject):
 			print stUser['p']
 			if stUser['p'] == shPwd.hexdigest():
 				if 'i' in stUser:
-					return self.setKey(str(stUser['_id']),stUser['n'],stUser['i'])
+					return self.setKey(str(stUser['_id']),stUser['n'],stUser['e'],stUser['i'])
 				else:
-					return self.setKey(str(stUser['_id']),stUser['n'])
+					return self.setKey(str(stUser['_id']),stUser['n'],stUser['e'])
 		return False
 
 
-	def setKey(self,user_id, user_name, user_image=None):
+	def setKey(self,user_id, user_name, email, user_image=None):
 		r = redis.StrictRedis(host='127.0.0.1', port=6379, db=0)
 		userkey = hashlib.sha1(user_name + user_id + str(datetime.utcnow())).hexdigest()
 		r.set(userkey,user_name)
 		basekey = userkey + ':'
 		namekey = basekey + 'name'
 		imagekey = basekey + 'thumbnail'
+		emailkey = basekey + 'email'
 		idkey = basekey + 'id'
 		r.set(namekey,user_name)
 		if user_image is None:
-			user_image = '/img/60x60.gif'
-		r.set(imagekey,user_image)
+			image = '/img/60x60.gif'
+		else:
+			image = user_image.get('id')
+
+		r.set(imagekey,image)
 		r.set(idkey,user_id) 
+		r.set(emailkey,email)
 		expire = 3600
 		r.expire(userkey,expire)
 		r.expire(namekey,expire)
 		r.expire(imagekey,expire)
+		r.expire(emailkey,expire)
 		r.expire(idkey,expire)
 
 		return userkey
@@ -154,8 +160,8 @@ class User(BaseObject):
 			res['t60'] = '/actions/getImage?i=60&id=' + image.get('id')
 			res['t160'] = '/actions/getImage?i=16&0id=' + image.get('id')
 			res['t260'] = '/actions/getImage?i=260&id=' + image.get('id')
+			res['image_id'] =  image.get('id')
 		
-
 
 		return res
 
