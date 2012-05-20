@@ -78,3 +78,17 @@ class Picture(BaseObject):
 		return image
 
 
+	def getImagesByUser(self,username):
+		
+		filter_dict = {'u': username}
+		fields_dict = {'_id': 1}
+		pictures = self.getImage(filter_dict, fields_dict)
+		return pictures
+
+
+	def getImage(self, filter_dict, fields_dict):
+		res = self.objects.find(filter_dict, fields_dict)
+		pictures = []
+		for pict_id in res:
+			pictures.append(str(pict_id.get('_id')))
+		return pictures

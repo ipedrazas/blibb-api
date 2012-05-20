@@ -186,3 +186,13 @@ class BaseObject(object):
 		except InvalidId:
 			return False
 
+	def getObjects(self, filter_dict, fields_dict):
+		res = self.objects.find(filter_dict, fields_dict)
+		objects = []
+		for o in res:
+			row = dict()
+			for field in fields_dict:
+				row[field] = o.get(field)
+			objects.append(row)
+		return objects
+

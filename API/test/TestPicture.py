@@ -17,11 +17,11 @@ import json
 class TestPicture(unittest.TestCase):
 
 
-	def test_getFlat(self):
-		pict  = Picture()
-		print pict.isValidId("4fa111812ba78b5854000001")
-		image = pict.dumpImage("4fa111812ba78b5854000001")
-		print image
+	# def test_getFlat(self):
+	# 	pict  = Picture()
+	# 	print pict.isValidId("4fa111812ba78b5854000001")
+	# 	image = pict.dumpImage("4fa111812ba78b5854000001")
+	# 	print image
 
 
 	# def test_save(self):
@@ -49,3 +49,14 @@ class TestPicture(unittest.TestCase):
 	# 	strJ = '{"i":{"size":116102,"format":"png","width":1600,"height":900,"mime_type":"image\/png","soft":"gnome-screenshot","file":"Screenshot at 2012-02-10 00:00:11.png","path":"\/var\/www\/blibb.net\/php\/uploads\/ipedrazas\/images\/4f7dea52f3a4180aed000000.png","t260":"\/var\/www\/blibb.net\/php\/uploads\/ipedrazas\/images\/t260\/4f7dea52f3a4180aed000000.png"},"b":"4f7d7781f3a418241d000007","u":"ipedrazas","id":"4f7dea52f3a4180aed000000"}'
 	# 	data = json.loads(strJ)
 	# 	print data['id']
+
+
+	# def test_getPicturesByUser(self):
+	# 	p = Picture()
+	# 	res = p.getImagesByUser('ipedrazas')
+	# 	print res
+
+	def test_getObjects(self):
+		p = Picture()
+		res = p.getObjects({'u':'ipedrazas'},{'_id','b'})
+		print res		
