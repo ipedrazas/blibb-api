@@ -59,6 +59,17 @@ def getImage(pict_id=None):
 	else:
 		abort(404)
 
+@mod.route('/user/pictures/<user_name>', methods=['GET'])
+def getImageByUsername(user_name=None):
+	e = Event('web.content.getImageByUsername')
+	p = Picture()
+	r = p.getImages({'u': user_name},{'_id','b'})
+	e.save()
+	if r != 'null':
+		return json.dumps(r)
+	else:
+		abort(404)
+
 
 #####################
 #####   SONGS   #####

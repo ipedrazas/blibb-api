@@ -86,7 +86,7 @@ class Picture(BaseObject):
 		return pictures
 
 
-	def getImage(self, filter_dict, fields_dict):
+	def getImages(self, filter_dict, fields_dict):
 		res = self.objects.find(filter_dict, fields_dict)
 		pictures = []
 		for pict_id in res:
