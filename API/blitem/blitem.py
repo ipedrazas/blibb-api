@@ -181,7 +181,7 @@ class Blitem(BaseObject):
 				if r['s'] not in slugs:
 					slugs.append(r['s'])
 				blitem[r['s']] = r['v']
-			blitem['cs'] = self.getComments(iid)
+			blitem['comments'] = self.getComments(iid)
 			if 'tg' in d:
 				blitem['tags'] = d['tg']
 
