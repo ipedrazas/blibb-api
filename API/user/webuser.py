@@ -19,16 +19,15 @@ def hello_world():
 #####################
 
 @mod.route('/<username>/<slug>', methods=['POST'])
-def getBlibbBySlugWithParams(username=None, slug=None):	
+def addItemtoBlibb(username=None, slug=None):	
 	if username is None:
 		abort(404)
 	if slug is None:
 		abort(404)
 
-	if 'template' in request.form:
-		template = request.form['template']
-	if 'items' in request.form:
-		items = request.form['items']
+	app_token = request.form['app_token']
+	key = request.form['key']
+	items = request.form['items']
 	b = Blibb()
 	jres =  b.getBySlug(username,slug)
 	dres = json.loads(jres)
