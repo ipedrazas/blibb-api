@@ -4,11 +4,11 @@ from API.blibb.blibb import Blibb
 from API.blitem.blitem import Blitem
 from API.event.event import Event
 from API.control.bcontrol import BControl
-import API.blitem.weblitem as weblitem
+import API.utils as utils
 
 from flask import Blueprint, request, redirect, abort
 import json
-import redis
+
 
 mod = Blueprint('user', __name__, url_prefix='')
 
@@ -34,7 +34,7 @@ def addItemtoBlibb(username=None, slug=None):
 	key = request.form['key']
 
 	tags = request.form['tags'] if 'tags' in request.form else ''
-	user = getKey(key)
+	user = utils.getKey(key)
 	b = Blibb()
 	jres =  b.getBySlug(username,slug)
 	dres = json.loads(jres)
@@ -45,39 +45,11 @@ def addItemtoBlibb(username=None, slug=None):
 		bid = jblibb['id']
 		blitem = Blitem()
 		labels = b.getLabelFromTemplate(bid)
-		bitems = []
-		for key,value in request.form.iteritems():
-			if '-' in key:
-				elem = getBlitemFromRequest(key, value, labels)
-				bitems.append(elem)
+		bitems = utils.getItemsFromRequest(labels, request)
+
 	blitem_id = blitem.insert(bid, user, bitems, tags)
 
 	return json.dumps(blitem_id) + "\n"
-
-
-def getKey(key):
-	r = redis.StrictRedis(host='127.0.0.1', port=6379, db=0)
-	return r.get(key)
-
-
-def getBlitemFromRequest(key, value, labels):
-		slug = key[3:]
-		typex = key[:2]
-		blitem = {}
-		blitem['t'] = typex
-		blitem['s'] = slug
-		if BControl.isMultitext(typex):
-			value = BControl.autoP(value)
-		elif BControl.isMp3(typex):
-			song = Song()
-			song.load(value)
-			value = song.dumpSong()
-		elif BControl.isImage(typex):
-			value = ObjectId(value)	
-
-		blitem['v'] = value
-		blitem['l'] = labels.get(slug)
-		return blitem
 
 
 @mod.route('/<username>/<slug>', methods=['GET'])

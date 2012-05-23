@@ -32,16 +32,12 @@ def newItem():
 	key = request.form['k']
 	tags = request.form['tags']
 
-	user = getKey(key)
-	bitems = []
+	user = utils.getKey(key)
 	b = Blibb()
 	labels = b.getLabelFromTemplate(bid)
 	logging.error(labels)
 	blitem = Blitem()
-	for key,value in request.form.iteritems():
-		if '-' in key:
-			elem = getBlitemFromRequest(key, value, labels)
-			bitems.append(elem)
+	bitems = utils.getItemsFromRequest(labels, request)
 
 	blitem_id = blitem.insert(bid, user, bitems, tags)
 	postProcess(blitem_id, bitems)
@@ -86,7 +82,7 @@ def newTag():
 	target_id = None
 	target = None
 	key = request.form['k']
-	user = getKey(key)
+	user = utils.getKey(key)
 	target_id = request.form['i']
 	target = Blitem()
 
@@ -131,29 +127,6 @@ def getItemsByBlibbAndView(blibb_id=None,view='Default'):
 		return r
 	else:
 		abort(404)
-
-def getKey(key):
-	r = redis.StrictRedis(host='127.0.0.1', port=6379, db=0)
-	return r.get(key)
-
-def getBlitemFromRequest(key, value, labels):
-		slug = key[3:]
-		typex = key[:2]
-		blitem = {}
-		blitem['t'] = typex
-		blitem['s'] = slug
-		if BControl.isMultitext(typex):
-			value = BControl.autoP(value)
-		elif BControl.isMp3(typex):
-			song = Song()
-			song.load(value)
-			value = song.dumpSong()
-		elif BControl.isImage(typex):
-			value = ObjectId(value)	
-
-		blitem['v'] = value
-		blitem['l'] = labels.get(slug)
-		return blitem
 
 def postProcess(obj_id, items):
 	for blitem in items:
