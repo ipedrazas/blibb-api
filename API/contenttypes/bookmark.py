@@ -126,7 +126,7 @@ class Bookmark(BaseObject):
 		s = dict()
 		bk = self.dump()
 		if bk is not None:
-			s['id'] = bk.get('_id')
+			s['id'] = str(bk.get('_id'))
 			s['url'] = bk.get('l')
 			s['domain'] = bk.get('d')
 			s['saved'] = bk.get('s')
