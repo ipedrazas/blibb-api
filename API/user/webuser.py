@@ -29,9 +29,11 @@ def addItemtoBlibb(username=None, slug=None):
 		abort(404)
 	if slug is None:
 		abort(404)
-
+	e = Event('web.user.blibb.getBlibbBySlug')
 	app_token = request.form['app_token']
 	key = request.form['key']
+	e.addLog({'at': app_token})
+	e.addLog({'s': slug})
 
 	tags = request.form['tags'] if 'tags' in request.form else ''
 	user = utils.getKey(key)
@@ -43,12 +45,13 @@ def addItemtoBlibb(username=None, slug=None):
 	if count == 1:
 		jblibb = results[0]
 		bid = jblibb['id']
+		e.addLog({'b': bid})
 		blitem = Blitem()
 		labels = b.getLabelFromTemplate(bid)
 		bitems = utils.getItemsFromRequest(labels, request)
 
 	blitem_id = blitem.insert(bid, user, bitems, tags)
-
+	e.save()
 	return json.dumps(blitem_id) + "\n"
 
 
