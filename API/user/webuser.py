@@ -114,7 +114,7 @@ def setImageUser():
 	return 'ok'
 
 
-@mod.route('/user/login', methods=['POST'])
+@mod.route('/login', methods=['POST'])
 def doLogin():
 	user = request.form['u']
 	pwd = request.form['p']
