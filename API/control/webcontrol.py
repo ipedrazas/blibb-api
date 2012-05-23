@@ -1,5 +1,4 @@
 
-import redis
 from flask import Blueprint, request, redirect, abort
 
 import json
@@ -15,11 +14,6 @@ mod = Blueprint('control', __name__, url_prefix='')
 @mod.route('/hi')
 def hello_world():
 	return "Hello World, this is control'"
-
-#####################
-##### CONTROLS  #####
-#####################
-
 
 @mod.route('/ctrls/all', methods=['GET'])
 def getAllControls():

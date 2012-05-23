@@ -1,13 +1,12 @@
 
 
 import json
-import redis
 from flask import Blueprint, request, redirect, abort
 from API.blitem.blitem import Blitem
 from API.blibb.blibb import Blibb
 from API.event.event import Event
 from API.contenttypes.picture import Picture
-
+import API.utils as utils
 
 mod = Blueprint('blibb', __name__, url_prefix='/blibb')
 
@@ -15,10 +14,6 @@ mod = Blueprint('blibb', __name__, url_prefix='/blibb')
 @mod.route('/hi')
 def hello_world():
 	return "Hello World, this is blibb'"
-
-##################
-##### BLIBB  #####
-##################
 
 @mod.route('', methods=['POST'])
 def newBlibb():
@@ -45,7 +40,7 @@ def newBlibb():
 		group = False
 		invites = ''
 		
-	user = getKey(key)
+	user = utils.getKey(key)
 	b = Blibb()
 	res = b.insert(user, name, slug, desc, template, image, group, invites)
 	e.save()
@@ -60,7 +55,7 @@ def addUserToBlibbGroup():
 	blibb_id = request.form['blibb_id']
 	userToAdd = request.form['user']
 	key = request.form['bkey']
-	user = getKey(key)
+	user = utils.getKey(key)
 	if b.isOwner(blibb_id,user):
 		res = b.addToBlibbGroup(blibb_id,userToAdd)
 	else:
@@ -122,9 +117,6 @@ def getBlibbByUser(username=None):
 	return res
 
 
-
-
-
 @mod.route('/<username>/group', methods=['GET'])
 def getGroupBlibbByUser(username=None):	
 	e = Event('web.blibb.getGroupBlibbByUser')
@@ -146,7 +138,7 @@ def newTag():
 	target_id = None
 	target = None
 	key = request.form['k']
-	user = getKey(key)
+	user = utils.getKey(key)
 	target_id = request.form['b']
 	target = Blibb()	
 
@@ -162,7 +154,7 @@ def deleteBlibb():
 	e = Event('web.blibb.deleteBlibb') 
 	key = request.form['k']
 	bid = request.form['b']
-	user = getKey(key)
+	user = utils.getKey(key)
 	b = Blibb()
 	res = dict()
 	if b.isOwner(bid,user):
@@ -172,7 +164,3 @@ def deleteBlibb():
 		res['error'] = 'You only can delete your own objects'
 	e.save()
 	return json.dumps(res)
-
-def getKey(key):
-	r = redis.StrictRedis(host='127.0.0.1', port=6379, db=0)
-	return r.get(key)

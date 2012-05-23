@@ -1,8 +1,4 @@
 
-
-
-
-import redis
 from flask import Blueprint, request, redirect, abort
 
 import json
@@ -10,6 +6,8 @@ from bson import json_util
 
 from API.template.template import Template
 from API.event.event import Event
+import API.utils as utils
+
 
 mod = Blueprint('template', __name__, url_prefix='/template')
 
@@ -17,11 +15,6 @@ mod = Blueprint('template', __name__, url_prefix='/template')
 @mod.route('/hi')
 def hello_world():
 	return "Hello World, this is template'"
-
-
-#####################
-##### TEMPLATE  #####
-#####################
 
 @mod.route('/<status>/<params>', methods=['GET'])
 def getTemplates(status=None, params=None):
@@ -39,7 +32,7 @@ def newTemplate():
 	key = request.form['bkey']
 	status = request.form['bstatus']
 	thumb = request.form['thumbnail']
-	user = getKey(key)
+	user = utils.getKey(key)
 	t = Template()
 	res = str(t.insert(name, desc, user, thumb, status))
 	e.save()
@@ -51,7 +44,7 @@ def publishTemplate():
 	t_id = request.form['tid']
 	view = request.form['view']
 	key = request.form['k']
-	user = getKey(key)
+	user = utils.getKey(key)
 	t = Template()
 	if t.isOwner(t_id, user):
 		t.load(t_id)
@@ -85,7 +78,7 @@ def addControl():
 	slug = request.form['slug']
 	typex = request.form['typex']
 	key = request.form['k']
-	user = getKey(key)
+	user = utils.getKey(key)
 	t = Template()
 	if t.isOwner(t_id, user):
 		res = t.addControl(c_id, t_id, title, help, order, view, slug, typex)
@@ -94,9 +87,6 @@ def addControl():
 	e.save()
 	return res
 
-def getKey(key):
-	r = redis.StrictRedis(host='127.0.0.1', port=6379, db=0)
-	return r.get(key)
 
 def getMessage(message, asJson=True, key='response'):
 		res = dict()

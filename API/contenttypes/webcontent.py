@@ -6,7 +6,7 @@ import json
 from API.contenttypes.song import Song
 from API.contenttypes.picture import Picture
 from API.event.event import Event
-
+import API.utils as utils
 
 mod = Blueprint('content', __name__, url_prefix='')
 
@@ -25,7 +25,6 @@ def setPictureData():
 	e = Event('getImage.setPictureData')
 	pict = Picture()
 	jsonData = request.form['p']
-
 	r = pict.updateJson(jsonData)
 	e.save()
 	if r != 'null':
@@ -39,7 +38,7 @@ def newPicture():
 	pict = Picture()
 	blibb = request.form['b']
 	key = request.form['k']
-	user = getKey(key)
+	user = utils.getKey(key)
 	items = dict()
 	r = pict.insert(blibb,user,items)
 	e.save()
@@ -92,7 +91,7 @@ def newSong():
 	song = Song()
 	blibb = request.form['b']
 	key = request.form['k']
-	user = getKey(key)
+	user = utils.getKey(key)
 	items = dict()
 	r = song.insert(blibb,user,items)
 	e.save()
@@ -113,7 +112,7 @@ def newBookmark(song_id=None):
 	b = request.form['b']
 	bn = request.form['bn']
 	k = request.form['k']
-	user = getKey(k)
+	user = utils.getKey(k)
 	url = request.form['url']
 	tags = []
 	if 'tags' in request.form:
@@ -121,8 +120,3 @@ def newBookmark(song_id=None):
 	bk_id = bk.insert(b, user, url, t, bn, tags )
 	return  json.dumps(bk_id,default=json_util.default)
 
-
-
-def getKey(key):
-	r = redis.StrictRedis(host='127.0.0.1', port=6379, db=0)
-	return r.get(key)

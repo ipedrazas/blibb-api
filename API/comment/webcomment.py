@@ -1,7 +1,6 @@
 
 
 import json
-import redis
 from flask import Blueprint, request, redirect, abort
 from API.comment.comment import Comment
 from API.event.event import Event
@@ -9,6 +8,7 @@ from API.blibb.blibb import Blibb
 from API.blitem.blitem import Blitem
 from bson import json_util
 import logging
+import API.utils as utils
 
 mod = Blueprint('comment', __name__, url_prefix='/comment')
 
@@ -28,7 +28,7 @@ def newComment():
 	comment = Comment()
 	c_id = None
 	key = request.form['k']
-	user = getKey(key)
+	user = utils.getKey(key)
 	logging.error('Processing %s' % user)
 	if user is not None:
 		target_id = None
@@ -66,7 +66,3 @@ def getComments(parent_id=None):
 	cs = comment.getCommentsById(parent_id,True)
 	e.save()
 	return cs
-
-def getKey(key):
-	r = redis.StrictRedis(host='127.0.0.1', port=6379, db=0)
-	return r.get(key)
