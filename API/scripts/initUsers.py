@@ -17,11 +17,11 @@ from API.user.buser import User
 
 
 def createInitialBatch():
-	createUser('Alpheta','alpheta@blibb.net','alpheta')
+	createUser('alpheta','alpheta@blibb.net','alpheta')
 	createUser('ipedrazas','ipedrazas@gmail.com','ivan')
-	createUser('Manu','mquintans@gmail.com','manu')
-	createUser('Antonio','avalverde@blibb.net','antonio')
-	createUser('Franziska','franziska.london@gmail.com','franziska')
+	createUser('manu','mquintans@gmail.com','manu')
+	createUser('valgreens','avalverde@blibb.net','antonio')
+	createUser('franziska','franziska.london@gmail.com','franziska')
 
 
 

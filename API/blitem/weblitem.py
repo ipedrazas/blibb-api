@@ -40,7 +40,7 @@ def newItem():
 	blitem = Blitem()
 	for key,value in request.form.iteritems():
 		if '-' in key:
-			elem = getBlitemFromRequest(key, value, labels, user, bid)
+			elem = getBlitemFromRequest(key, value, labels)
 			bitems.append(elem)
 
 	blitem_id = blitem.insert(bid, user, bitems, tags)
@@ -136,7 +136,7 @@ def getKey(key):
 	r = redis.StrictRedis(host='127.0.0.1', port=6379, db=0)
 	return r.get(key)
 
-def getBlitemFromRequest(key, value, labels, user, bid):
+def getBlitemFromRequest(key, value, labels):
 		slug = key[3:]
 		typex = key[:2]
 		blitem = {}
