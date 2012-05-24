@@ -42,7 +42,6 @@ def createSingleLineControl():
 	c.ui = getDefaultUI()
 	views['default'] = '''
 			<div id="{{ctrl_id}}_{{ctrl_order}}" class="templatedCtrl">
-				<span class="bControlsActions"><i class="icon-pencil"></i><i class="icon-trash"></i></span>
 				<label for="{{ctrl_typex}}-{{ctrl_slug}}">{{ctrl_name}}:</label>
 				<input name="{{ctrl_typex}}-{{ctrl_slug}}" placeholder="{{ctrl_help}}" size="50" type="text" />
 			</div>
@@ -69,9 +68,8 @@ def createDateControl():
 	c.typex = BControl.DATE
 	views['default'] = '''
 			<div id="{{ctrl_id}}_{{ctrl_order}}" class="templatedCtrl">
-				<span class="bControlsActions"><i class="icon-pencil"></i><i class="icon-trash"></i></span>
 				<label for="{{ctrl_typex}}-{{ctrl_slug}}">{{ctrl_name}}:</label>
-				<input name="{{ctrl_typex}}-{{ctrl_slug}}" id="datepicker" class="hasDatepicker" type="text" placeholder="{{ctrl_help}}" />
+				<input id="datepicker" name="{{ctrl_typex}}-{{ctrl_slug}}" type="text" placeholder="{{ctrl_help}}" />
 			</div>
 			'''
 	c.views = views
@@ -87,7 +85,6 @@ def createMultiLineControl():
 	c.typex = BControl.MULTITEXT
 	views['default'] = '''
 			<div id="{{ctrl_id}}_{{ctrl_order}}" class="templatedCtrl">
-				<span class="bControlsActions"><i class="icon-pencil"></i><i class="icon-trash"></i></span>
 				<label for="{{ctrl_typex}}-{{ctrl_slug}}">{{ctrl_name}}:</label>
 				<textarea rows="5" cols="50" name="{{ctrl_typex}}-{{ctrl_slug}}" placeholder="{{ctrl_help}}"></textarea>
 			</div>
@@ -219,7 +216,6 @@ def createBookmarkControl():
 	c.ui = getDefaultUI()
 	views['default'] = '''
 			<div id="{{ctrl_id}}_{{ctrl_order}}" class="templatedCtrl">
-				<span class="bControlsActions"><i class="icon-pencil"></i><i class="icon-trash"></i></span>
 				<label for="{{ctrl_typex}}-{{ctrl_slug}}">{{ctrl_name}}:</label>
 				<input name="{{ctrl_typex}}-{{ctrl_slug}}" placeholder="{{ctrl_help}}" size="50" type="text" />
 			</div>
