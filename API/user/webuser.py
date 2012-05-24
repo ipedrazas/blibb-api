@@ -6,7 +6,7 @@ from API.event.event import Event
 from API.control.bcontrol import BControl
 import API.utils as utils
 
-from flask import Blueprint, request, redirect, abort
+from flask import Blueprint, request, redirect, abort, current_app, jsonify
 import json
 
 
@@ -17,12 +17,25 @@ mod = Blueprint('user', __name__, url_prefix='')
 def hello_world():
 	return "Hello World, this is user'"
 
+def support_jsonp(f):
+    """Wraps JSONified output for JSONP"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        callback = request.args.get('callback', False)
+        if callback:
+            content = str(callback) + '(' + str(f(*args,**kwargs).data) + ')'
+            return current_app.response_class(content, mimetype='application/javascript')
+        else:
+            return f(*args, **kwargs)
+    return decorated_function
+
 
 #####################
 ###### USERS  #######
 #####################
 
 @mod.route('/<username>/<slug>', methods=['POST'])
+@support_jsonp
 def addItemtoBlibb(username=None, slug=None):
 
 	if username is None:
@@ -56,6 +69,7 @@ def addItemtoBlibb(username=None, slug=None):
 
 
 @mod.route('/<username>/<slug>', methods=['GET'])
+@support_jsonp
 def getBlibbBySlug(username=None, slug=None):	
 	'''
 		
@@ -87,10 +101,11 @@ def getBlibbBySlug(username=None, slug=None):
 			pass
 		ret['items'] = rs_items['items']
 	e.save()
-	return json.dumps(ret)
+	return  jsonify(ret)
 
 
 @mod.route('/user/name/<user_name>', methods=['GET'])
+@support_jsonp
 def getUserByName(user_name=None):	
 	e = Event('web.user.getUserByName')
 	if user_name is None:
@@ -102,6 +117,7 @@ def getUserByName(user_name=None):
 	return res
 
 @mod.route('/user/<user_id>', methods=['GET'])
+@support_jsonp
 def getUser(user_id=None):	
 	e = Event('web.user.getUser')
 	if user_id is None:
@@ -113,6 +129,7 @@ def getUser(user_id=None):
 	return res
 
 @mod.route('/user/image', methods=['POST'])
+@support_jsonp
 def setImageUser():	
 	e = Event('web.user.setImageUser')
 	user_id = request.form['user_id']
@@ -126,6 +143,7 @@ def setImageUser():
 
 
 @mod.route('/login', methods=['POST'])
+@support_jsonp
 def doLogin():
 	user = request.form['u']
 	pwd = request.form['p']
