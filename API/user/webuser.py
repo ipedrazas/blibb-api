@@ -7,6 +7,7 @@ from API.control.bcontrol import BControl
 import API.utils as utils
 
 from flask import Blueprint, request, redirect, abort, current_app, jsonify
+from functools import wraps
 import json
 
 
@@ -142,11 +143,17 @@ def setImageUser():
 	return 'ok'
 
 
-@mod.route('/login', methods=['POST'])
+@mod.route('/login', methods=['GET','POST'])
 @support_jsonp
 def doLogin():
-	user = request.form['u']
-	pwd = request.form['p']
+	
+	if request.method == 'POST':
+		user = request.form['u']
+		pwd = request.form['p']
+	else:
+		user = request.args.get('u', False)
+		pwd = request.args.get('p', False)
+		
 	u = User()
 	key = u.authenticate(user,pwd)
 	if key:
