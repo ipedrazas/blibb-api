@@ -65,7 +65,7 @@ def addItemtoBlibb(username=None, slug=None):
 
 	blitem_id = blitem.insert(bid, user, bitems, tags)
 	e.save()
-	return json.dumps(blitem_id) + "\n"
+	return jsonify(blitem_id)
 
 
 @mod.route('/<username>/<slug>', methods=['GET'])
@@ -112,9 +112,9 @@ def getUserByName(user_name=None):
 		abort(404)
 	user = User()
 	u = user.getByName(user_name)
-	res = json.dumps(u)
+	
 	e.save()
-	return res
+	return jsonify(u)
 
 @mod.route('/user/<user_id>', methods=['GET'])
 @support_jsonp
@@ -152,6 +152,6 @@ def doLogin():
 	if key:
 		d = dict()
 		d['key'] = key
-		return json.dumps(d)
+		return jsonify(d)
 	else:
-		abort(404)
+		abort(401)
