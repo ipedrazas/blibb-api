@@ -117,8 +117,9 @@ class Template(BaseObject):
 		<div class="{{slug}}Desc">{{desc}}<\/div>
 		<div class="{{slug}}Date">{{created}}<\/div>
 		<div class="{{slug}}Author">{{owner}}<\/div>
-		<div class="entryItems">{{#ENTRIES}}{{{.}}}{{\/ENTRIES}}<\/div>
+		<div class="entryItems">{{#ENTRIES}}{{ENTRY}}{{\/ENTRIES}}<\/div>
 				'''
+		res = res.replace('{{ENTRY}}', self.getWrapperEntry())
 		return res.replace('{{slug}}', self.slugify(self.name))
 
 	def getCssWrapper(self):
@@ -139,6 +140,9 @@ class Template(BaseObject):
 		<\/ul>
 	</div>
 '''
+
+	def getControlsHtmlWrapper(self):
+		pass
 	
 	def getControlWrite(self):
 		pass
@@ -154,7 +158,7 @@ class Template(BaseObject):
 			return '.' + slug + ' {  }'
 
 	def getWrapperEntry(self):
-		res = '<div id="entry">'
+		res = '\n\t<div id="entry">\n\t\t'
 		for control in self.controls:
 			slug = control.get('s')
 			ctype = control.get('t')
@@ -165,10 +169,10 @@ class Template(BaseObject):
 			else:
 				res += self.getControlRead(slug)
 
-			res += '\n\t'
+			res += '\n\t\t'
 
-		res += self.getBlitemOptions()
-		res += '</div>' 
+		# res += self.getBlitemOptions()
+		res += '</div><!-- div entry end -->' 
 		return res
 
 	def getControlReadMusic(self, slug):
@@ -198,10 +202,12 @@ class Template(BaseObject):
 		self.objects.update({ u'_id': ObjectId(self.id)}, {"$push": {'v.' + viewName: res}, "$set": {'q':'active'}}, True)
 
 	def createDefaultView(self):
+		controls = self.getTemplateControls(self.id)
 		rb = self.getHtmlWrapper()
 		sb = self.getCssWrapper()
 		ri = self.getWrapperEntry()
 		si = self.getCssEntry()
+
 		self.createView('Default', rb, sb, ri, si)
 		
 

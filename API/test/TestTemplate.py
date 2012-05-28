@@ -38,34 +38,28 @@ class TestTemplate(unittest.TestCase):
 	# 	# print b.getByName('my name')
 
 
-	# def test_getControls(self):
-	# 	t = Template()
-	# 	ctrls = t.getTemplateControls('4f733922f3a4181945000000')
-
-		# controls = list(cursor)
-		# for elem in cursor:
-		# 	controls = elem.get('ctrls')
-
-		# for a in ctrls:
-		# 	print a.get('c')
-		# 	print a.get('t')
-		# 	print a.get('v')
-
-	def test_populate(self):
+	def test_getControls(self):
 		t = Template()
-		t.load('4f7f1350f3a41813f3000000')
+		ctrls = t.getTemplateControls('4fc33afb73f24e1091000008')
+
+		for ctrl in ctrls:
+			print ctrl.get('s')
+
+	# def test_populate(self):
+	# 	t = Template()
+	# 	t.load('4f7f1350f3a41813f3000000')
 
 		# print json.dumps(t,default=json_util.default)
-		print t.dump()
+		# print t.dump()
 		# ctrls = t.controls
 		# for control in ctrls:
 			# print control.get('s')
 
-	# def test_wrapperEntry(self):
-	# 	t = Template()
-	# 	t.load('4f733922f3a4181945000000')
-	# 	res = t.getWrapperEntry()
-	# 	# print res
+	def test_wrapperEntry(self):
+		t = Template()
+		t.load('4fc33afb73f24e1091000008')
+		res = t.getWrapperEntry()
+		print res
 
 	# def test_cssEntry(self):
 	# 	t = Template()
@@ -97,8 +91,8 @@ class TestTemplate(unittest.TestCase):
 	# 	print 'test_publish(self):'
 	# 	print t.publish()
 
-	def test_getById(self):
-		t = Template()
-		tt =  simplejson.loads(t.getById('4f7ea549f3a4180981000007'))
-		print tt
+	# def test_getById(self):
+	# 	t = Template()
+	# 	tt =  simplejson.loads(t.getById('4f7ea549f3a4180981000007'))
+	# 	print tt
 		
