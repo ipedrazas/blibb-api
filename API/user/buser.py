@@ -1,6 +1,6 @@
 # 
 #
-#	event.py
+#	User.py
 #
 #
 
@@ -152,16 +152,18 @@ class User(BaseObject):
 	def getByName(self,username):
 		r = self.objects.find_one({ 'n': username },{ 'n': 1, 'e': 1, 'i': 1})
 		res = dict()
-		res['id'] = str(r.get('_id'))
-		res['name'] = r.get('n')
-		res['email'] = r.get('e')
-		if 'i' in r:
-			image = r.get('i')
-			res['t60'] = '/actions/getImage?i=60&id=' + image.get('id')
-			res['t160'] = '/actions/getImage?i=16&0id=' + image.get('id')
-			res['t260'] = '/actions/getImage?i=260&id=' + image.get('id')
-			res['image_id'] =  image.get('id')
-		
+		if r is not None:
+			res['id'] = str(r.get('_id'))
+			res['name'] = r.get('n')
+			res['email'] = r.get('e')
+			if 'i' in r:
+				image = r.get('i')
+				res['t60'] = '/actions/getImage?i=60&id=' + image.get('id')
+				res['t160'] = '/actions/getImage?i=16&0id=' + image.get('id')
+				res['t260'] = '/actions/getImage?i=260&id=' + image.get('id')
+				res['image_id'] =  image.get('id')
+		else:
+			res['error'] = 'user not found'
 
 		return res
 
@@ -173,4 +175,5 @@ class User(BaseObject):
 			self.objects.update({ u'_id': ObjectId(user_id)}, {"$set": {'i': image}}, True)
 			return user_id
 		return 'error'
+
 

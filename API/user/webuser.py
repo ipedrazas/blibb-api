@@ -162,3 +162,15 @@ def doLogin():
 		return jsonify(d)
 	else:
 		abort(401)
+
+
+@mod.route('/invite/<code>', methods=['GET'])
+def validateInviteCode(code=None):	
+	e = Event('web.user.validateInviteCode')
+	if code is None:
+		abort(404)
+	user = User()
+	u = user.getByName(user_name)
+	
+	e.save()
+	return jsonify(u)

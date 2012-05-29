@@ -12,11 +12,14 @@ from os.path import join, abspath, dirname
 parentpath = abspath(join(dirname(__file__), '../..'))
 sys.path.append(parentpath)
 
+
+
 from API.user.buser import User
 
 
 
 def createInitialBatch():
+	createUser('test','test','test')
 	createUser('alpheta','alpheta@blibb.net','alpheta')
 	createUser('ipedrazas','ipedrazas@gmail.com','ivan')
 	createUser('manu','mquintans@gmail.com','manu')
