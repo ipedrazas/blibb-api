@@ -9,9 +9,10 @@ from datetime import datetime
 from API.base import BaseObject
 from API.contenttypes.picture import Picture
 from bson.objectid import ObjectId
+import API.utils as utils
 import json
 import hashlib
-import redis
+
 
 class User(BaseObject):
 
@@ -122,7 +123,7 @@ class User(BaseObject):
 
 
 	def setKey(self,user_id, user_name, email, user_image=None):
-		r = redis.StrictRedis(host='127.0.0.1', port=6379, db=0)
+		r = utils.getRedis()
 		userkey = hashlib.sha1(user_name + user_id + str(datetime.utcnow())).hexdigest()
 		r.set(userkey,user_name)
 		basekey = userkey + ':'

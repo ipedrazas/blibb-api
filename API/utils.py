@@ -53,7 +53,10 @@ def getItemsFromRequest(labels, request):
 	return bitems
 
 def getKey(key):
-	r = redis.StrictRedis(host='127.0.0.1', port=6389, db=0)
+	r = getRedis()
 	return r.get(key)
+
+def getRedis():
+	return redis.StrictRedis(host='127.0.0.1', port=6389, db=0)
 
 	
