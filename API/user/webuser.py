@@ -151,8 +151,8 @@ def doLogin():
 		user = request.form['u']
 		pwd = request.form['p']
 	else:
-		user = request.args.get('u', False)
-		pwd = request.args.get('p', False)
+		user = request.args.get('u', '')
+		pwd = request.args.get('p', '')
 		
 	u = User()
 	key = u.authenticate(user,pwd)
