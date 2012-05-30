@@ -89,7 +89,7 @@ class BaseObject(object):
 		self._tags = []
 		self._doc = None
 		self._cursor = None
-		self.setLog()
+		# self.setLog()
 
 	def debug(self,debug):
 		self._logger.debug(str(debug))
