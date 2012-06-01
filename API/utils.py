@@ -57,6 +57,6 @@ def getKey(key):
 	return r.get(key)
 
 def getRedis():
-	return redis.StrictRedis(host='127.0.0.1', port=6389, db=0)
+	return redis.StrictRedis(host='127.0.0.1', port=6379, db=0)
 
 	
