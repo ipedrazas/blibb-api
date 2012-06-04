@@ -14,3 +14,9 @@ mod = Blueprint('manager', __name__, url_prefix='/sys')
 @mod.route('/hi')
 def hello_world():
 	return "Hello World, this is Manager'"
+
+@mod.route('/validate/<code>', methods=['GET'])
+def validate(code=None):
+	m = Manager()
+	return jsonify({'result':m.validateCode(code)})
+	
