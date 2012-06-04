@@ -119,7 +119,7 @@ class Blibb(BaseObject):
 		return labels
 		 
 	def getTemplateView(self, obj_id, view='Default'):
-		res =  self.objects.find_one({ u'_id': ObjectId(obj_id)}, {'t.v': 1, 'n':1, 'd':1, 'c':1, 'u':1, 'tg':1, 's':1})
+		res =  self.objects.find_one({ u'_id': ObjectId(obj_id)}, {'t.v': 1, 'n':1, 'd':1, 'c':1, 'u':1, 'tg':1, 's':1, 'img':1})
 		buf = dict()
 		if '_id' in res:
 			t = res['t']
@@ -130,6 +130,8 @@ class Blibb(BaseObject):
 			buf['date'] = str(res['c'])
 			buf['owner'] = res['u']
 			buf['slug'] = res['s']
+			img = res['img']
+			buf['img'] = img['id']
 			if 'tg' in res:
 				buf['tags'] = res['tg']
 		else:
