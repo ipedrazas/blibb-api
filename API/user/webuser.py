@@ -18,6 +18,17 @@ mod = Blueprint('user', __name__, url_prefix='')
 def hello_world():
 	return "Hello World, this is user'"
 
+def check_tokens(f):
+	@wraps(f)
+	def decorated_function(*args, **kwargs):
+		app_token = request.args.get('app_token', False)
+		user_token = request.args.get('user_token', False)
+		if app_token or user_token:
+			pass
+		else:
+			abort(401)
+	return decorated_function
+
 def support_jsonp(f):
     """Wraps JSONified output for JSONP"""
     @wraps(f)

@@ -15,7 +15,7 @@ def not_found(error):
 
 
 
-
+from API.web.wmanager import mod as ManagerModule
 from API.blibb.weblibb import mod as BlibbModule
 from API.blitem.weblitem import mod as BlitemModule
 from API.contenttypes.webcontent import mod as ContentModule
@@ -32,3 +32,4 @@ app.register_blueprint(ContentModule)
 app.register_blueprint(ControlModule)
 app.register_blueprint(TemplateModule)
 app.register_blueprint(UserModule)
+app.register_blueprint(ManagerModule)

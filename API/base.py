@@ -89,18 +89,25 @@ class BaseObject(object):
 		self._tags = []
 		self._doc = None
 		self._cursor = None
-		# self.setLog()
+		self.setLog()
+
+	def getLogLevel(self):
+		return self._logger.getEffectiveLevel()
 
 	def debug(self,debug):
 		self._logger.debug(str(debug))
 
-	def setLog(self):
+	def error(self,error):
+		self._logger.error(str(error))
+
+	def setLog(self, log_level=logging.WARNING):
 		self._logger = logging.getLogger(self._collection)
-		hdlr = logging.FileHandler(dirname(__file__) + '/../logs/' + self._collection + '.log')
-		formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-		hdlr.setFormatter(formatter)
-		self._logger.addHandler(hdlr) 
-		self._logger.setLevel(logging.DEBUG)
+		# hdlr = logging.FileHandler(dirname(__file__) + '/../logs/' + self._collection + '.log')
+		hdlr = logging.basicConfig(level=log_level)
+		# formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+		# hdlr.setFormatter(formatter)
+		# self._logger.addHandler(hdlr) 
+		self._logger.setLevel(log_level)
 
 
 	def slugify(self, text, delim=u''):
