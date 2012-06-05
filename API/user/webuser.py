@@ -9,6 +9,7 @@ import API.utils as utils
 from flask import Blueprint, request, redirect, abort, current_app, jsonify
 from functools import wraps
 import json
+from API.utils import crossdomain
 
 
 mod = Blueprint('user', __name__, url_prefix='')
@@ -17,6 +18,8 @@ mod = Blueprint('user', __name__, url_prefix='')
 @mod.route('/hi')
 def hello_world():
 	return "Hello World, this is user'"
+
+
 
 def check_tokens(f):
 	@wraps(f)
@@ -79,9 +82,14 @@ def addItemtoBlibb(username=None, slug=None):
 	e.save()
 	return jsonify(blitem_id)
 
+@mod.route('/cors',methods=['GET'])
+@crossdomain(origin='*')
+def getCors():
+	return jsonify(foo='yayyyy cross domain ftw')
 
 @mod.route('/<username>/<slug>', methods=['GET'])
 @support_jsonp
+@crossdomain(origin='*')
 def getBlibbBySlug(username=None, slug=None):	
 	e = Event('web.user.blibb.getBlibbBySlug')
 	b = Blibb()
