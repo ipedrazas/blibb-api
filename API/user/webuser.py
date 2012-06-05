@@ -83,13 +83,6 @@ def addItemtoBlibb(username=None, slug=None):
 @mod.route('/<username>/<slug>', methods=['GET'])
 @support_jsonp
 def getBlibbBySlug(username=None, slug=None):	
-	'''
-		
-		Pass a blibb_id, get the blibb data
-		get all the items, return a json doc with 
-		blibb info and all the flat items
-
-	'''
 	e = Event('web.user.blibb.getBlibbBySlug')
 	b = Blibb()
 	if username is None:

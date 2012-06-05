@@ -1,7 +1,7 @@
 
 
 import json
-from flask import Blueprint, request, redirect, abort
+from flask import Blueprint, request, redirect, abort, jsonify
 from API.blitem.blitem import Blitem
 from API.blibb.blibb import Blibb
 from API.event.event import Event
@@ -164,3 +164,25 @@ def deleteBlibb():
 		res['error'] = 'You only can delete your own objects'
 	e.save()
 	return json.dumps(res)
+
+
+########################
+####### FOLLOWERS ######
+########################
+
+@mod.route('/fol', methods=['POST'])
+def addFollower():
+	e = Event('web.blibb.addFollower') 
+	key = request.form['k']
+	bid = request.form['b']
+	follow= request.form['f']
+	user = utils.getKey(key)
+	b = Blibb()
+	res = dict()
+	if b.isOwner(bid,user):		
+		res['error'] = 'You are always your first follower!'
+	else:
+		b.addFollower(bid, follow)
+		res['result'] = 'Ok'
+	e.save()
+	return jsonify(res)

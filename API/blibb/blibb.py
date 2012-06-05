@@ -52,6 +52,7 @@ class Blibb(BaseObject):
 		self.__desc = None
 		self.__items = []
 		self.__template = None
+		self.slug = None
 
 	def populate(self):
 		if self.doc is not None:
@@ -61,6 +62,7 @@ class Blibb(BaseObject):
 			self.id = self.doc.get('_id')
 			self.items = self.doc.get('i')
 			self.tags = self.doc.get('t')
+			self.slug = self.doc.get('s')
 
 	def save(self):
 		self.objects.update(

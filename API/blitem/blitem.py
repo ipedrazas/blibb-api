@@ -71,11 +71,14 @@ class Blitem(BaseObject):
 			tag_list = list(set(tags.split()))
 			# ToDO: this has to go through a queue
 			b = Blibb()
+			b.load(blibb)
+			b.populate()
+			bs = b.slug
 			for t in tag_list:
 				b.addTag(blibb,t)
 
 		now = datetime.utcnow()
-		doc = {"b" : ObjectId(blibb), "u": user, "c": now, "i": items, "cc": 0, 'tg': tag_list}
+		doc = {"b" : ObjectId(blibb), "u": user, "bs": bs ,"c": now, "i": items, "cc": 0, 'tg': tag_list}
 		newId = self.objects.insert(doc)
 		return str(newId)
 
