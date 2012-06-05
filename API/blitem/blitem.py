@@ -69,7 +69,6 @@ class Blitem(BaseObject):
 		tag_list = []
 		if tags is not None:
 			tag_list = list(set(tags.split()))
-			# ToDO: this has to go through a queue
 			b = Blibb()
 			b.load(blibb)
 			b.populate()

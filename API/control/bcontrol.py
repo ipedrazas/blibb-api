@@ -140,6 +140,11 @@ class BControl(BaseObject):
 		return typex == BControl.getType(BControl.URL)
 
 	@staticmethod
+	def isDate(typex):
+		return typex == BControl.getType(BControl.DATE)
+
+
+	@staticmethod
 	def autoP(text):
 		res = ''
 		buf = ''

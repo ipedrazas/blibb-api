@@ -42,7 +42,11 @@ def getBlitemFromRequest(key, value, labels):
 			song.load(value)
 			value = song.dumpSong()
 		elif BControl.isImage(typex):
-			value = ObjectId(value)	
+			value = ObjectId(value)
+		elif BControl.isDate(typex):
+			# TODO: convert dates to MongoDates
+			# and back
+			value = value	
 
 		blitem['v'] = value
 		blitem['l'] = labels.get(slug)
