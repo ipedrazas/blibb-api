@@ -133,7 +133,8 @@ class Blibb(BaseObject):
 			buf['owner'] = res['u']
 			buf['slug'] = res['s']
 			img = res['img']
-			buf['img'] = img['id']
+			if 'id' in img:
+				buf['img'] = img['id']
 			if 'tg' in res:
 				buf['tags'] = res['tg']
 		else:
