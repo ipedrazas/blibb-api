@@ -19,8 +19,6 @@ mod = Blueprint('user', __name__, url_prefix='')
 def hello_world():
 	return "Hello World, this is user'"
 
-
-
 def check_tokens(f):
 	@wraps(f)
 	def decorated_function(*args, **kwargs):
@@ -83,14 +81,14 @@ def addItemtoBlibb(username=None, slug=None):
 	e.save()
 	return jsonify(blitem_id)
 
-@mod.route('/cors',methods=['GET'])
+@mod.route('/cors',methods=['GET','POST'])
 @crossdomain(origin='*')
 def getCors():
 	return jsonify(foo='yayyyy cross domain ftw')
 
+
 @mod.route('/<username>/<slug>', methods=['GET'])
 @support_jsonp
-@crossdomain(origin='*')
 def getBlibbBySlug(username=None, slug=None):	
 	e = Event('web.user.blibb.getBlibbBySlug')
 	b = Blibb()
