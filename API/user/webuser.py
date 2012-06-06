@@ -50,6 +50,7 @@ def support_jsonp(f):
 #####################
 
 @mod.route('/<username>/<slug>', methods=['POST'])
+@crossdomain(origin='*')
 @support_jsonp
 def addItemtoBlibb(username=None, slug=None):
 

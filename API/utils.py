@@ -2,7 +2,6 @@
 
 from bs4 import BeautifulSoup
 import urllib2
-from flask import request
 from API.control.bcontrol import BControl
 from bson.objectid import ObjectId
 import zmq

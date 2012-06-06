@@ -2,7 +2,7 @@ gunicorn
 
 pytz
 beautifulsoup4
-functools
+
 
 pyzmq
 pymongo
