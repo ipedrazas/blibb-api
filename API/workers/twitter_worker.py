@@ -31,8 +31,9 @@ def getTwitterDetails(user_names, attributes):
 		twitter_url = "https://api.twitter.com/1/users/lookup.json?screen_name={0}&include_entities=false".format(strUser)
 		print twitter_url
 		resp,json_content = h.request(twitter_url)
-		print json_content
-		print resp.get('x-ratelimit-remaining')
+		
+		limit = resp.get('x-ratelimit-remaining')
+
 		content = json.loads(json_content)
 		for user in content:
 			u = dict()
@@ -89,11 +90,9 @@ start_time = time.time()
 namesBag = []
 while True:
 	#  Wait for next request from client
-	time.sleep (1) 
+	time.sleep (0.1) 
 	lap = time.time() - start_time
-	print 'lap: ' + str(lap)
-
-	if lap > 5:
+	if lap > 25:
 		if(len(namesBag)>0):
 			names_list =  getScreenNames(namesBag)
 			twitter_details = getTwitterDetails(names_list, atts)
