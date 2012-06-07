@@ -31,13 +31,12 @@ def getTwitterDetails(user_names, attributes):
 		twitter_url = "https://api.twitter.com/1/users/lookup.json?screen_name={0}&include_entities=false".format(strUser)
 		print twitter_url
 		resp,json_content = h.request(twitter_url)
-		
 		limit = resp.get('x-ratelimit-remaining')
 
 		content = json.loads(json_content)
 		for user in content:
 			u = dict()
-			print user
+			# print user
 			for att in attributes:
 				u[att] = user.get(att)
 			# u = {'screen_name': user.get('screen_name'),'name': user.get('name'), 'description': user.get('description'), 'image': user.get('profile_image_url'), 'location': user.get('location')}
