@@ -135,6 +135,8 @@ class Blibb(BaseObject):
 			img = res['img']
 			if 'id' in img:
 				buf['img'] = img['id']
+			else:
+				buf['img'] = img
 			if 'tg' in res:
 				buf['tags'] = res['tg']
 		else:

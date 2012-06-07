@@ -108,3 +108,10 @@ def crossdomain(origin=None, methods=None, headers=None,
         f.provide_automatic_options = False
         return update_wrapper(wrapped_function, f)
     return decorator
+
+def queueTwitterResolution(obj_id, twiter_screen_name):
+	context = zmq.Context()
+	socket = context.socket(zmq.REQ)
+	socket.connect ("tcp://localhost:5556")
+	if obj_id is not None:
+		socket.send (str( obj_id + '##' + twiter_screen_name))

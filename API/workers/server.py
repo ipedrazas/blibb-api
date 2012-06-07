@@ -1,7 +1,6 @@
 #
-#   Hello World server in Python
 #   Binds REP socket to tcp://*:5555
-#   Expects "Hello" from client, replies with "World"
+#   receives a URL and fetches the content to resolve the title
 #
 import zmq
 import time
@@ -10,6 +9,7 @@ import sys
 from os.path import join, abspath, dirname
 parentpath = abspath(join(dirname(__file__), '../..'))
 sys.path.append(parentpath)
+
 
 from API.blitem.blitem import Blitem
 from API.contenttypes.bookmark import Bookmark
@@ -38,16 +38,12 @@ def processUrl(message):
 	blitem = Blitem()
 	blitem.load(strs[0])
 	blitem.populate()
-	logger.debug(blitem.id)
 	bkmrk = Bookmark()
 	bk_id = bkmrk.findByUrl(url)
-	logger.debug("Bookmark: " + str(bk_id))
 	if bk_id is None:
-		logger.debug("Bookmark Insert")
 		bk_id = bkmrk.insert(blitem.blibb, blitem.owner, url, title, blitem.tags)
 		bkmrk.load(bk_id)
 	else:
-		logger.debug("Bookmark Update")
 		bkmrk.add(blitem.blibb,blitem.owner,blitem.tags)
 
 	items = blitem.items

@@ -21,6 +21,7 @@ class BControl(BaseObject):
 	MP3 = 31
 	DOC = 41
 	URL = 51
+	TWITTER = 61
 
 
 	def __init__(self):
@@ -143,6 +144,9 @@ class BControl(BaseObject):
 	def isDate(typex):
 		return typex == BControl.getType(BControl.DATE)
 
+	@staticmethod
+	def isTwitter(typex):
+		return typex == BControl.getType(BControl.TWITTER)
 
 	@staticmethod
 	def autoP(text):

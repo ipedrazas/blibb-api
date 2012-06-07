@@ -223,6 +223,22 @@ def createBookmarkControl():
 	c.views = views
 	c.save()
 
+def createTwitterControl():
+	c = createBaseObject()
+	views = dict()
+	c.name = 'Twitter Control'
+	c.css = ' font-size: 100%;'
+	c.ctype = 'text'
+	c.typex = BControl.TWITTER
+	c.ui = getDefaultUI()
+	views['default'] = '''
+			<div id="{{ctrl_id}}_{{ctrl_order}}" class="templatedCtrl">
+				<label for="{{ctrl_typex}}-{{ctrl_slug}}">{{ctrl_name}}:</label>
+				<input name="{{ctrl_typex}}-{{ctrl_slug}}" placeholder="{{ctrl_help}}" size="50" type="text" />
+			</div>
+			'''
+	c.views = views
+	c.save()
 
 def createAll():
 	createSingleLineControl()
@@ -232,7 +248,7 @@ def createAll():
 	createUploadImages()
 	createUploadMusic()
 	createBookmarkControl()
-
+	createTwitterControl()
 	
 print 'Script to create BControls'
 # createUploadMusic()

@@ -134,4 +134,7 @@ def postProcess(obj_id, items):
 		typex = blitem['t']
 		if BControl.isURL(typex):
 			utils.sendUrl(obj_id,blitem['v'])
+		if BControl.isTwitter(typex):
+			utils.queueTwitterResolution(obj_id,blitem['v'])
+			
 
