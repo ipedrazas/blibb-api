@@ -220,3 +220,6 @@ class Blibb(BaseObject):
 		result = self.objects.find({ u'gu': username },{u't' : 0}).sort("c", -1)
 		return self.resultSetToJson(result)
 
+
+	def incNumItem(self, username, slug):
+		self.objects.update({ 's': slug, 'u': username }, {"$inc": {'ni': 1}})

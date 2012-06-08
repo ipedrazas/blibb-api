@@ -78,6 +78,10 @@ def addItemtoBlibb(username=None, slug=None):
 		bitems = utils.getItemsFromRequest(labels, request)
 
 	blitem_id = blitem.insert(bid, user, bitems, tags)
+	if blitem_id:
+		b.incNumItem(username,slug)
+
+	utils.postProcess(blitem_id, bitems)
 	e.save()
 	return jsonify(blitem_id)
 
@@ -141,7 +145,7 @@ def getUser(user_id=None):
 	return res
 
 @mod.route('/user/image', methods=['POST'])
-@support_jsonp
+@crossdomain(origin='*')
 def setImageUser():	
 	e = Event('web.user.setImageUser')
 	user_id = request.form['user_id']
@@ -154,8 +158,8 @@ def setImageUser():
 	return 'ok'
 
 
-@mod.route('/login', methods=['GET','POST'])
-@support_jsonp
+@mod.route('/login', methods=['POST'])
+@crossdomain(origin='*')
 def doLogin():
 	
 	if request.method == 'POST':
@@ -176,6 +180,7 @@ def doLogin():
 
 
 @mod.route('/invite/<code>', methods=['GET'])
+@support_jsonp
 def validateInviteCode(code=None):	
 	e = Event('web.user.validateInviteCode')
 	if code is None:

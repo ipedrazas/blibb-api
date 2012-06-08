@@ -40,13 +40,9 @@ def newItem():
 	bitems = utils.getItemsFromRequest(labels, request)
 
 	blitem_id = blitem.insert(bid, user, bitems, tags)
-<<<<<<< HEAD
 	if blitem_id:
 		b.incNumItem(username,slug)
-	postProcess(blitem_id, bitems)
-=======
 	utils.postProcess(blitem_id, bitems)
->>>>>>> 318c62c9d5c6464e6e38f5c2c3fc7413450e6892
 	e.save()
 	return blitem_id
 
