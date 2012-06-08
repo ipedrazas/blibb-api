@@ -4,10 +4,10 @@
 #
 #
 
+from API.contenttypes.picture import Picture
 
 from datetime import datetime
 from API.base import BaseObject
-from API.contenttypes.picture import Picture
 from bson.objectid import ObjectId
 import API.utils as utils
 import json
@@ -169,12 +169,12 @@ class User(BaseObject):
 		return res
 
 
-	def addPicture(self, user_id, picture_id):
+	def addPicture(self, filter, picture_id):
 		if picture_id is not None:
 			p = Picture()
 			image = p.dumpImage(picture_id)
-			self.objects.update({ u'_id': ObjectId(user_id)}, {"$set": {'i': image}}, True)
-			return user_id
+			self.objects.update(filter, {"$set": {'i': image}}, True)
+			return picture_id
 		return 'error'
 
 

@@ -196,6 +196,40 @@ class Blitem(BaseObject):
 
 		return json.dumps(result,default=json_util.default)
 
+	def getItems(self, filter, fields):
+		docs = self.objects.find(filter,fields).sort("c", -1)
+		return docs
+
+	def getItemsByTag(self, owner, slug, tag):
+		docs = self.getItems({'u': owner, 'bs': slug, 'tg': tag}, {'i':1, 'tg': 1, 'b':1})
+		result = dict()
+		blitems = []
+		slugs = []
+		types = []
+		
+		for d in docs:
+			blitem = dict()
+			iid = str(d['_id'])
+			blibb_id = str(d.get('b', ''))
+			blitem['id'] = iid
+			blitem['blibb_id'] = blibb_id
+			i = d['i']
+			for r in i:
+				if r['s'] not in slugs:
+					slugs.append(r['s'])
+				blitem[r['s']] = r['v']
+			blitem['comments'] = self.getComments(iid)
+			if 'tg' in d:
+				blitem['tags'] = d['tg']
+
+			blitems.append(blitem)
+
+
+		result['count'] = len(blitems)
+		result['items'] = blitems
+		result['fields'] = slugs
+
+		return result
 	
 		
 

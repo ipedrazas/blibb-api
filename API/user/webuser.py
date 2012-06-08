@@ -5,6 +5,8 @@ from API.blitem.blitem import Blitem
 from API.event.event import Event
 from API.control.bcontrol import BControl
 import API.utils as utils
+from bson.objectid import ObjectId
+
 
 from flask import Blueprint, request, redirect, abort, current_app, jsonify
 from functools import wraps
@@ -119,7 +121,8 @@ def getBlibbBySlug(username=None, slug=None):
 	results = dres.get('results')
 	count = dres.get('count')
 	ret = dict()
-	
+	cond = { 's': slug, 'u': username }
+	b.incView(cond)
 	if count == 1:
 		jblibb = results[0]
 		bid = jblibb['id']
@@ -162,12 +165,12 @@ def getUser(user_id=None):
 @crossdomain(origin='*')
 def setImageUser():	
 	e = Event('web.user.setImageUser')
-	user_id = request.form['user_id']
+	user_id = request.form['object_id']
 	image_id = request.form['image_id']
 	if user_id is None:
 		abort(404)
 	user = User()
-	user.addPicture(user_id, image_id)	
+	user.addPicture({'_id': ObjectId(user_id)}, image_id)	
 	e.save()
 	return 'ok'
 
@@ -204,3 +207,20 @@ def validateInviteCode(code=None):
 	
 	e.save()
 	return jsonify(u)
+
+@mod.route('/<username>/<slug>/<tag>', methods=['GET'])
+@support_jsonp
+def getItemsByTag(username=None, slug=None, tag=None):	
+	e = Event('web.user.blibb.getBlibbBySlug')
+
+	if username is None:
+		abort(404)
+	if slug is None:
+		abort(404)
+	if tag is None:
+		abort(404)
+	
+	b = Blitem()
+	items = b.getItemsByTag(username, slug, tag)
+	e.save()
+	return  jsonify(items)

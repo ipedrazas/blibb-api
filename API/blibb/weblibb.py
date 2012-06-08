@@ -7,6 +7,8 @@ from API.blibb.blibb import Blibb
 from API.event.event import Event
 from API.contenttypes.picture import Picture
 import API.utils as utils
+from API.utils import crossdomain
+from bson.objectid import ObjectId
 
 mod = Blueprint('blibb', __name__, url_prefix='/blibb')
 
@@ -193,3 +195,17 @@ def addFollower():
 		res['result'] = 'Ok'
 	e.save()
 	return jsonify(res)
+
+
+@mod.route('/action/image', methods=['POST'])
+@crossdomain(origin='*')
+def updateImage():
+	e = Event('web.blibb.updateImage')
+	object_id = request.form['object_id']
+	image_id = request.form['image_id']
+	if object_id is None:
+		abort(404)
+	b = Blibb()
+	b.addPicture({'_id': ObjectId(object_id)}, image_id)	
+	e.save()
+	return 'ok'

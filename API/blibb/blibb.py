@@ -11,6 +11,9 @@ from bson.objectid import ObjectId
 from bson import json_util
 from API.base import BaseObject
 from API.template.template import Template
+from API.contenttypes.picture import Picture
+
+
 
 class Blibb(BaseObject):
 
@@ -121,7 +124,7 @@ class Blibb(BaseObject):
 		return labels
 		 
 	def getTemplateView(self, obj_id, view='Default'):
-		res =  self.objects.find_one({ u'_id': ObjectId(obj_id)}, {'t.v': 1, 'n':1, 'd':1, 'c':1, 'u':1, 'tg':1, 's':1, 'img':1})
+		res =  self.objects.find_one({ u'_id': ObjectId(obj_id)}, {'t.v': 1, 'n':1, 'd':1, 'c':1, 'u':1, 'tg':1, 's':1, 'img':1, 'ni':1, 'st.v':1})
 		buf = dict()
 		if '_id' in res:
 			t = res['t']
@@ -132,6 +135,10 @@ class Blibb(BaseObject):
 			buf['date'] = str(res['c'])
 			buf['owner'] = res['u']
 			buf['slug'] = res['s']
+			buf['num_items'] = res.get('ni',0)
+			if 'st' in res:
+				stats = res.get('st')
+				buf['num_views'] = stats.get('v',0)
 			img = res['img']
 			if 'id' in img:
 				buf['img'] = img['id']
@@ -195,6 +202,9 @@ class Blibb(BaseObject):
 			buf['id'] = str(result['_id'])
 			buf['owner'] = result['u']
 			buf['num_items'] = result.get('ni',0)
+			if 'st' in result:
+				stats = result.get('st')
+				buf['num_views'] = stats.get('v',0)
 			buf['date'] = self.dateToString(result['c'])
 			if 'img' in result:
 				if 'thumbnails' in result['img']:
@@ -234,3 +244,15 @@ class Blibb(BaseObject):
 	def incNumItem(self, condition):
 		self.objects.update(condition, {"$inc": {'ni': 1}})
 
+	def incView(self, condition):
+		self.objects.update(condition, {"$inc": {'st.v': 1}})
+
+	
+	def addPicture(self, filter, picture_id):
+		if picture_id is not None:
+			p = Picture()
+			image = p.dumpImage(picture_id)
+			self.objects.update(filter, {"$set": {'img': image}})
+			return picture_id
+
+		return 'error'

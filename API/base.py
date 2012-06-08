@@ -203,3 +203,10 @@ class BaseObject(object):
 			objects.append(row)
 		return objects
 
+	def addPicture(self, filter, picture_id):
+		if picture_id is not None:
+			p = Picture()
+			image = p.dumpImage(picture_id)
+			self.objects.update(filter, {"$set": {'i': image}}, True)
+			return 'ok'
+		return 'error'
