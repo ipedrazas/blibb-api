@@ -15,6 +15,13 @@ mod = Blueprint('blibb', __name__, url_prefix='/blibb')
 def hello_world():
 	return "Hello World, this is blibb'"
 
+@mod.route('/meta/fields/<bid>', methods=['GET'])
+def getBlibbFields(bid=None):
+	if bid is not None:
+		b = Blibb()
+		fields = b.getFields(bid)
+		return json.dumps(fields)
+
 @mod.route('', methods=['POST'])
 def newBlibb():
 	e = Event('web.blibb.newBlibb')

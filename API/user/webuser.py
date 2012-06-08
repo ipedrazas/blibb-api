@@ -78,8 +78,6 @@ def addItemtoBlibb(username=None, slug=None):
 		bitems = utils.getItemsFromRequest(labels, request)
 
 	blitem_id = blitem.insert(bid, user, bitems, tags)
-	if blitem_id:
-		b.incNumItem(username,slug)
 	e.save()
 	return jsonify(blitem_id)
 
@@ -158,7 +156,6 @@ def setImageUser():
 
 @mod.route('/login', methods=['GET','POST'])
 @support_jsonp
-@crossdomain(origin='*')
 def doLogin():
 	
 	if request.method == 'POST':

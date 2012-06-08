@@ -14,3 +14,4 @@ THREADS_PER_PAGE = 8
 
 CSRF_ENABLED=True
 CSRF_SESSION_KEY="nRomTn23vzGcv4wecx12xv3aidoaGmoSKdfMiao" # even more secret
+
