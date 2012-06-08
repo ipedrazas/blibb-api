@@ -90,7 +90,7 @@ def addItemtoBlibb(username=None, slug=None):
 
 	utils.postProcess(blitem_id, bitems)
 	e.save()
-	return jsonify(blitem_id)
+	return jsonify({'id':blitem_id})
 
 
 def isAnonApp(key):
