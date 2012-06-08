@@ -79,7 +79,8 @@ def addItemtoBlibb(username=None, slug=None):
 
 	blitem_id = blitem.insert(bid, user, bitems, tags)
 	if blitem_id:
-		b.incNumItem(username,slug)
+		cond = { 's': slug, 'u': username }
+		b.incNumItem(cond)
 
 	utils.postProcess(blitem_id, bitems)
 	e.save()

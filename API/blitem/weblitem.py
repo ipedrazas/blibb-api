@@ -41,7 +41,8 @@ def newItem():
 
 	blitem_id = blitem.insert(bid, user, bitems, tags)
 	if blitem_id:
-		b.incNumItem(username,slug)
+		cond = {'_id': ObjectId(bid)}
+		b.incNumItem(cond)
 	utils.postProcess(blitem_id, bitems)
 	e.save()
 	return blitem_id
