@@ -251,9 +251,14 @@ def createAll():
 	createTwitterControl()
 	
 print 'Script to create BControls'
+
+
+# createAll()
+# createSingleLineControl()
+# createMultiLineControl()
+# createDateControl()
+# # createSelectControl()
+# createUploadImages()
 # createUploadMusic()
-
-createAll()
-# createSelectControl()
-
 # createBookmarkControl()
+createTwitterControl()

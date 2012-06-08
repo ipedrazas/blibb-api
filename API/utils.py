@@ -59,6 +59,16 @@ def getItemsFromRequest(labels, request):
 			bitems.append(elem)
 	return bitems
 
+def postProcess(obj_id, items):
+	for blitem in items:
+		# print blitem
+		typex = blitem['t']
+		if BControl.isURL(typex):
+			sendUrl(obj_id,blitem['v'])
+		if BControl.isTwitter(typex):
+			queueTwitterResolution(obj_id,blitem['v'])
+
+
 def getKey(key):
 	r = getRedis()
 	return r.get(key)

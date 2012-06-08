@@ -1,19 +1,23 @@
 
+import API.utils as utils
+from flask import Blueprint, request, redirect, abort, current_app, jsonify
+from functools import wraps
+import json
+from API.utils import crossdomain
 from API.user.buser import User
 from API.blibb.blibb import Blibb
 from API.blitem.blitem import Blitem
 from API.event.event import Event
 from API.control.bcontrol import BControl
-import API.utils as utils
 
-from flask import Blueprint, request, redirect, abort, current_app, jsonify
-from functools import wraps
-import json
-from API.utils import crossdomain
 
 
 mod = Blueprint('user', __name__, url_prefix='')
 
+ANON_APPS = {
+	'QPGQ': 'quidprogquo',
+	'QUOTR': 'quotr'
+}
 
 @mod.route('/hi')
 def hello_world():
@@ -56,6 +60,7 @@ def addItemtoBlibb(username=None, slug=None):
 		abort(404)
 	if slug is None:
 		abort(404)
+
 	e = Event('web.user.blibb.getBlibbBySlug')
 	app_token = request.form['app_token']
 	key = request.form['key']
@@ -63,7 +68,11 @@ def addItemtoBlibb(username=None, slug=None):
 	e.addLog({'s': slug})
 
 	tags = request.form['tags'] if 'tags' in request.form else ''
-	user = utils.getKey(key)
+
+	user = isAnonApp(key)
+	if not user:
+		user = utils.getKey(key)
+	
 	b = Blibb()
 	jres =  b.getBySlug(username,slug)
 	dres = json.loads(jres)
@@ -78,8 +87,15 @@ def addItemtoBlibb(username=None, slug=None):
 		bitems = utils.getItemsFromRequest(labels, request)
 
 	blitem_id = blitem.insert(bid, user, bitems, tags)
+	utils.postProcess(blitem_id, bitems)
 	e.save()
-	return jsonify(blitem_id)
+	return jsonify({'id':blitem_id})
+
+def isAnonApp(key):
+	for app in ANON_APPS:
+		if key == app:
+			return key
+	return False
 
 @mod.route('/cors',methods=['GET','POST'])
 @crossdomain(origin='*')

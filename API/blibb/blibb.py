@@ -220,3 +220,13 @@ class Blibb(BaseObject):
 		result = self.objects.find({ u'gu': username },{u't' : 0}).sort("c", -1)
 		return self.resultSetToJson(result)
 
+	def getFields(self, obj_id):
+		doc = self.objects.find_one({ u'_id': ObjectId(obj_id)	}, {'t.i':1})
+		template = doc.get('t').get('i')
+		# return template
+		fields = []
+		for elem in template:
+			fields.append(elem.get('tx') + '-' + elem.get('s'))
+			# fields.append(elem)
+		return fields
+

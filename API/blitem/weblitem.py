@@ -40,7 +40,7 @@ def newItem():
 	bitems = utils.getItemsFromRequest(labels, request)
 
 	blitem_id = blitem.insert(bid, user, bitems, tags)
-	postProcess(blitem_id, bitems)
+	utils.postProcess(blitem_id, bitems)
 	e.save()
 	return blitem_id
 
@@ -128,13 +128,6 @@ def getItemsByBlibbAndView(blibb_id=None,view='Default'):
 	else:
 		abort(404)
 
-def postProcess(obj_id, items):
-	for blitem in items:
-		# print blitem
-		typex = blitem['t']
-		if BControl.isURL(typex):
-			utils.sendUrl(obj_id,blitem['v'])
-		if BControl.isTwitter(typex):
-			utils.queueTwitterResolution(obj_id,blitem['v'])
+
 			
 
