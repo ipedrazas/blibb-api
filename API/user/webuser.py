@@ -14,6 +14,10 @@ from API.utils import crossdomain
 
 mod = Blueprint('user', __name__, url_prefix='')
 
+ANON_APPS = {
+	'QPGQ': 'quidprogquo',
+	'QUOTR': 'quotr'
+}
 
 @mod.route('/hi')
 def hello_world():
@@ -49,7 +53,6 @@ def support_jsonp(f):
 
 @mod.route('/<username>/<slug>', methods=['POST'])
 @crossdomain(origin='*')
-@support_jsonp
 def addItemtoBlibb(username=None, slug=None):
 
 	if username is None:
@@ -63,7 +66,10 @@ def addItemtoBlibb(username=None, slug=None):
 	e.addLog({'s': slug})
 
 	tags = request.form['tags'] if 'tags' in request.form else ''
-	user = utils.getKey(key)
+	user = isAnonApp(key)
+	if not user:
+		user = utils.getKey(key)
+
 	b = Blibb()
 	jres =  b.getBySlug(username,slug)
 	dres = json.loads(jres)
@@ -85,6 +91,13 @@ def addItemtoBlibb(username=None, slug=None):
 	utils.postProcess(blitem_id, bitems)
 	e.save()
 	return jsonify(blitem_id)
+
+
+def isAnonApp(key):
+	for app in ANON_APPS:
+		if key == app:
+			return key
+	return False
 
 @mod.route('/cors',methods=['GET','POST'])
 @crossdomain(origin='*')

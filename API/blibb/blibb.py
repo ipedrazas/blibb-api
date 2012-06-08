@@ -191,9 +191,10 @@ class Blibb(BaseObject):
 		for result in r:
 			buf = dict()		
 			buf['name'] = result['n']
-			buf['description'] = result['d']
+			buf['description'] = result.get('d','')
 			buf['id'] = str(result['_id'])
 			buf['owner'] = result['u']
+			buf['num_items'] = result.get('ni',0)
 			buf['date'] = self.dateToString(result['c'])
 			if 'img' in result:
 				if 'thumbnails' in result['img']:
