@@ -165,8 +165,13 @@ class Blibb(BaseObject):
 		r = r.replace('\\','')
 		return r
 
-	def getByUser(self,username):
-		r = self.objects.find({ u'u': username },{u't' : 0}).sort("c", -1)
+	def getBlibbs(self, filter, fields, page=1):
+		PER_PAGE = 20
+		docs = self.objects.find(filter,fields).sort("c", -1).skip(PER_PAGE * (page - 1)).limit(PER_PAGE )
+		return docs
+
+	def getByUser(self,username, page=1):
+		r = self.getBlibbs({ u'u': username },{u't' : 0},page)
 		rs = []
 		count = 0
 		for result in r:
@@ -190,9 +195,9 @@ class Blibb(BaseObject):
 		return json.dumps(resp)
 
 
-	def getBySlug(self,username, slug):
+	def getBySlug(self,username, slug, page=1):
 		
-		r = self.objects.find({  u'u': username, u's': slug },{u't' : 0}).sort("c", -1)
+		r = self.getBlibbs({  u'u': username, u's': slug },{u't' : 0}, page)
 		rs = []
 		count = 0
 		for result in r:
@@ -228,8 +233,8 @@ class Blibb(BaseObject):
 		return json.dumps(res)
 
 
-	def getByGroupUser(self,username):
-		result = self.objects.find({ u'gu': username },{u't' : 0}).sort("c", -1)
+	def getByGroupUser(self,username, page=1):
+		result = self.getBlibbs({ u'gu': username },{u't' : 0}, page)
 		return self.resultSetToJson(result)
 
 	def getFields(self, obj_id):

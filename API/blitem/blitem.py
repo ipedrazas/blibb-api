@@ -168,7 +168,7 @@ class Blitem(BaseObject):
 
 
 	def getAllItemsFlat2(self,blibb_id):
-		docs = self.objects.find({u'b': ObjectId(blibb_id)},{'i':1, 'tg': 1}).sort("c", -1)
+		docs = self.getItems({'b': ObjectId(blibb_id)},{'i':1, 'tg': 1})
 		result = dict()
 		blitems = []
 		slugs = []
@@ -177,7 +177,7 @@ class Blitem(BaseObject):
 		for d in docs:
 			blitem = dict()
 			iid = str(d['_id'])
-			blitem['id'] = iid
+			blitemstem['id'] = iid
 			i = d['i']
 			for r in i:
 				if r['s'] not in slugs:
@@ -196,8 +196,9 @@ class Blitem(BaseObject):
 
 		return json.dumps(result,default=json_util.default)
 
-	def getItems(self, filter, fields):
-		docs = self.objects.find(filter,fields).sort("c", -1)
+	def getItems(self, filter, fields, page=1):
+		PER_PAGE = 20
+		docs = self.objects.find(filter,fields).sort("c", -1).skip(PER_PAGE * (page - 1)).limit(PER_PAGE )
 		return docs
 
 	def getItemsByTag(self, owner, slug, tag):
@@ -231,5 +232,3 @@ class Blitem(BaseObject):
 
 		return result
 	
-		
-

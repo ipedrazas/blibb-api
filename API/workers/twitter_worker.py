@@ -36,13 +36,9 @@ def getTwitterDetails(user_names, attributes):
 		content = json.loads(json_content)
 		for user in content:
 			u = dict()
-			# print user
 			for att in attributes:
-				u[att] = user.get(att)
-			# u = {'screen_name': user.get('screen_name'),'name': user.get('name'), 'description': user.get('description'), 'image': user.get('profile_image_url'), 'location': user.get('location')}
 			users.append(u)
 	return users
-
 
 def getScreenNames(names):
 	screen_names = []
@@ -107,3 +103,4 @@ while True:
 	except zmq.ZMQError as e:
 		if e.errno != zmq.EAGAIN:
 			raise
+				u[att] = user.get(att)
