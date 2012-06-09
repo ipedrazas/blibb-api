@@ -202,6 +202,7 @@ class Blibb(BaseObject):
 			buf['id'] = str(result['_id'])
 			buf['owner'] = result['u']
 			buf['num_items'] = result.get('ni',0)
+			buf['tags'] = result.get('tg','')
 			if 'st' in result:
 				stats = result.get('st')
 				buf['num_views'] = stats.get('v',0)

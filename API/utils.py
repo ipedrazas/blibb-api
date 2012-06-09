@@ -29,27 +29,28 @@ def sendUrl(obj_id, url):
 
 
 def getBlitemFromRequest(key, value, labels):
-		slug = key[3:]
-		typex = key[:2]
-		blitem = {}
-		blitem['t'] = typex
-		blitem['s'] = slug
-		if BControl.isMultitext(typex):
-			value = BControl.autoP(value)
-		elif BControl.isMp3(typex):
-			song = Song()
-			song.load(value)
-			value = song.dumpSong()
-		elif BControl.isImage(typex):
-			value = ObjectId(value)
-		elif BControl.isDate(typex):
-			# TODO: convert dates to MongoDates
-			# and back
-			value = value	
+	value = value.strip()
+	slug = key[3:]
+	typex = key[:2]
+	blitem = {}
+	blitem['t'] = typex
+	blitem['s'] = slug
+	if BControl.isMultitext(typex):
+		value = BControl.autoP(value
+	elif BControl.isMp3(typex):
+		song = Song()
+		song.load(value)
+		value = song.dumpSong()
+	elif BControl.isImage(typex):
+		value = ObjectId(value)
+	elif BControl.isDate(typex):
+		# TODO: convert dates to MongoDates
+		# and back
+		value = value	
 
-		blitem['v'] = value
-		blitem['l'] = labels.get(slug)
-		return blitem
+	blitem['v'] = value
+	blitem['l'] = labels.get(slug)
+	return blitem
 
 def getItemsFromRequest(labels, request):
 	bitems = []
