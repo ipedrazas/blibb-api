@@ -9,6 +9,7 @@ import redis
 from datetime import timedelta
 from flask import make_response, request, current_app
 from functools import update_wrapper
+import re
 
 
 def getTitle(url):
@@ -36,7 +37,7 @@ def getBlitemFromRequest(key, value, labels):
 	blitem['t'] = typex
 	blitem['s'] = slug
 	if BControl.isMultitext(typex):
-		value = BControl.autoP(value
+		value = BControl.autoP(value)
 	elif BControl.isMp3(typex):
 		song = Song()
 		song.load(value)
@@ -46,7 +47,9 @@ def getBlitemFromRequest(key, value, labels):
 	elif BControl.isDate(typex):
 		# TODO: convert dates to MongoDates
 		# and back
-		value = value	
+		value = value
+	elif BControl.isTwitter(typex):
+		value = re.sub('[!@#$]', '', value)
 
 	blitem['v'] = value
 	blitem['l'] = labels.get(slug)

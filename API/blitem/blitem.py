@@ -67,12 +67,12 @@ class Blitem(BaseObject):
 
 	def insert(self, blibb, user, items, tags=None):
 		tag_list = []
+		b = Blibb()
+		b.load(blibb)
+		b.populate()
+		bs = b.slug
 		if tags is not None:
-			tag_list = list(set(tags.split()))
-			b = Blibb()
-			b.load(blibb)
-			b.populate()
-			bs = b.slug
+			tag_list = list(set(tags.split()))			
 			for t in tag_list:
 				b.addTag(blibb,t)
 
@@ -135,20 +135,22 @@ class Blitem(BaseObject):
 		return cs
 
 	def getAllItemsFlat(self,blibb_id):
-		docs = self.objects.find({u'b': ObjectId(blibb_id)},{'i':1, 'tg': 1}).sort("c", -1)
+		docs = self.getItems({u'b': ObjectId(blibb_id)},{'i':1, 'tg': 1}).sort("c", -1)
 		result = dict()
 		blitems = []
 		slugs = []
 		types = []
 		
+
 		for d in docs:
 			blitem = dict()
 			iid = str(d['_id'])
 			blitem['id'] = iid
 			i = d['i']
 			for r in i:
-				if r['s'] not in slugs:
-					slugs.append(r['s'])
+				s = r.get('s', False)
+				if s and s not in slugs:
+					slugs.append(s)
 				tt = dict()
 				tt['v'] = r['v']
 				tt['t'] = r['t']
@@ -177,7 +179,7 @@ class Blitem(BaseObject):
 		for d in docs:
 			blitem = dict()
 			iid = str(d['_id'])
-			blitemstem['id'] = iid
+			blitems['id'] = iid
 			i = d['i']
 			for r in i:
 				if r['s'] not in slugs:
