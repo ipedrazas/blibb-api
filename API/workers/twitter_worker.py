@@ -104,4 +104,3 @@ while True:
 	except zmq.ZMQError as e:
 		if e.errno != zmq.EAGAIN:
 			raise
-				u[att] = user.get(att)
