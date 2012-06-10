@@ -107,9 +107,10 @@ def getCors():
 	return jsonify(foo='yayyyy cross domain ftw')
 
 
+@mod.route('/<username>/<slug>/<page>', methods=['GET'])
 @mod.route('/<username>/<slug>', methods=['GET'])
 @support_jsonp
-def getBlibbBySlug(username=None, slug=None):	
+def getBlibbBySlug(username=None, slug=None, page=1):	
 	e = Event('web.user.blibb.getBlibbBySlug')
 	b = Blibb()
 	if username is None:
@@ -128,7 +129,7 @@ def getBlibbBySlug(username=None, slug=None):
 		bid = jblibb['id']
 		ret['blibb'] = jblibb
 		bl = Blitem()
-		jitems = bl.getAllItemsFlat2(bid)
+		jitems = bl.getAllItemsFlat2(bid,int(page))
 		rs_items = json.loads(jitems)
 		for i in rs_items:
 			pass

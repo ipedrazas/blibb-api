@@ -134,8 +134,13 @@ class Blitem(BaseObject):
 		cs = c.getCommentsById(obj_id,True)
 		return cs
 
+	def getItemsPage(self, filter, fields, page=1):
+		PER_PAGE = 20
+		docs = self.objects.find(filter,fields).sort("c", -1).skip(PER_PAGE * (page - 1)).limit(PER_PAGE )
+		return docs
+
 	def getAllItemsFlat(self,blibb_id):
-		docs = self.getItems({u'b': ObjectId(blibb_id)},{'i':1, 'tg': 1}).sort("c", -1)
+		docs = self.getItemsPage({u'b': ObjectId(blibb_id)},{'i':1, 'tg': 1})
 		result = dict()
 		blitems = []
 		slugs = []
@@ -169,8 +174,8 @@ class Blitem(BaseObject):
 		return json.dumps(result,default=json_util.default)
 
 
-	def getAllItemsFlat2(self,blibb_id):
-		docs = self.getItems({'b': ObjectId(blibb_id)},{'i':1, 'tg': 1})
+	def getAllItemsFlat2(self,blibb_id, page):
+		docs = self.getItemsPage({'b': ObjectId(blibb_id)},{'i':1, 'tg': 1}, page)
 		result = dict()
 		blitems = []
 		slugs = []
@@ -179,7 +184,7 @@ class Blitem(BaseObject):
 		for d in docs:
 			blitem = dict()
 			iid = str(d['_id'])
-			blitems['id'] = iid
+			blitem['id'] = iid
 			i = d['i']
 			for r in i:
 				if r['s'] not in slugs:
@@ -198,13 +203,8 @@ class Blitem(BaseObject):
 
 		return json.dumps(result,default=json_util.default)
 
-	def getItems(self, filter, fields, page=1):
-		PER_PAGE = 20
-		docs = self.objects.find(filter,fields).sort("c", -1).skip(PER_PAGE * (page - 1)).limit(PER_PAGE )
-		return docs
-
 	def getItemsByTag(self, owner, slug, tag):
-		docs = self.getItems({'u': owner, 'bs': slug, 'tg': tag}, {'i':1, 'tg': 1, 'b':1})
+		docs = self.getItemsPage({'u': owner, 'bs': slug, 'tg': tag}, {'i':1, 'tg': 1, 'b':1})
 		result = dict()
 		blitems = []
 		slugs = []
