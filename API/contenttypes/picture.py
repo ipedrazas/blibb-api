@@ -11,6 +11,7 @@ import json
 from bson import json_util
 from pymongo import Connection
 from bson.objectid import ObjectId
+from bson import errors
 
 class Picture(BaseObject):
 
@@ -57,26 +58,29 @@ class Picture(BaseObject):
 
 	def dumpImage(self, pict_id=None):
 		image = dict()
-		if pict_id is None:
-			return
-		pictObj = self.objects.find_one({ u'_id': ObjectId(pict_id)})
-		if pictObj is not None:
-			image['id'] = pict_id
-			pict = pictObj.get('i')
-			image['format'] = pict.get('format')
-			image['width'] = pict.get('width')
-			image['height'] = pict.get('height')
+		try:
+			objid = ObjectId(pict_id)			
+			pictObj = self.objects.find_one({ u'_id': objid})
+			if pictObj is not None:
+				image['id'] = pict_id
+				pict = pictObj.get('i')
+				image['format'] = pict.get('format')
+				image['width'] = pict.get('width')
+				image['height'] = pict.get('height')
 
-			image['thumbnails'] = pict.get('thumb')			
-			image['file'] = pict.get('file')
-			image['path'] = pict.get('path')
+				image['thumbnails'] = pict.get('thumb')			
+				image['file'] = pict.get('file')
+				image['path'] = pict.get('path')
 
-			image['mime_type'] = pict.get('mime_type')
-			image['soft'] = pict.get('soft')
-			image['size'] = pict.get('size')
+				image['mime_type'] = pict.get('mime_type')
+				image['soft'] = pict.get('soft')
+				image['size'] = pict.get('size')
 
-		return image
+			return image
+		except errors.InvalidId:
+			return 'Object not found - Nothing Deleted'
 
+		
 
 	def getImagesByUser(self,username):
 		

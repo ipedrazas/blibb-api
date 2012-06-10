@@ -37,6 +37,7 @@ def getTwitterDetails(user_names, attributes):
 		for user in content:
 			u = dict()
 			for att in attributes:
+				u[att] = user.get(att)
 			users.append(u)
 	return users
 

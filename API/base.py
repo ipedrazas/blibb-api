@@ -139,7 +139,7 @@ class BaseObject(object):
 	def addTag(self, obj_id, tag):
 		# don't need to check if tags exists for duplicates. Only stores one
 		# case unsensitive FTW!
-		self._objects.update({ u'_id': ObjectId(obj_id)}, {"$addToSet": {'tg': tag}}, False)
+		self._objects.update({ u'_id': ObjectId(obj_id)}, {"$addToSet": {'tg': tag.lower()}}, False)
 
 
 	def resultSetToJson(self, resultSet):

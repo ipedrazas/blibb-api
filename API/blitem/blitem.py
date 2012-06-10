@@ -72,7 +72,7 @@ class Blitem(BaseObject):
 		b.populate()
 		bs = b.slug
 		if tags is not None:
-			tag_list = list(set(tags.split()))			
+			tag_list = list(set(tags.lower().split()))			
 			for t in tag_list:
 				b.addTag(blibb,t)
 
