@@ -35,10 +35,13 @@ def getTwitterDetails(user_names, attributes):
 
 		content = json.loads(json_content)
 		for user in content:
-			u = dict()
-			for att in attributes:
-				u[att] = user.get(att)
-			users.append(u)
+			if isinstance( user, dict ):
+				u = dict()
+				for att in attributes:
+					u[att] = user.get(att)
+				users.append(u)
+			else:
+				users.append(user)
 	return users
 
 def getScreenNames(names):
