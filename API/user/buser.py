@@ -109,7 +109,7 @@ class User(BaseObject):
 		return json.dumps(u)
 
 	def authenticate(self, user, password):		
-		stUser = self.objects.find_one( {'$or': [{'e': user}, {'n':user}] })
+		stUser = self.objects.find_one( {'$or': [{'e': user.trim()}, {'n':user.trim()}] })
 		if stUser is not None:
 			shPwd = hashlib.sha1(password + stUser['s'])
 			print shPwd.hexdigest()

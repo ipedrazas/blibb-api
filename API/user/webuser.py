@@ -56,7 +56,6 @@ def support_jsonp(f):
 @mod.route('/<username>/<slug>', methods=['POST'])
 @crossdomain(origin='*')
 def addItemtoBlibb(username=None, slug=None):
-
 	if username is None:
 		abort(404)
 	if slug is None:
@@ -209,7 +208,7 @@ def validateInviteCode(code=None):
 	e.save()
 	return jsonify(u)
 
-@mod.route('/<username>/<slug>/<tag>', methods=['GET'])
+@mod.route('/<username>/<slug>/tag/<tag>', methods=['GET'])
 @support_jsonp
 def getItemsByTag(username=None, slug=None, tag=None):	
 	e = Event('web.user.blibb.getBlibbBySlug')
@@ -225,3 +224,4 @@ def getItemsByTag(username=None, slug=None, tag=None):
 	items = b.getItemsByTag(username, slug, tag)
 	e.save()
 	return  jsonify(items)
+
