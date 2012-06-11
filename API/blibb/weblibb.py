@@ -76,6 +76,7 @@ def addUserToBlibbGroup():
 	
 
 @mod.route('/<blibb_id>/p/<params>', methods=['GET'])
+@crossdomain(origin='*')
 def getBlibb(blibb_id=None,params=None):
 	e = Event('web.blibb.getBlibb')
 	if blibb_id is None:

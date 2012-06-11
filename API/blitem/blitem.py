@@ -113,7 +113,7 @@ class Blitem(BaseObject):
 		if doc is not None:
 			iid = str(doc['_id'])
 			blitem['id'] = iid
-			blitem['b'] = str(doc['b'])
+			blitem['parent'] = str(doc['b'])
 			blitem['cc'] = doc['cc']
 			i = doc['i']
 			for r in i:
