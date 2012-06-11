@@ -118,8 +118,8 @@ class Blitem(BaseObject):
 			i = doc['i']
 			for r in i:
 				blitem[r['s']] = r['v']
-			if 'tg' in doc:
-				blitem['tags'] = d['tg']
+			
+			blitem['tags'] = doc.get('tg','')
 
 			# pull the comments
 			comments = self.getComments(iid)
