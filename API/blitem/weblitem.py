@@ -13,6 +13,8 @@ from API.contenttypes.bookmark import Bookmark
 import API.utils as utils
 from bson.objectid import ObjectId
 
+from API.utils import crossdomain
+
 mod = Blueprint('blitem', __name__, url_prefix='/blitem')
 
 
@@ -48,6 +50,7 @@ def newItem():
 	return blitem_id
 
 @mod.route('/fields/<blibb_id>', methods=['GET'])
+@crossdomain(origin='*')
 def getBlitemFields(username=None):	
 	e = Event('web.blibb.getGroupBlibbByUser')
 	b = Blibb()
@@ -69,6 +72,7 @@ def getReadViewItems(blitem_id=None):
 
 
 @mod.route('/<blitem_id>', methods=['GET'])
+@crossdomain(origin='*')
 def getBlitem(blitem_id=None):
 	e = Event('web.blitem.getBlitem')
 	i = Blitem()

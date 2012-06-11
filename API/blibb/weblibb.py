@@ -18,6 +18,7 @@ def hello_world():
 	return "Hello World, this is blibb'"
 
 @mod.route('/meta/fields/<bid>', methods=['GET'])
+@crossdomain(origin='*')
 def getBlibbFields(bid=None):
 	if bid is not None:
 		b = Blibb()
@@ -94,6 +95,7 @@ def getBlibb(blibb_id=None,params=None):
 		abort(404)
 
 @mod.route('/<blibb_id>/template', methods=['GET'])
+@crossdomain(origin='*')
 def getBlibbTemplate(blibb_id=None):
 	e = Event('web.blibb.getBlibbTemplate')
 	b = Blibb()
