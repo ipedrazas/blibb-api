@@ -88,7 +88,7 @@ def updateTwitterItem(user_list, namesBag):
 
 def getObjectId(name,namesBag):
 	for e in namesBag:
-		if name == e.get('name'):
+		if name.lower() == e.get('name').lower():
 			return e.get('id')
 
 
