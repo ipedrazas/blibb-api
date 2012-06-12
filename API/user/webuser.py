@@ -178,21 +178,18 @@ def setImageUser():
 @mod.route('/login', methods=['POST'])
 @crossdomain(origin='*')
 def doLogin():
-	
-	if request.method == 'POST':
-		user = request.form['u']
-		pwd = request.form['p']
-	else:
-		user = request.args.get('u', '')
-		pwd = request.args.get('p', '')
-		
+	e = Event('web.user.doLogin')
+	user = request.form['u']
+	pwd = request.form['p']		
 	u = User()
 	key = u.authenticate(user,pwd)
 	if key:
 		d = dict()
 		d['key'] = key
+		e.save()
 		return jsonify(d)
 	else:
+		e.save()
 		abort(401)
 
 

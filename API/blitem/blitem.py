@@ -114,7 +114,7 @@ class Blitem(BaseObject):
 			iid = str(doc['_id'])
 			blitem['id'] = iid
 			blitem['parent'] = str(doc['b'])
-			blitem['cc'] = doc['cc']
+			blitem['num_comments'] = doc['cc']
 			i = doc['i']
 			for r in i:
 				blitem[r['s']] = r['v']
@@ -123,7 +123,7 @@ class Blitem(BaseObject):
 
 			# pull the comments
 			comments = self.getComments(iid)
-			blitem['cs'] = comments
+			blitem['comments'] = comments
 
 		return json.dumps(blitem,default=json_util.default)
 
