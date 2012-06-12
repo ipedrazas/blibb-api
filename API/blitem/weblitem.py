@@ -37,7 +37,6 @@ def newItem():
 	user = utils.getKey(key)
 	b = Blibb()
 	labels = b.getLabelFromTemplate(bid)
-	logging.error(labels)
 	blitem = Blitem()
 	bitems = utils.getItemsFromRequest(labels, request)
 

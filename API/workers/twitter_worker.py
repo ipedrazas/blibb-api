@@ -1,9 +1,10 @@
 #twitter_test.py
 
 import json
-import httplib2
+from httplib2 import Http
 import zmq
 import time
+import logging
 
 import sys
 from os.path import join, abspath, dirname
@@ -13,7 +14,7 @@ sys.path.append(parentpath)
 
 from API.control.bcontrol import BControl
 from API.blitem.blitem import Blitem
-
+from urllib import urlencode
 
 
 def readQueue(message):
@@ -23,19 +24,18 @@ def readQueue(message):
 	return {'id':o_id, 'name' : screen_name}
 
 
-def getTwitterDetails(user_names, attributes):	
+def getTwitterDetails(user_names, attributes):
 	users = []
 	if user_names:
-		h = httplib2.Http(".cache")
-		strUser = ','.join(user_names)	
-		twitter_url = "https://api.twitter.com/1/users/lookup.json?screen_name={0}&include_entities=false".format(strUser)
-		print twitter_url
-		resp,json_content = h.request(twitter_url)
+		h = Http()
+		screen_names = ','.join(user_names)
+		post_params = dict(screen_name= screen_names, include_entities= False)
+		twitter_url = "https://api.twitter.com/1/users/lookup.json"
+		resp,json_content = h.request(twitter_url, 'POST', urlencode(post_params))
 		limit = resp.get('x-ratelimit-remaining')
-
 		content = json.loads(json_content)
 		for user in content:
-			if isinstance( user, dict ):
+			if type(user)==type({}):
 				u = dict()
 				for att in attributes:
 					u[att] = user.get(att)
@@ -54,32 +54,50 @@ def processTwitterData(users, attributes):
 	lean_users = []
 	for user in users:
 		u = dict()
-		for att in attributes:
-			u[att] = user.get(att)
+		if type(user)==type({}):
+			for att in attributes:
+				u[att] = user.get(att)			
+		else:
+			u['screen_name'] = user
+			u['name'] = 'not found'
+			u['location'] = 'not found'
+			u['description'] = 'not found'
+			u['profile_image_url'] = ''
 		lean_users.append(u)
+
 	return lean_users
 
 
-def updateTwiterItem(user_list, namesBag):
+def updateTwitterItem(user_list, namesBag):
 	for user in user_list:
 		name = user.get('screen_name')
+		logger.debug('Updating ' + str(user) + ' with ' + name)
 		u_id = getObjectId(name, namesBag)
-		print 'Update Item ' + u_id + ' with ' + str(user)
-		blitem = Blitem()
-		blitem.load(u_id)
-		blitem.populate()
-		items = blitem.items
-		for item in items:
-			if BControl.isTwitter(item['t']):
-				item['v'] = user
-		
-		blitem.items = items
-		blitem.save()
+		if u_id is not None:
+			print 'Update Item ' + str(u_id) + ' with ' + str(user)
+			blitem = Blitem()
+			blitem.load(u_id)
+			blitem.populate()
+			items = blitem.items
+			for item in items:
+				if BControl.isTwitter(item['t']):
+					item['v'] = user
+			
+			blitem.items = items
+			blitem.save()
 
 def getObjectId(name,namesBag):
 	for e in namesBag:
 		if name == e.get('name'):
 			return e.get('id')
+
+
+logger = logging.getLogger('twitter_worker')
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+logger.addHandler(ch)
 
 context = zmq.Context()
 socket = context.socket(zmq.REP)
@@ -96,7 +114,7 @@ while True:
 			names_list =  getScreenNames(namesBag)
 			twitter_details = getTwitterDetails(names_list, atts)
 			user_list = processTwitterData(twitter_details, atts)
-			updateTwiterItem(user_list, namesBag)
+			updateTwitterItem(user_list, namesBag)
 			del namesBag[:]
 		start_time = time.time()
 
