@@ -1,3 +1,9 @@
+####
+####
+####
+####
+####
+####
 
 from datetime import datetime
 from API.base import BaseObject
@@ -13,10 +19,14 @@ class Manager(BaseObject):
 	def validateCode(self, code=None):
 		c = self.objects.find_one({'n': code, 'a': 1})
 		if c:
-			self.objects.update({ u'_id': c.get('_id')}, {"$inc": {'i': 1}}, False)
-			self.debug('code validated')
+			# self.objects.update({ u'_id': c.get('_id')}, {"$inc": {'i': 1}}, False)
+			self.debug(str(code) + ' code validated')
 			return True
 		return False
+
+	def useCode(self, code=None):
+		self.objects.update({ u'_id': c.get('_id')}, {"$inc": {'i': 1}}, False)
+		
 
 	def disableCode(self, code= None):
 		c = self.objects.update({ u'n': code}, {"$set": {'a': 0}}, False)	

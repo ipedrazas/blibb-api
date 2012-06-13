@@ -2,6 +2,7 @@
 
 
 import os
+import logging
 
 _basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -14,4 +15,6 @@ THREADS_PER_PAGE = 8
 
 CSRF_ENABLED=True
 CSRF_SESSION_KEY="nRomTn23vzGcv4wecx12xv3aidoaGmoSKdfMiao" # even more secret
+
+LOG_LEVEL = logging.DEBUG
 

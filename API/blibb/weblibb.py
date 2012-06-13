@@ -7,18 +7,29 @@ from API.blibb.blibb import Blibb
 from API.event.event import Event
 from API.contenttypes.picture import Picture
 import API.utils as utils
-from API.utils import crossdomain
 from bson.objectid import ObjectId
 
+from API.decorators import crossdomain
+from API.decorators import support_jsonp
+
+import logging
+
 mod = Blueprint('blibb', __name__, url_prefix='/blibb')
+
+logger = logging.getLogger('twitter_worker')
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+logger.addHandler(ch)
 
 
 @mod.route('/hi')
 def hello_world():
-	return "Hello World, this is blibb'"
+	return "Hello World, this is blibby'"
 
 @mod.route('/meta/fields/<bid>', methods=['GET'])
-@crossdomain(origin='*')
+
 def getBlibbFields(bid=None):
 	if bid is not None:
 		b = Blibb()
@@ -73,7 +84,7 @@ def addUserToBlibbGroup():
 		d['error'] = "Userkey is not valid for this operation"
 		res = d
 	e.save()
-	return json.dumps(res)
+	return jsonify(res)
 	
 
 @mod.route('/<blibb_id>/p/<params>', methods=['GET'])
@@ -168,15 +179,10 @@ def deleteBlibb():
 	bid = request.form['b']
 	user = utils.getKey(key)
 	b = Blibb()
-	res = dict()
-	if b.isOwner(bid,user):
-		b.remove(bid)
-		res['result'] = 'success'
-	else:
-		res['error'] = 'You only can delete your own objects'
+	filter = {'_id': ObjectId(bid), 'u': user}
+	b.remove(filter)
 	e.save()
-	return json.dumps(res)
-
+	return jsonify({'ret': 1})
 
 ########################
 ####### FOLLOWERS ######

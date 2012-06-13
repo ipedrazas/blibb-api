@@ -13,7 +13,8 @@ from API.contenttypes.bookmark import Bookmark
 import API.utils as utils
 from bson.objectid import ObjectId
 
-from API.utils import crossdomain
+from API.decorators import crossdomain
+from API.decorators import support_jsonp
 
 mod = Blueprint('blitem', __name__, url_prefix='/blitem')
 

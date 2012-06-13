@@ -1,4 +1,13 @@
+#
+#
+#
+#
+#
+#
+#
 
+
+from API.om.manager import Manager
 from API.user.buser import User
 from API.blibb.blibb import Blibb
 from API.blitem.blitem import Blitem
@@ -11,56 +20,68 @@ from bson.objectid import ObjectId
 from flask import Blueprint, request, redirect, abort, current_app, jsonify
 from functools import wraps
 import json
-from API.utils import crossdomain
+from API.decorators import crossdomain
+from API.decorators import support_jsonp
 
 
 mod = Blueprint('user', __name__, url_prefix='')
 
 ANON_APPS = {
 	'QPGQ': 'quidprogquo',
-	'QUOTR': 'quotr'
+	'QUOTR': 'quotr',
+	'test': 'test'
 }
 
 @mod.route('/hi')
 def hello_world():
 	return "Hello World, this is user'"
 
-def check_tokens(f):
-	@wraps(f)
-	def decorated_function(*args, **kwargs):
-		app_token = request.args.get('app_token', False)
-		user_token = request.args.get('user_token', False)
-		if app_token or user_token:
-			pass
-		else:
-			abort(401)
-	return decorated_function
-
-def support_jsonp(f):
-    """Wraps JSONified output for JSONP"""
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        callback = request.args.get('callback', False)
-        if callback:
-            content = str(callback) + '(' + str(f(*args,**kwargs).data) + ')'
-            return current_app.response_class(content, mimetype='application/javascript')
-        else:
-            return f(*args, **kwargs)
-    return decorated_function
-
-
 #####################
 ###### USERS  #######
 #####################
 
-@mod.route('/<username>/<slug>', methods=['POST'])
+@mod.route('/<username>/<slug>/action/delete', methods=['POST'])
 @crossdomain(origin='*')
-def addItemtoBlibb(username=None, slug=None):
+def deleteBlibb(username=None, slug=None):
+	e = Event('web.user.blibb.deleteItem')
 	if username is None:
 		abort(404)
 	if slug is None:
 		abort(404)
+	b = Blibb()
+	jres =  b.getBySlug(username,slug)
+	dres = json.loads(jres)
+	results = dres.get('results','')
+	count = dres.get('count',0)
+	if count > 0:
+		jblibb = results[0]
+		bid = jblibb['id']
+		filter = { '_id': ObjectId(bid)}
+		b.remove(filter)
+
+	e.save()
+
+@mod.route('/<username>/<slug>/del/<item_id>', methods=['POST'])
+@crossdomain(origin='*')
+def deleteItem(username=None, slug=None, item_id=None):
+	e = Event('web.user.blibb.deleteItem')
+	if username is None:
+		abort(404)
+	if slug is None:
+		abort(404)
+	if item_id is None:
+		abort(404)
+
+	e.save()
+
+@mod.route('/<username>/<slug>', methods=['POST'])
+@crossdomain(origin='*')
+def addItemtoBlibb(username=None, slug=None):
 	e = Event('web.user.blibb.getBlibbBySlug')
+	if username is None:
+		abort(404)
+	if slug is None:
+		abort(404)	
 	app_token = request.form['app_token']
 	key = request.form['key']
 	e.addLog({'at': app_token})
@@ -192,18 +213,21 @@ def doLogin():
 		e.save()
 		abort(401)
 
+@mod.route('/user', methods=['POST'])
+@crossdomain(origin='*')
+def newUser():
+	e = Event('web.user.newUser')
+	user = request.form['user']
+	pwd = request.form['pwd']
+	code = request.form['code']
+	email = request.form['email']
 
-@mod.route('/invite/<code>', methods=['GET'])
-@support_jsonp
-def validateInviteCode(code=None):	
-	e = Event('web.user.validateInviteCode')
-	if code is None:
-		abort(404)
-	user = User()
-	u = user.getByName(user_name)
-	
-	e.save()
-	return jsonify(u)
+	m = Manager()
+	if m.validateCode(code):
+		u = User()
+	else:
+		return jsonify({'error': 'Code is not valid'})
+
 
 @mod.route('/<username>/<slug>/tag/<tag>', methods=['GET'])
 @support_jsonp

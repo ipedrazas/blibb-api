@@ -100,15 +100,13 @@ class BaseObject(object):
 	def error(self,error):
 		self._logger.error(str(error))
 
-	def setLog(self, log_level=logging.WARNING):
+	def setLog(self):
 		self._logger = logging.getLogger(self._collection)
-		# hdlr = logging.FileHandler(dirname(__file__) + '/../logs/' + self._collection + '.log')
-		hdlr = logging.basicConfig(level=log_level)
-		# formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-		# hdlr.setFormatter(formatter)
-		# self._logger.addHandler(hdlr) 
-		self._logger.setLevel(log_level)
-
+		self._logger.setLevel(logging.DEBUG)
+		ch = logging.StreamHandler()
+		formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+		ch.setFormatter(formatter)
+		self._logger.addHandler(ch)
 
 	def slugify(self, text, delim=u''):
 		"""Generates an slightly worse ASCII-only slug."""
@@ -181,9 +179,9 @@ class BaseObject(object):
 			# url = c.shorten(longurl, custom='')
 			self._objects.update({ u'_id': ObjectId(obj_id)}, {"uri": url}, False)
 
-	def remove(self, obj_id):
-		if obj_id is not None:
-			self._objects.remove({ u'_id': ObjectId(obj_id)})
+	def remove(self, filter):
+		if filter is not None:
+			self._objects.remove(filter)
 
 
 	def isValidId(self, obj_id):
