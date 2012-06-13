@@ -121,11 +121,6 @@ def isAnonApp(key):
 			return key
 	return False
 
-@mod.route('/cors',methods=['GET','POST'])
-@crossdomain(origin='*')
-def getCors():
-	return jsonify(foo='yayyyy cross domain ftw')
-
 
 @mod.route('/<username>/<slug>/<page>', methods=['GET'])
 @mod.route('/<username>/<slug>', methods=['GET'])

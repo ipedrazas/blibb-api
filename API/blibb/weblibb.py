@@ -29,7 +29,6 @@ def hello_world():
 	return "Hello World, this is blibby'"
 
 @mod.route('/meta/fields/<bid>', methods=['GET'])
-
 def getBlibbFields(bid=None):
 	if bid is not None:
 		b = Blibb()
@@ -130,6 +129,7 @@ def getBlibbView(blibb_id=None, view_name='null'):
 		abort(404)
 
 @mod.route('/<username>', methods=['GET'])
+@support_jsonp
 def getBlibbByUser(username=None):	
 	e = Event('web.blibb.getBlibbByUser')
 	b = Blibb()

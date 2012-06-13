@@ -171,7 +171,7 @@ class Blibb(BaseObject):
 		return docs
 
 	def getByUser(self,username, page=1):
-		r = self.getBlibbs({ u'u': username },{u't' : 0},page)
+		r = self.getBlibbs({ 'u': username },{'t' : 0}, page)
 		rs = []
 		count = 0
 		for result in r:
