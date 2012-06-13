@@ -148,7 +148,7 @@ class Template(BaseObject):
 		pass
 
 	def getControlRead(self, slug):
-		return '<div class="' + slug + '">{{' + slug + '}}</div>'
+		return '<div class="' + slug + '">{{{' + slug + '}}</div>'
 
 
 	def getControlCss(self, slug, style):
