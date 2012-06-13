@@ -225,8 +225,9 @@ class Blibb(BaseObject):
 
 	def getIdBySlug(self,username, slug):
 		r = self.objects.find_one({  u'u': username, u's': slug },{u'_id' : 1})
-		oid = r.get('_id')
-		if oid:
+		
+		if r is not None:
+			oid = r.get('_id', False)
 			return str(oid)
 		return False
 
