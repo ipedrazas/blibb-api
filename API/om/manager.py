@@ -44,3 +44,9 @@ class Manager(BaseObject):
 		doc = {"n" : code, "a": active, "f": now, 'i': 0}
 		newId = self.objects.insert(doc)
 		return str(newId)
+
+	def addBetaUser(self, email, ip, browser):
+		now = datetime.utcnow()
+		doc = {"e" : email, "i": ip, "c": now, 'b': browser}
+		newId = self.objects.insert(doc)
+		return str(newId)

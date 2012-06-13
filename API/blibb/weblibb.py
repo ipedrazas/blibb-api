@@ -42,29 +42,35 @@ def newBlibb():
 	desc = request.form['bdesc']
 	template = request.form['btemplate'] 
 	key = request.form['bkey']
+	user = utils.getKey(key)
 	image_id = request.form['bimage']
 	slug = request.form['slug']
-	pict = Picture()
-	if pict.isValidId(image_id):		
-		image = pict.dumpImage(image_id)
-	else:
-		image = 'blibb.png'
-
-	if request.form.get('bgroup', None) == "1":
-		group = True
-		if 'email_invites' in request.form:
-			invites = request.form['email_invites'] 
-		else:
-			invites = ''
-	else:
-		group = False
-		invites = ''
-		
-	user = utils.getKey(key)
 	b = Blibb()
-	res = b.insert(user, name, slug, desc, template, image, group, invites)
+	# check if a blibb with that slug already exists
+	if not b.getIdBySlug(user,slug):
+		pict = Picture()
+		if pict.isValidId(image_id):		
+			image = pict.dumpImage(image_id)
+		else:
+			image = 'blibb.png'
+
+		if request.form.get('bgroup', None) == "1":
+			group = True
+			if 'email_invites' in request.form:
+				invites = request.form['email_invites'] 
+			else:
+				invites = ''
+		else:
+			group = False
+			invites = ''
+		new_id = b.insert(user, name, slug, desc, template, image, group, invites)
+		res = {'id': new_id}
+	else:
+		res = {'error': 'Blibb with that slug already exists'}
+
 	e.save()
-	return res
+	return jsonify(res)	
+	
 
 	
 

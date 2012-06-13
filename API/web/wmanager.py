@@ -7,6 +7,9 @@ from flask import Blueprint, request, redirect, abort, current_app, jsonify
 from functools import wraps
 import json
 
+from API.decorators import crossdomain
+from API.decorators import support_jsonp
+
 
 mod = Blueprint('manager', __name__, url_prefix='/sys')
 
@@ -19,4 +22,17 @@ def hello_world():
 def validate(code=None):
 	m = Manager()
 	return jsonify({'result':m.validateCode(code)})
+
+@mod.route('/addToBeta', methods=['POST'])
+@crossdomain(origin='*')
+def addToBetaList():
+	e = Event('web.wmanager.addToBetaList')
+
+	email = request.form['email']
+	ip = request.form['ip']
+	browser = request.form['browser']
+	m = Manager()
+	res = {'result':m.addBetaUser(email,ip,browser)}
+	e.save()
+	return jsonify(res)
 	

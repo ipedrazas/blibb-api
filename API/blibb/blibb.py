@@ -87,9 +87,7 @@ class Blibb(BaseObject):
 			doc = {"n" : name, "s": slug, "d": desc, "u": user, "c": now, "nf": 0, "g": group, "t": t.dump(), "cc":0, "img" : image}
 
 		newId = self.objects.insert(doc)
-		d = dict()
-		d['id'] = str(newId)
-		return json.dumps(d)
+		return str(newId)
 
 	def getTemplate(self,obj_id):
 		template =  self._objects.find_one({ u'_id': ObjectId(obj_id)}, {u't':1})
@@ -228,9 +226,9 @@ class Blibb(BaseObject):
 	def getIdBySlug(self,username, slug):
 		r = self.objects.find_one({  u'u': username, u's': slug },{u'_id' : 1})
 		oid = r.get('_id')
-		res = dict()
-		res['id'] = str(oid)
-		return json.dumps(res)
+		if oid:
+			return str(oid)
+		return False
 
 
 	def getByGroupUser(self,username, page=1):
