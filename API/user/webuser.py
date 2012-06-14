@@ -220,6 +220,13 @@ def newUser():
 	m = Manager()
 	if m.validateCode(code):
 		u = User()
+		u.name = user
+		u.email = email
+		u.password = pwd
+		u.code = code
+		
+		u_id = u.save()
+		return jsonify({'id': u_id})
 	else:
 		return jsonify({'error': 'Code is not valid'})
 

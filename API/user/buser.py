@@ -52,6 +52,14 @@ class User(BaseObject):
 	def reset_code(self):
 		return self.__reset_code
 
+	@property
+	def code(self):
+		return self.__reg_code
+
+	@code.setter
+	def code(self,value):
+		self.__reg_code = value
+
 	@name.setter
 	def name(self,value):
 		self.__name = value
@@ -87,13 +95,13 @@ class User(BaseObject):
 		self.__created =  datetime.utcnow()
 		self.__last_access = None
 		self.__reset_code = None		
-
+		self.__reg_code = None
 		
 	def save(self):
 		user_id = self.objects.insert(
 				{"n": self.name, "e" : self.email, "p": self.password, 
 				"s": self.salt, "ps": self.pub_salt, "c" : self.created, 
-				"a": self.active, 'l': self.last_access, 'rp': self.reset_code})
+				"a": self.active, 'l': self.last_access, 'rc': self.code,'rp': self.reset_code})
 		return str(user_id)
 
 	def toJson(self):
