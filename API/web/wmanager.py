@@ -27,12 +27,23 @@ def validate(code=None):
 @crossdomain(origin='*')
 def addToBetaList():
 	e = Event('web.wmanager.addToBetaList')
-
 	email = request.form['email']
 	ip = request.form['ip']
 	browser = request.form['browser']
 	m = Manager()
-	res = {'result':m.addBetaUser(email,ip,browser)}
+	res = {'result': m.addBetaUser(email,ip,browser)}
 	e.save()
 	return jsonify(res)
-	
+
+@mod.route('/addCode', methods=['POST'])
+@crossdomain(origin='*')
+def addCode():
+	e = Event('web.wmanager.addCode')
+	key = request.form['k']
+	code = request.form['c']
+	if key == 'ivan':
+		m = Manager()
+		res = {'result': m.addCode(code)}
+		return jsonify(res)
+	else:
+		abort(401)
