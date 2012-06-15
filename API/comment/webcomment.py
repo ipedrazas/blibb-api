@@ -1,7 +1,7 @@
 
 
 import json
-from flask import Blueprint, request, redirect, abort
+from flask import Blueprint, request, redirect, abort, current_app, jsonify
 from API.comment.comment import Comment
 from API.event.event import Event
 from API.blibb.blibb import Blibb
@@ -9,6 +9,10 @@ from API.blitem.blitem import Blitem
 from bson import json_util
 import logging
 import API.utils as utils
+
+from API.decorators import crossdomain
+from API.decorators import support_jsonp
+
 
 mod = Blueprint('comment', __name__, url_prefix='/comment')
 
@@ -23,43 +27,31 @@ def hello_world():
 #####################
 
 @mod.route('', methods=['POST'])
+@crossdomain(origin='*')
 def newComment():
 	e = Event('web.newComment')
 	comment = Comment()
-	c_id = None
-	key = request.form['k']
+	key = request.form['login_key']
+	target_id = request.form['item_id']
+	text =  request.form['comment']
 	user = utils.getKey(key)
-	logging.error('Processing %s' % user)
-	if user is not None:
-		target_id = None
-		parent = None
-		pObject = None
-		if 'b' in request.form:		
-			target_id = request.form['b']
-			parent = 'b'
-			pObject = Blibb()
-			logging.error('Processing %s' % target_id)
-		elif 'i' in request.form:
-			target_id = request.form['i']
-			parent = 'i'
-			pObject = Blitem()
-			logging.error('Processing %s' % target_id)
-		else:
-			abort(404)
-		
-		text =  request.form['c']
-		c_id = comment.insert(target_id, user, text, parent)
-		pObject.incCommentsCounter(target_id)
-		e.save()
-	else:
-		d = dict()
-		d['error'] = "user not found"
-		c_id = d
-	return json.dumps(c_id,default=json_util.default)
+	if user is not None:	
+		pObject = Blitem()	
+		c_id = comment.insert(target_id, user, text)
+		pObject.incCommentsCounter(target_id)		
+		return jsonify({'item': target_id, 'user': user, 'text': text, 'comment_id': c_id})
+
+		#####
+		###		TODO: queue item_id + comment to be added to
+		###		assoc. blibb object
+		#####
+	e.save()
+	return jsonify({'error': 'user not found'})
 
 
 
 @mod.route('/<parent_id>', methods=['GET'])
+@support_jsonp
 def getComments(parent_id=None):
 	e = Event('web.getComments')
 	comment = Comment()

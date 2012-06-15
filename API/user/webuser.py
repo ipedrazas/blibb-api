@@ -15,8 +15,6 @@ from API.event.event import Event
 from API.control.bcontrol import BControl
 import API.utils as utils
 from bson.objectid import ObjectId
-
-
 from flask import Blueprint, request, redirect, abort, current_app, jsonify
 from functools import wraps
 import json

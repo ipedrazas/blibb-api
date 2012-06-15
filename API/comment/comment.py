@@ -9,8 +9,8 @@ from datetime import datetime
 from pymongo import Connection
 from API.base import BaseObject
 from bson.objectid import ObjectId
+from bson import errors
 import json
-
 
 class Comment(BaseObject):
 
@@ -22,11 +22,15 @@ class Comment(BaseObject):
 		self.__text = None
 		self.__parentClass = None
 		
-	def insert(self, parent, owner, text, parentClass, thumbnail='/img/60x60.gif'):
+	def insert(self, parent, owner, text, thumbnail='/img/60x60.gif'):
 		now = datetime.utcnow()
-		doc = {"p" : parent, "u": owner, "c": now, "t": text, "pc": parentClass, 'th': thumbnail}
-		newId = self.objects.insert(doc)
-		return str(newId)
+		try:
+			doc = {"p" : ObjectId(parent), "u": owner, "c": now, "t": text, 'th': thumbnail}
+			newId = self.objects.insert(doc)
+			return str(newId)
+
+		except errors.InvalidId:
+			return 'item_id is not valid'
 
 	def insertJson(self,jsonData):
 		now = datetime.utcnow()
@@ -37,7 +41,7 @@ class Comment(BaseObject):
 		return json.dumps(sId)
 
 	def getCommentsById(self, obj_id, asJson=False):
-		docs = self.objects.find({ 'p': obj_id}).sort("c", -1)
+		docs = self.objects.find({ 'p': ObjectId(obj_id)}).sort("c", -1)
 		ddocs = []
 		for d in docs:
 			doc = dict()
