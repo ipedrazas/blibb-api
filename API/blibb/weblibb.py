@@ -143,7 +143,7 @@ def getBlibbByUser(username=None):
 		abort(404)
 	res = b.getByUser(username)
 	e.save()
-	return res
+	return jsonify(res)
 
 
 @mod.route('/<username>/group', methods=['GET'])

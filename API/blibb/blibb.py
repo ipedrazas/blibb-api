@@ -190,7 +190,7 @@ class Blibb(BaseObject):
 		resp = dict()
 		resp['count'] = count
 		resp['results'] = rs
-		return json.dumps(resp)
+		return resp
 
 
 	def getBySlug(self,username, slug, page=1):
