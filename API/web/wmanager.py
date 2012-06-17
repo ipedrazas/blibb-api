@@ -23,7 +23,7 @@ def validate(code=None):
 	m = Manager()
 	return jsonify({'result':m.validateCode(code)})
 
-@mod.route('/addToBeta', methods=['POST'])
+@mod.route('/add/tobeta', methods=['POST'])
 @crossdomain(origin='*')
 def addToBetaList():
 	e = Event('web.wmanager.addToBetaList')
@@ -35,7 +35,7 @@ def addToBetaList():
 	e.save()
 	return jsonify(res)
 
-@mod.route('/addCode', methods=['POST'])
+@mod.route('/add/code', methods=['POST'])
 @crossdomain(origin='*')
 def addCode():
 	e = Event('web.wmanager.addCode')
