@@ -142,7 +142,7 @@ def getBlibbBySlug(username=None, slug=None, page=1):
 		bid = jblibb['id']
 		ret['blibb'] = jblibb
 		bl = Blitem()
-		jitems = bl.getAllItemsFlat2(bid,int(page))
+		jitems = bl.getAllItemsFlat(bid,int(page))
 		rs_items = json.loads(jitems)
 		for i in rs_items:
 			pass

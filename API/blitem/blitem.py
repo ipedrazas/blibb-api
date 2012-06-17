@@ -13,6 +13,7 @@ from API.comment.comment import Comment
 from API.contenttypes.song import Song
 from bson.objectid import ObjectId
 from bson import json_util
+from bson import errors
 
 
 class Blitem(BaseObject):
@@ -61,25 +62,27 @@ class Blitem(BaseObject):
 			self.created = self.doc.get('c')
 			self.id = self.doc.get('_id')
 			self.items = self.doc.get('i')
-			if 'tg' in self.doc:
-				self.tags = self.doc.get('tg')
+			self.tags = self.doc.get('tg','')
 			self.blibb = self.doc.get('b')
 
 	def insert(self, blibb, user, items, tags=None):
 		tag_list = []
 		b = Blibb()
-		b.load(blibb)
-		b.populate()
-		bs = b.slug
-		if tags is not None:
-			tag_list = list(set(tags.lower().split()))			
-			for t in tag_list:
-				b.addTag(blibb,t)
+		try:
+			b.load(blibb)
+			b.populate()
+			bs = b.slug
+			if tags is not None:
+				tag_list = list(set(tags.lower().split()))			
+				for t in tag_list:
+					b.addTag(blibb,t)
 
-		now = datetime.utcnow()
-		doc = {"b" : ObjectId(blibb), "u": user, "bs": bs ,"c": now, "i": items, "cc": 0, 'tg': tag_list}
-		newId = self.objects.insert(doc)
-		return str(newId)
+			now = datetime.utcnow()
+			doc = {"b" : ObjectId(blibb), "u": user, "bs": bs ,"c": now, "i": items, "cc": 0, 'tg': tag_list}
+			newId = self.objects.insert(doc)
+			return str(newId)
+		except errors.InvalidId:
+			return 'item_id is not valid'
 
 	def save(self):
 		self.objects.update(
@@ -107,32 +110,36 @@ class Blitem(BaseObject):
 		items = doc['i']
 		return str(items['ri'])
 
-	def getFlat(self, obj_id):
-		doc = self.objects.find_one({ u'_id': ObjectId(obj_id)	})
+	def flatObject(self, doc):
 		blitem = dict()
+		slugs = []
 		if doc is not None:
-			iid = str(doc['_id'])
-			blitem['id'] = iid
-			blitem['parent'] = str(doc['b'])
-			blitem['num_comments'] = doc['cc']
-			i = doc['i']
-			for r in i:
-				blitem[r['s']] = r['v']
+			blitem['id'] = str(doc.get('_id',''))
+			blitem['parent'] = str(doc.get('b',''))
+			blitem['num_comments'] = doc.get('cc','')
+			i = doc.get('i',False)
+			if i:
+				for r in i:
+					s = r.get('s', False)
+					if s and s not in slugs:
+						slugs.append(s)
+					tt = dict()
+					tt['value'] = r['v']
+					tt['type'] = r['t']
+					blitem[r['s']] = tt
+				blitem['fields'] = slugs
 			
 			blitem['tags'] = doc.get('tg','')
+			blitem['comments'] = self.getComments(blitem['id'])
+		return blitem
 
-			# pull the comments
-			comments = self.getComments(iid)
-			blitem['comments'] = comments
 
-		return json.dumps(blitem,default=json_util.default)
+	def getFlat(self, obj_id):
+		doc = self.objects.find_one({ u'_id': ObjectId(obj_id)	})		
+		item = self.flatObject(doc)
+		return json.dumps(item)
 
 	def getComments(self,obj_id):
-		c = Comment()
-		cs = c.getCommentsById(obj_id,True)
-		return cs
-
-	def getTagss(self,obj_id):
 		c = Comment()
 		cs = c.getCommentsById(obj_id,True)
 		return cs
@@ -142,98 +149,31 @@ class Blitem(BaseObject):
 		docs = self.objects.find(filter,fields).sort("c", -1).skip(PER_PAGE * (page - 1)).limit(PER_PAGE )
 		return docs
 
-	def getAllItemsFlat(self,blibb_id):
-		docs = self.getItemsPage({u'b': ObjectId(blibb_id)},{'i':1, 'tg': 1})
+	def getAllItemsFlat(self,blibb_id, page):
+		docs = self.getItemsPage({u'b': ObjectId(blibb_id)},{'i':1, 'tg': 1}, page)
 		result = dict()
 		blitems = []
-		slugs = []
-		types = []
-		
-
 		for d in docs:
-			blitem = dict()
-			iid = str(d['_id'])
-			blitem['id'] = iid
-			i = d['i']
-			for r in i:
-				s = r.get('s', False)
-				if s and s not in slugs:
-					slugs.append(s)
-				tt = dict()
-				tt['v'] = r['v']
-				tt['t'] = r['t']
-				blitem[r['s']] = tt
-			blitem['cs'] = self.getComments(iid)
-			if 'tg' in d:
-				blitem['tags'] = d['tg']
-
-			blitems.append(blitem)
-
+			blitems.append(self.flatObject(d))
 		result['b_id'] = blibb_id
 		result['count'] = len(blitems)
 		result['items'] = blitems
-		result['fields'] = slugs
 
 		return json.dumps(result,default=json_util.default)
 
-
-	def getAllItemsFlat2(self,blibb_id, page):
-		docs = self.getItemsPage({'b': ObjectId(blibb_id)},{'i':1, 'tg': 1}, page)
-		result = dict()
-		blitems = []
-		slugs = []
-		types = []
-		
-		for d in docs:
-			blitem = dict()
-			iid = str(d['_id'])
-			blitem['id'] = iid
-			i = d['i']
-			for r in i:
-				if r['s'] not in slugs:
-					slugs.append(r['s'])
-				blitem[r['s']] = r['v']
-			blitem['comments'] = self.getComments(iid)
-			if 'tg' in d:
-				blitem['tags'] = d['tg']
-
-			blitems.append(blitem)
-
-		result['b_id'] = blibb_id
-		result['count'] = len(blitems)
-		result['items'] = blitems
-		result['fields'] = slugs
-
-		return json.dumps(result,default=json_util.default)
 
 	def getItemsByTag(self, owner, slug, tag):
 		docs = self.getItemsPage({'u': owner, 'bs': slug, 'tg': tag}, {'i':1, 'tg': 1, 'b':1})
 		result = dict()
 		blitems = []
-		slugs = []
-		types = []
 		
 		for d in docs:
-			blitem = dict()
-			iid = str(d['_id'])
-			blibb_id = str(d.get('b', ''))
-			blitem['id'] = iid
-			blitem['blibb_id'] = blibb_id
-			i = d['i']
-			for r in i:
-				if r['s'] not in slugs:
-					slugs.append(r['s'])
-				blitem[r['s']] = r['v']
-			blitem['comments'] = self.getComments(iid)
-			if 'tg' in d:
-				blitem['tags'] = d['tg']
-
+			blitems.append(self.flatObject(d))
 			blitems.append(blitem)
-
 
 		result['count'] = len(blitems)
 		result['items'] = blitems
-		result['fields'] = slugs
+
 
 		return result
 	

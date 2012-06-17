@@ -111,10 +111,10 @@ def getAllItems(blibb_id=None):
 	return r
 
 @mod.route('/<blibb_id>/items', methods=['GET'])
-def getAllItemsFlat(blibb_id=None):
+def getAllItemsFlat(blibb_id=None, page=1):
 	e = Event('web.blitem.getAllItemsFlat')
 	i = Blitem()
-	r = i.getAllItemsFlat(blibb_id)
+	r = i.getAllItemsFlat(blibb_id, page)
 	e.save()
 	if r != 'null':
 		return r

@@ -22,10 +22,10 @@ class Comment(BaseObject):
 		self.__text = None
 		self.__parentClass = None
 		
-	def insert(self, parent, owner, text, thumbnail='/img/60x60.gif'):
+	def insert(self, parent, owner, text):
 		now = datetime.utcnow()
 		try:
-			doc = {"p" : ObjectId(parent), "u": owner, "c": now, "t": text, 'th': thumbnail}
+			doc = {"p" : ObjectId(parent), "u": owner, "c": now, "t": text}
 			newId = self.objects.insert(doc)
 			return str(newId)
 
@@ -44,18 +44,30 @@ class Comment(BaseObject):
 		docs = self.objects.find({ 'p': ObjectId(obj_id)}).sort("c", -1)
 		ddocs = []
 		for d in docs:
-			doc = dict()
-			doc['id'] = str(d['_id'])
-			doc['parent'] = d['p']
-			doc['user'] = d['u']
-			doc['comment'] = d['t']
-			dd = str(d['c'])
-			pos = dd.index('.')
-			doc['date'] = dd[:pos]			 
-			if 'ut' in doc:
-				doc['user_image'] = d['ut']
-			ddocs.append(doc)
+			ddocs.append(self.flatObject(d))
 		return ddocs
+
+
+	def flatObject(self, comment):		
+		doc = dict()
+		doc['id'] = str(comment['_id'])
+		doc['parent'] = str(comment['p'])
+		doc['user'] = comment['u']
+		doc['comment'] = comment['t']
+		dd = str(comment['c'])
+		pos = dd.index('.')
+		doc['date'] = dd[:pos]
+
+		return doc
+
+
+
+	def getCommentFlat(self, obj_id):
+		try:
+			doc = self.objects.find_one({ '_id': ObjectId(obj_id)	})			
+			return self.flatObject(doc)
+		except errors.InvalidId:
+			return 'item_id is not valid'
 
 	
 	

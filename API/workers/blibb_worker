@@ -1,0 +1,65 @@
+#twitter_test.py
+
+
+import zmq
+import time
+import logging
+
+import sys
+from os.path import join, abspath, dirname
+parentpath = abspath(join(dirname(__file__), '../..'))
+sys.path.append(parentpath)
+
+
+from API.blitem.blitem import Blitem
+from API.blibb.blibb import Blibb
+
+
+
+def readQueue(message):
+	strs = message.split('##')
+	object_id = strs[0]
+	item_id = strs[1]
+	return {'id':object_id, 'item_id' : item_id}
+
+
+
+def updateBlibb(data):
+	comment_id = data['id']
+	c = Comment()
+	comment = c.getCommentFlat(comment_id)
+
+	item_id = data['item_id']
+	i = Blitem()
+	ret = i.find({'_id': item_id},{'b':1})
+	blibb_id = ret['b']
+	if blibb_id:
+		b = Blibb()
+		b.addComment(comment)
+	
+
+
+
+
+logger = logging.getLogger('blibb_worker')
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+logger.addHandler(ch)
+
+context = zmq.Context()
+socket = context.socket(zmq.REP)
+socket.bind("tcp://*:5557")
+while True:
+	#  Wait for next request from client
+	time.sleep (0.1) 
+	
+	try: 
+		message = socket.recv(zmq.NOBLOCK)
+		entry = readQueue(message)
+		updateBlibb(entry)
+		socket.send('ok')
+	except zmq.ZMQError as e:
+		if e.errno != zmq.EAGAIN:
+			raise
