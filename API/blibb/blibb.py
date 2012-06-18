@@ -261,3 +261,6 @@ class Blibb(BaseObject):
 			return picture_id
 
 		return 'error'
+
+	def addComment(self, object_id, comment):
+		pass

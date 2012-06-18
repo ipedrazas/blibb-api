@@ -33,9 +33,9 @@ def updateBlibb(data):
 	i = Blitem()
 	ret = i.find({'_id': item_id},{'b':1})
 	blibb_id = ret['b']
-	if blibb_id:
+	try:
 		b = Blibb()
-		b.addComment(comment)
+		b.addComment(blibb_id comment)
 	
 
 

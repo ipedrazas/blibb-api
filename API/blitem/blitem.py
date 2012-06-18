@@ -126,7 +126,7 @@ class Blitem(BaseObject):
 					tt = dict()
 					tt['value'] = r['v']
 					tt['type'] = r['t']
-					blitem[r['s']] = tt
+					blitem[r['s']] = r['v']
 				blitem['fields'] = slugs
 			
 			blitem['tags'] = doc.get('tg','')
