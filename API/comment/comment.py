@@ -40,7 +40,7 @@ class Comment(BaseObject):
 		sId['id'] = str(newId)
 		return json.dumps(sId)
 
-	def getCommentsById(self, obj_id, asJson=False):
+	def getCommentsById(self, obj_id):
 		docs = self.objects.find({ 'p': ObjectId(obj_id)}).sort("c", -1)
 		ddocs = []
 		for d in docs:

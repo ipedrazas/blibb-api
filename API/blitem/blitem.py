@@ -114,7 +114,8 @@ class Blitem(BaseObject):
 		blitem = dict()
 		slugs = []
 		if doc is not None:
-			blitem['id'] = str(doc.get('_id',''))
+			blitem_id = str(doc.get('_id',''))
+			blitem['id'] = blitem_id
 			blitem['parent'] = str(doc.get('b',''))
 			blitem['num_comments'] = doc.get('cc','')
 			i = doc.get('i',False)
@@ -130,7 +131,7 @@ class Blitem(BaseObject):
 				blitem['fields'] = slugs
 			
 			blitem['tags'] = doc.get('tg','')
-			blitem['comments'] = self.getComments(blitem['id'])
+			blitem['comments'] = self.getComments(blitem_id)
 		return blitem
 
 
@@ -141,7 +142,7 @@ class Blitem(BaseObject):
 
 	def getComments(self,obj_id):
 		c = Comment()
-		cs = c.getCommentsById(obj_id,True)
+		cs = c.getCommentsById(obj_id)
 		return cs
 
 	def getItemsPage(self, filter, fields, page=1):
@@ -162,14 +163,14 @@ class Blitem(BaseObject):
 		return json.dumps(result,default=json_util.default)
 
 
-	def getItemsByTag(self, owner, slug, tag):
-		docs = self.getItemsPage({'u': owner, 'bs': slug, 'tg': tag}, {'i':1, 'tg': 1, 'b':1})
+	def getItemsByTag(self, blibb_id, tag):
+		docs = self.getItemsPage({'b': ObjectId(blibb_id), 'tg': tag}, {'i':1, 'tg': 1})
 		result = dict()
 		blitems = []
 		
 		for d in docs:
 			blitems.append(self.flatObject(d))
-			blitems.append(blitem)
+			# blitems.append(blitem)
 
 		result['count'] = len(blitems)
 		result['items'] = blitems

@@ -240,9 +240,13 @@ def getItemsByTag(username=None, slug=None, tag=None):
 		abort(404)
 	if tag is None:
 		abort(404)
+
+	blibb = Blibb()
+	blibb_id = blibb.getIdBySlug(username,slug)
 	
+	# return blibb_id
 	b = Blitem()
-	items = b.getItemsByTag(username, slug, tag)
+	items = b.getItemsByTag(blibb_id, tag)
 	e.save()
 	return  jsonify(items)
 
