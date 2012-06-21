@@ -249,8 +249,8 @@ class Blibb(BaseObject):
 	def incNumItem(self, condition):
 		self.objects.update(condition, {"$inc": {'ni': 1}})
 
-	def incView(self, condition):
-		self.objects.update(condition, {"$inc": {'st.v': 1}})
+	def incView(self, condition, field):
+		self.objects.update(condition, {"$inc": {'st.' + field: 1}})
 
 	
 	def addPicture(self, filter, picture_id):

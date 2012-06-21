@@ -136,7 +136,7 @@ def getBlibbBySlug(username=None, slug=None, page=1):
 	count = dres.get('count')
 	ret = dict()
 	cond = { 's': slug, 'u': username }
-	b.incView(cond)
+	b.incView(cond, 'v')
 	if count == 1:
 		jblibb = results[0]
 		bid = jblibb['id']
@@ -241,8 +241,11 @@ def getItemsByTag(username=None, slug=None, tag=None):
 	if tag is None:
 		abort(404)
 
+	# current_app.logger.debug("Done " + username)
 	blibb = Blibb()
 	blibb_id = blibb.getIdBySlug(username,slug)
+	cond = { 's': slug, 'u': username }
+	blibb.incView(cond, 'vt')
 	
 	# return blibb_id
 	b = Blitem()

@@ -121,7 +121,7 @@ class BaseObject(object):
 
 
 	def load(self,obj_id):
-		self._doc = self._objects.find_one({ u'_id': ObjectId(obj_id)	})
+		self._doc = self._objects.find_one({ '_id': ObjectId(obj_id)})
 		
 
 	def __populate(self):

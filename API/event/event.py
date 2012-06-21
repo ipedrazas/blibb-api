@@ -7,6 +7,7 @@
 
 from datetime import datetime
 from pymongo import Connection
+from flask import current_app
 
 class Event(object):
 
@@ -31,6 +32,7 @@ class Event(object):
 		self.toDB()
 		
 	def toDB(self):
+		# current_app.logger.debug(" saving event " + str(self._duration.microseconds))
 		doc = {"d" : self._duration.microseconds, "c": self._start, "l": self._log, "n": self._name}
 		newId = self._objects.insert(doc)
 		return str(newId)
