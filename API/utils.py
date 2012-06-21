@@ -10,6 +10,7 @@ from datetime import timedelta
 from flask import make_response, request, current_app
 from functools import update_wrapper
 import re
+from bson import errors
 
 
 def getTitle(url):
@@ -88,3 +89,10 @@ def queueTwitterResolution(obj_id, twiter_screen_name):
 	socket.connect ("tcp://localhost:5556")
 	if obj_id is not None:
 		socket.send (str( obj_id + '##' + twiter_screen_name))
+
+def isValidId(obj_id):
+	try:
+		oid = ObjectId(obj_id)
+		return True
+	except errors.InvalidId:
+		return False

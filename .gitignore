@@ -30,4 +30,6 @@ API/*.log
 .mr.developer.cfg
 
 .DS_Store
->>>>>>> ignoring
+
+API/test/twitter_cmd_test.py
+

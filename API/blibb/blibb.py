@@ -9,6 +9,7 @@ import json
 from datetime import datetime
 from bson.objectid import ObjectId
 from bson import json_util
+import API.utils as utils
 from API.base import BaseObject
 from API.template.template import Template
 from API.contenttypes.picture import Picture
@@ -68,7 +69,8 @@ class Blibb(BaseObject):
 			self.slug = self.doc.get('s')
 
 	def save(self):
-		self.objects.update(
+		if utils.isValidId(self.id):
+			self.objects.update(
 				{u"_id" : ObjectId(self.id)},
 				{"n" : self.name, "u": self.owner, "m": datetime.utcnow(), "i": self.items},
 				True)
@@ -90,6 +92,7 @@ class Blibb(BaseObject):
 		return str(newId)
 
 	def getTemplate(self,obj_id):
+
 		template =  self._objects.find_one({ u'_id': ObjectId(obj_id)}, {u't':1})
 		return json.dumps(template,default=json_util.default)
 

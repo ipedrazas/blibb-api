@@ -24,7 +24,7 @@ class Event(object):
 		
 
 	def addLog(self, log):
-		self._log.append(log)
+		self._log.append(log)		
 
 	def save(self,dates=False):
 		self._end = datetime.utcnow()

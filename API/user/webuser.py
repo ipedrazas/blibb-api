@@ -241,6 +241,9 @@ def getItemsByTag(username=None, slug=None, tag=None):
 	if tag is None:
 		abort(404)
 
+	ip = request.remote_addr
+	e.addLog(ip)
+
 	# current_app.logger.debug("Done " + username)
 	blibb = Blibb()
 	blibb_id = blibb.getIdBySlug(username,slug)
