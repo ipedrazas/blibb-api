@@ -31,7 +31,7 @@ class Event(object):
 		self.toDB()
 		
 	def toDB(self):
-		doc = {"d" : str(self._duration), "c": self._start, "l": self._log, "n": self._name}
+		doc = {"d" : self._duration.microseconds, "c": self._start, "l": self._log, "n": self._name}
 		newId = self._objects.insert(doc)
 		return str(newId)
 
