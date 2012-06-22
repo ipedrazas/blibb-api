@@ -28,6 +28,15 @@ logger.addHandler(ch)
 def hello_world():
 	return "Hello World, this is blibby'"
 
+@mod.route('/meta/webhooks/<bid>', methods=['GET'])
+def getWebhooks(bid=None):
+	if utils.isValidId(bid):
+		b = Blibb()
+		fields = b.getWebhooks(bid)
+		return jsonify({'webhooks': fields})
+	else:
+		return jsonify({'error': 'Object id not valid'})
+
 @mod.route('/meta/fields/<bid>', methods=['GET'])
 def getBlibbFields(bid=None):
 	if bid is not None:

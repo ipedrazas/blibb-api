@@ -249,6 +249,17 @@ class Blibb(BaseObject):
 			# fields.append(elem)
 		return fields
 
+	def getWebhooks(self, obj_id):
+		doc = self.objects.find_one({ u'_id': ObjectId(obj_id)	}, {'wh':1})
+		whs = doc.get('wh',[])
+		# return template
+		webhooks = []
+		for wh in whs:
+			w = {'action': wh.get('a'), 'callback': wh.get('u'), 'fields': wh.get('f')}
+			webhooks.append(w)
+		return webhooks
+
+
 	def incNumItem(self, condition):
 		self.objects.update(condition, {"$inc": {'ni': 1}})
 
