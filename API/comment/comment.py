@@ -9,8 +9,8 @@ from datetime import datetime
 from pymongo import Connection
 from API.base import BaseObject
 from bson.objectid import ObjectId
-from bson import errors
-import json
+
+import API.utils as utils
 
 class Comment(BaseObject):
 
@@ -24,13 +24,10 @@ class Comment(BaseObject):
 		
 	def insert(self, parent, owner, text):
 		now = datetime.utcnow()
-		try:
+		if utils.isValidId(parent):
 			doc = {"p" : ObjectId(parent), "u": owner, "c": now, "t": text}
 			newId = self.objects.insert(doc)
 			return str(newId)
-
-		except errors.InvalidId:
-			return 'item_id is not valid'
 
 	def insertJson(self,jsonData):
 		now = datetime.utcnow()
@@ -38,14 +35,17 @@ class Comment(BaseObject):
 		newId = self.objects.insert(data)
 		sId = dict()
 		sId['id'] = str(newId)
-		return json.dumps(sId)
+		return sId
 
 	def getCommentsById(self, obj_id):
-		docs = self.objects.find({ 'p': ObjectId(obj_id)}).sort("c", -1)
-		ddocs = []
-		for d in docs:
-			ddocs.append(self.flatObject(d))
-		return ddocs
+		if utils.isValidId(obj_id):
+			docs = self.objects.find({ 'p': ObjectId(obj_id)}).sort("c", -1)
+			ddocs = []
+			for d in docs:
+				ddocs.append(self.flatObject(d))
+			return ddocs
+		else:
+			return {'error': 'Object Id is not valid'}
 
 
 	def flatObject(self, comment):		
@@ -63,11 +63,9 @@ class Comment(BaseObject):
 
 
 	def getCommentFlat(self, obj_id):
-		try:
+		if utils.isValidId(obj_id):
 			doc = self.objects.find_one({ '_id': ObjectId(obj_id)	})			
 			return self.flatObject(doc)
-		except errors.InvalidId:
-			return 'item_id is not valid'
 
 	
 	

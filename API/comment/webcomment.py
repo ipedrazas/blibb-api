@@ -56,6 +56,13 @@ def newComment():
 def getComments(parent_id=None):
 	e = Event('web.getComments')
 	comment = Comment()
-	cs = comment.getCommentsById(parent_id,True)
+	cs = comment.getCommentsById(parent_id)
 	e.save()
-	return cs
+	
+	return jsonify({'comments': cs})
+
+
+
+
+
+
