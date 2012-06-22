@@ -224,3 +224,30 @@ def updateImage():
 	b.addPicture({'_id': ObjectId(object_id)}, image_id)	
 	e.save()
 	return 'ok'
+
+@mod.route('/actions/webhook', methods=['POST'])
+@crossdomain(origin='*')
+def addWebhook():
+	e = Event('web.blibb.addWebhook')
+	key = request.form['login_key']
+	bid = request.form['blibb_id']
+	callback = request.form['callback']
+	fields = request.form['fields']
+	action = request.form['action']
+	user = utils.getKey(key)
+	res = dict()
+	wb = {'a': action, 'u': callback, 'f': fields}
+	if utils.isValidId(bid):
+		b = Blibb()
+		if b.isOwner(bid,user):
+			b.addWebhook(bid, wb)
+			res['result'] = 'ok'
+		else:
+			abort(401)
+	else:
+		res['error'] = 'Object Id is not valid'
+	
+	e.save()
+	return jsonify(res)
+
+

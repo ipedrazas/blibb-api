@@ -267,3 +267,8 @@ class Blibb(BaseObject):
 
 	def addComment(self, object_id, comment):
 		pass
+
+	def addWebhook(self, object_id, webhook):
+		if utils.isValidId(object_id):
+			self.objects.update({'_id': ObjectId(object_id)}, {'$pull': {'wh': {'a': webhook['a']}}})
+			self.objects.update({'_id': ObjectId(object_id)},{'$addToSet':{'wh': webhook}})
