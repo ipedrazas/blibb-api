@@ -47,8 +47,7 @@ def deleteBlibb(username=None, slug=None):
 	if slug is None:
 		abort(404)
 	b = Blibb()
-	jres =  b.getBySlug(username,slug)
-	dres = json.loads(jres)
+	dres =  b.getBySlug(username,slug)
 	results = dres.get('results','')
 	count = dres.get('count',0)
 	if count > 0:
@@ -91,8 +90,7 @@ def addItemtoBlibb(username=None, slug=None):
 		user = utils.getKey(key)
 
 	b = Blibb()
-	jres =  b.getBySlug(username,slug)
-	dres = json.loads(jres)
+	dres =  b.getBySlug(username,slug)	
 	results = dres.get('results')
 	count = dres.get('count')
 	if count == 1:
@@ -130,8 +128,7 @@ def getBlibbBySlug(username=None, slug=None, page=1):
 		abort(404)
 	if slug is None:
 		abort(404)
-	jres =  b.getBySlug(username,slug)
-	dres = json.loads(jres)
+	dres =  b.getBySlug(username,slug)	
 	results = dres.get('results')
 	count = dres.get('count')
 	ret = dict()

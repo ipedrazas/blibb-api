@@ -196,8 +196,7 @@ class Blibb(BaseObject):
 		return resp
 
 
-	def getBySlug(self,username, slug, page=1):
-		
+	def getBySlug(self,username, slug, page=1):		
 		r = self.getBlibbs({  u'u': username, u's': slug },{u't' : 0}, page)
 		rs = []
 		count = 0
@@ -207,24 +206,37 @@ class Blibb(BaseObject):
 			buf['description'] = result.get('d','')
 			buf['id'] = str(result['_id'])
 			buf['owner'] = result['u']
-			buf['num_items'] = result.get('ni',0)
 			buf['tags'] = sorted(result.get('tg',''))
-			if 'st' in result:
-				stats = result.get('st')
-				buf['num_views'] = stats.get('v',0)
 			buf['date'] = self.dateToString(result['c'])
 			if 'img' in result:
 				if 'thumbnails' in result['img']:
 					buf['img_sizes'] = result['img'].get('thumbnails')
 				if 'id' in result['img']:
 					buf['img_id'] = result['img'].get('id')
+			buf['stats'] = self.getStats(result)
 			rs.append(buf)
 			count += 1
 
 		resp = dict()
 		resp['count'] = count
 		resp['results'] = rs
-		return json.dumps(resp)
+		return resp
+
+	def getStats(self,doc):
+		stats = []
+		buf = dict()
+		stats.append({'num_items': doc.get('ni',0)})
+		if 'st' in result:
+			stts = doc.get('st')
+			stats.append({'num_views': stts.get('v',0)})
+			stats.append({'num_writes': stts.get('nw',0)})
+
+		return stats
+			
+
+
+
+
 
 	def getIdBySlug(self,username, slug):
 		r = self.objects.find_one({  u'u': username, u's': slug },{u'_id' : 1})
