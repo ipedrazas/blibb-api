@@ -20,6 +20,8 @@ from functools import wraps
 import json
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
+from API.decorators import cached
+from API.error import Message
 
 
 mod = Blueprint('user', __name__, url_prefix='')
@@ -118,16 +120,17 @@ def isAnonApp(key):
 	return False
 
 
-@mod.route('/<username>/<slug>/<page>', methods=['GET'])
 @mod.route('/<username>/<slug>', methods=['GET'])
 @support_jsonp
-def getBlibbBySlug(username=None, slug=None, page=1):	
+def getBlibbBySlug(username=None, slug=None):	
 	e = Event('web.user.blibb.getBlibbBySlug')
 	b = Blibb()
 	if username is None:
 		abort(404)
 	if slug is None:
 		abort(404)
+
+	page = request.args.get('page',1)	
 	dres =  b.getBySlug(username,slug)	
 	results = dres.get('results')
 	count = dres.get('count')
@@ -139,8 +142,8 @@ def getBlibbBySlug(username=None, slug=None, page=1):
 		bid = jblibb['id']
 		ret['blibb'] = jblibb
 		bl = Blitem()
-		jitems = bl.getAllItemsFlat(bid,int(page))
-		rs_items = json.loads(jitems)
+		rs_items = bl.getAllItemsFlat(bid,int(page))
+		# rs_items = json.loads(jitems)
 		for i in rs_items:
 			pass
 		ret['items'] = rs_items['items']
@@ -168,9 +171,9 @@ def getUser(user_id=None):
 		abort(404)
 	user = User()
 	user.load(user_id)
-	res = user.toJson()
+	
 	e.save()
-	return res
+	return jsonify(user)
 
 @mod.route('/user/image', methods=['POST'])
 @crossdomain(origin='*')
@@ -229,7 +232,7 @@ def newUser():
 @mod.route('/<username>/<slug>/tag/<tag>', methods=['GET'])
 @support_jsonp
 def getItemsByTag(username=None, slug=None, tag=None):	
-	e = Event('web.user.blibb.getBlibbBySlug')
+	e = Event('web.user.blibb.getItemsByTag')
 
 	if username is None:
 		abort(404)
@@ -253,3 +256,26 @@ def getItemsByTag(username=None, slug=None, tag=None):
 	e.save()
 	return  jsonify(items)
 
+@mod.route('/<username>/<slug>/<id>', methods=['GET'])
+@support_jsonp
+def getItemById(username=None, slug=None, id=None):
+	e = Event('web.user.blibb.getItemsByTag')
+	if username is None:
+		abort(404)
+	if slug is None:
+		abort(404)
+	if id is None:
+		abort(404)
+
+	blibb = Blibb()
+	blibb_id = blibb.getIdBySlug(username,slug)
+	if utils.isValidId(id):
+		if utils.isValidId(blibb_id):
+			blitem = Blitem()
+			items = blitem.getItem({'_id': ObjectId(id), 'b': ObjectId(blibb_id)})
+			e.save()
+			return  jsonify(items)
+		else:
+			abort(404)
+	else:
+		return jsonify(Message.get('id_not_valid'))

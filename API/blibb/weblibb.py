@@ -42,7 +42,7 @@ def getBlibbFields(bid=None):
 	if bid is not None:
 		b = Blibb()
 		fields = b.getFields(bid)
-		return json.dumps(fields)
+		return jsoninfy(fields)
 
 @mod.route('', methods=['POST'])
 def newBlibb():
@@ -115,7 +115,7 @@ def getBlibb(blibb_id=None,params=None):
 
 	e.save()
 	if r != 'null':
-		return r
+		return jsonify(r)
 	else:
 		abort(404)
 
@@ -139,7 +139,7 @@ def getBlibbView(blibb_id=None, view_name='null'):
 	r = b.getTemplateView(blibb_id, view_name)
 	e.save()
 	if r != 'null':
-		return r
+		return jsonify(r)
 	else:
 		abort(404)
 

@@ -3,7 +3,7 @@
 
 import logging
 import redis
-from flask import Blueprint, request, redirect, abort
+from flask import Blueprint, request, redirect, abort, jsonify
 
 from API.blitem.blitem import Blitem
 from API.blibb.blibb import Blibb
@@ -12,9 +12,11 @@ from API.control.bcontrol import BControl
 from API.contenttypes.bookmark import Bookmark
 import API.utils as utils
 from bson.objectid import ObjectId
-
+import API.utils as utils
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
+from API.error import Message
+
 
 mod = Blueprint('blitem', __name__, url_prefix='/blitem')
 
@@ -36,39 +38,29 @@ def newItem():
 	tags = request.form['tags']
 
 	user = utils.getKey(key)
-	b = Blibb()
-	labels = b.getLabelFromTemplate(bid)
-	blitem = Blitem()
-	bitems = utils.getItemsFromRequest(labels, request)
+	if utils.isValidId(bid):
+		b = Blibb()
+		labels = b.getLabelFromTemplate(bid)
+		blitem = Blitem()
+		bitems = utils.getItemsFromRequest(labels, request)
 
-	blitem_id = blitem.insert(bid, user, bitems, tags)
-	if blitem_id:
-		cond = {'_id': ObjectId(bid)}
-		b.incNumItem(cond)
-	utils.postProcess(blitem_id, bitems)
-	e.save()
-	return blitem_id
+		blitem_id = blitem.insert(bid, user, bitems, tags)
+		if blitem_id:
+			cond = {'_id': ObjectId(bid)}
+			b.incNumItem(cond)
+		utils.postProcess(blitem_id, bitems)
+		e.save()
+		return blitem_id
+	return jsonify(Message.get('id_not_valid'))
 
 @mod.route('/fields/<blibb_id>', methods=['GET'])
 @crossdomain(origin='*')
-def getBlitemFields(username=None):	
-	e = Event('web.blibb.getGroupBlibbByUser')
+def getBlitemFields(blibb_id=None):	
+	e = Event('web.blibb.getBlitemFields')
 	b = Blibb()
 	res = b.getLabelFromTemplate(blibb_id)
 	e.save()
-	return json.dumps(res)
-
-
-@mod.route('/read/<blitem_id>', methods=['GET'])
-def getReadViewItems(blitem_id=None):
-	e = Event('web.blitem.getReadViewItems')
-	i = Blitem()
-	r = i.getById(blitem_id)
-	e.save()
-	if r != 'null':
-		return r
-	else:
-		abort(404)
+	return jsonify(res)
 
 
 @mod.route('/<blitem_id>', methods=['GET'])
@@ -79,7 +71,7 @@ def getBlitem(blitem_id=None):
 	r = i.getFlat(blitem_id)
 	e.save()
 	if r != 'null':
-		return r
+		return jsonify(r)
 	else:
 		abort(404)
 
@@ -98,17 +90,16 @@ def newTag():
 		t = target.addTag(target_id, tag)
 
 	e.save()
-	return json.dumps('ok')
+	return jsonify({'response': 'ok'})
 
 
 @mod.route('/<blibb_id>/blitems', methods=['GET'])
 def getAllItems(blibb_id=None):
 	e = Event('web.blitem.getAllItems')
 	i = Blitem()
-	its = i.getAllItems(blibb_id)
-	r = i.resultSetToJson(its)
+	its = i.getAllItems(blibb_id)	
 	e.save()
-	return r
+	return jsonify(its)
 
 @mod.route('/<blibb_id>/items', methods=['GET'])
 def getAllItemsFlat(blibb_id=None, page=1):
@@ -117,7 +108,7 @@ def getAllItemsFlat(blibb_id=None, page=1):
 	r = i.getAllItemsFlat(blibb_id, page)
 	e.save()
 	if r != 'null':
-		return r
+		return jsonify(r)
 	else:
 		abort(404)
 

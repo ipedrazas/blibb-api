@@ -96,3 +96,5 @@ def isValidId(obj_id):
 		return True
 	except errors.InvalidId:
 		return False
+	except TypeError:
+		return False

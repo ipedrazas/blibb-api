@@ -8,12 +8,11 @@ import logging
 import json
 from datetime import datetime
 from bson.objectid import ObjectId
-from bson import json_util
 import API.utils as utils
 from API.base import BaseObject
 from API.template.template import Template
 from API.contenttypes.picture import Picture
-
+from API.error import Message
 
 
 class Blibb(BaseObject):
@@ -92,9 +91,12 @@ class Blibb(BaseObject):
 		return str(newId)
 
 	def getTemplate(self,obj_id):
+		if utils.isValidId(obj_id):
+			template =  self._objects.find_one({ '_id': ObjectId(obj_id)}, {u't':1})
+			return json.dumps(template,default=json_util.default)
+		else:
+			return Message.get('id_not_valid')
 
-		template =  self._objects.find_one({ u'_id': ObjectId(obj_id)}, {u't':1})
-		return json.dumps(template,default=json_util.default)
 
 	def incFollower(self,obj_id):
 		self.objects.update({ u'_id': ObjectId(obj_id)}, {"$inc": {'nf': 1}}, True)
@@ -115,51 +117,72 @@ class Blibb(BaseObject):
 		pass
 
 	def getLabelFromTemplate(self, obj_id):
-		result = self._objects.find_one({ u'_id': ObjectId(obj_id)}, {'t.i.n': 1, 't.i.s': 1})
 		labels = dict()
-		t = result['t']
-		i = t['i']
-		for r in i:
-			labels[r['s']] = r['n']
-
-		return labels
+		if utils.isValidId(obj_id):
+			result = self._objects.find_one({ '_id': ObjectId(obj_id)}, {'t.i.n': 1, 't.i.s': 1})					
+			if result is not None:
+				t = result['t']
+				i = t['i']
+				for r in i:
+					labels[r['s']] = r['n']
+				return labels
+			else:
+				return {'count': 0}
+		else:
+			return {'error': 'Object id not valid'}
 		 
 	def getTemplateView(self, obj_id, view='Default'):
 		res =  self.objects.find_one({ u'_id': ObjectId(obj_id)}, {'t.v': 1, 'n':1, 'd':1, 'c':1, 'u':1, 'tg':1, 's':1, 'img':1, 'ni':1, 'st.v':1})
-		buf = dict()
+
 		if '_id' in res:
-			t = res['t']
-			v = t['v']
-			buf[view] = v[view]
-			buf['name'] = res['n']
-			buf['description'] = res['d']
-			buf['date'] = str(res['c'])
-			buf['owner'] = res['u']
-			buf['slug'] = res['s']
-			buf['num_items'] = res.get('ni',0)
-			if 'st' in res:
-				stats = res.get('st')
-				buf['num_views'] = stats.get('v',0)
-			img = res['img']
+			return self.flatObject(res)
+		else:
+			return {'error': "view " + view + " does not exist"}
+
+
+	def flatObject(self, doc):
+		buf = dict()
+		
+		buf['id'] = str(doc['_id'])
+		if 't' in doc:
+			buf['template'] = doc['t']
+		if 'n' in doc:
+			buf['name'] = doc['n']
+		if 'd' in doc:
+			buf['description'] = doc['d']
+		if 'c' in doc:
+			buf['date'] = str(doc['c'])
+		if 'u' in doc:
+			buf['owner'] = doc['u']
+		if 's' in doc:
+			buf['slug'] = doc['s']
+		if 'ni' in doc:
+			buf['num_items'] = doc.get('ni',0)
+		if 'st' in doc:
+			stats = doc.get('st')
+			buf['num_views'] = stats.get('v',0)
+		if 'img' in doc:
+			img = doc['img']
 			if 'id' in img:
 				buf['img'] = img['id']
 			else:
 				buf['img'] = img
-			if 'tg' in res:
-				buf['tags'] = res['tg']
-		else:
-			buf['error'] = "view " + view + " does not exist"
-		return json.dumps(buf,default=json_util.default)
+		if 'tg' in doc:
+			buf['tags'] = doc['tg']
+
+		return buf
 
 	def getByIdParams(self, obj_id, params):
 		p = dict()
-		listparams = params.split(",")
-		for param in listparams:
-			p[param] = 1
-		
-		doc = self.objects.find_one({ u'_id': ObjectId(obj_id)	}, p)
-		return json.dumps(doc,default=json_util.default)
+		if utils.isValidId(obj_id):
+			listparams = params.split(",")
+			for param in listparams:
+				p[param] = 1
+			
+			doc = self.objects.find_one({ u'_id': ObjectId(obj_id)	}, p)
+			return self.flatObject(doc)
 
+		return Message.get('id_not_valid')
 	def stripslashes(self,s):
 		r = s.replace('\\n','')
 		r = r.replace('\\t','')
@@ -197,7 +220,7 @@ class Blibb(BaseObject):
 
 
 	def getBySlug(self,username, slug, page=1):		
-		r = self.getBlibbs({  u'u': username, u's': slug },{u't' : 0}, page)
+		r = self.getBlibbs({  'u': username, 's': slug },{'t' : 0}, page)
 		rs = []
 		count = 0
 		for result in r:
@@ -226,7 +249,7 @@ class Blibb(BaseObject):
 		stats = []
 		buf = dict()
 		stats.append({'num_items': doc.get('ni',0)})
-		if 'st' in result:
+		if 'st' in doc:
 			stts = doc.get('st')
 			stats.append({'num_views': stts.get('v',0)})
 			stats.append({'num_writes': stts.get('nw',0)})
@@ -234,12 +257,8 @@ class Blibb(BaseObject):
 		return stats
 			
 
-
-
-
-
 	def getIdBySlug(self,username, slug):
-		r = self.objects.find_one({  u'u': username, u's': slug },{u'_id' : 1})
+		r = self.objects.find_one({ 'u': username, 's': slug },{'_id' : 1})
 		
 		if r is not None:
 			oid = r.get('_id', False)
@@ -248,17 +267,17 @@ class Blibb(BaseObject):
 
 
 	def getByGroupUser(self,username, page=1):
-		result = self.getBlibbs({ u'gu': username },{u't' : 0}, page)
+		result = self.getBlibbs({ 'gu': username },{'t' : 0}, page)
 		return self.resultSetToJson(result)
 
 	def getFields(self, obj_id):
 		doc = self.objects.find_one({ u'_id': ObjectId(obj_id)	}, {'t.i':1})
 		template = doc.get('t').get('i')
-		# return template
+
 		fields = []
 		for elem in template:
 			fields.append(elem.get('tx') + '-' + elem.get('s'))
-			# fields.append(elem)
+
 		return fields
 
 	def getWebhooks(self, obj_id):
@@ -280,13 +299,12 @@ class Blibb(BaseObject):
 
 	
 	def addPicture(self, filter, picture_id):
-		if picture_id is not None:
+		if utils.isValidId(picture_id):
 			p = Picture()
 			image = p.dumpImage(picture_id)
 			self.objects.update(filter, {"$set": {'img': image}})
 			return picture_id
-
-		return 'error'
+		return Message.get('id_not_valid')
 
 	def addComment(self, object_id, comment):
 		pass
@@ -295,3 +313,5 @@ class Blibb(BaseObject):
 		if utils.isValidId(object_id):
 			self.objects.update({'_id': ObjectId(object_id)}, {'$pull': {'wh': {'a': webhook['a']}}})
 			self.objects.update({'_id': ObjectId(object_id)},{'$addToSet':{'wh': webhook}})
+		else:
+			return Message.get('id_not_valid')

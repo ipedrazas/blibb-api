@@ -5,15 +5,15 @@
 #
 
 import logging
-import json
 from datetime import datetime
 from API.base import BaseObject
 from API.blibb.blibb import Blibb
 from API.comment.comment import Comment
 from API.contenttypes.song import Song
 from bson.objectid import ObjectId
-from bson import json_util
 from bson import errors
+import API.utils as utils
+from API.error import Message
 
 
 class Blitem(BaseObject):
@@ -65,11 +65,11 @@ class Blitem(BaseObject):
 			self.tags = self.doc.get('tg','')
 			self.blibb = self.doc.get('b')
 
-	def insert(self, blibb, user, items, tags=None):
+	def insert(self, blibb_id, user, items, tags=None):
 		tag_list = []
 		b = Blibb()
-		try:
-			b.load(blibb)
+		if utils.isValidId(blibb_id):
+			b.load(blibb_id)
 			b.populate()
 			bs = b.slug
 			if tags is not None:
@@ -78,14 +78,14 @@ class Blitem(BaseObject):
 				else:
 					tag_list = list(set(tags.lower().split()))
 				for t in tag_list:
-					b.addTag(blibb,t)
+					b.addTag(blibb_id,t)
 
 			now = datetime.utcnow()
-			doc = {"b" : ObjectId(blibb), "u": user, "bs": bs ,"c": now, "i": items, "cc": 0, 'tg': tag_list}
+			doc = {"b" : ObjectId(blibb_id), "u": user, "bs": bs ,"c": now, "i": items, "cc": 0, 'tg': tag_list}
 			newId = self.objects.insert(doc)
 			return str(newId)
-		except errors.InvalidId:
-			return 'item_id is not valid'
+		else:
+			return Message.get('id_not_valid')
 
 	def save(self):
 		self.objects.update(
@@ -100,22 +100,30 @@ class Blitem(BaseObject):
 		
 		
 	def getAllItems(self,blibb_id):
-		docs = self.objects.find({u'b': ObjectId(blibb_id)},{'i':1}).sort("c", -1)
-		return docs
+		if utils.isValidId(blibb_id):
+			docs = self.objects.find({u'b': ObjectId(blibb_id)},{'i':1}).sort("c", -1)
+			return docs
+		return Message.get('id_not_valid')
 		
+	def getItem(self, filter, fields={}):
+		doc = self.objects.find_one(filter)
+		return self.flatObject(doc)
 
 	def getById(self,obj_id):
-		doc = self.objects.find_one({ u'_id': ObjectId(obj_id)	})
-		return json.dumps(doc,default=json_util.default)
+		if utils.isValidId(obj_id):
+			return self.getItem({'_id': ObjectId(obj_id)})
+		return Message.get('id_not_valid')
 
 	def getRead(self,obj_id):
-		doc = self.objects.find_one({ '_id': ObjectId(obj_id)},{'i':1})
-		items = doc['i']
-		return str(items['ri'])
+		if utils.isValidId(obj_id):
+			doc = self.objects.find_one({ '_id': ObjectId(obj_id)},{'i':1})
+			items = doc['i']
+			return str(items['ri'])
+		return Message.get('id_not_valid')
 
 	def flatObject(self, doc):
 		blitem = dict()
-		slugs = []
+		fields = []
 		if doc is not None:
 			blitem_id = str(doc.get('_id',''))
 			blitem['id'] = blitem_id
@@ -124,14 +132,16 @@ class Blitem(BaseObject):
 			i = doc.get('i',False)
 			if i:
 				for r in i:
-					s = r.get('s', False)
-					if s and s not in slugs:
-						slugs.append(s)
+					s = r.get('s', '')
+					t = r.get('t', '')
+					field = t + '-' + s
+					if field not in fields:
+						fields.append(field)
 					tt = dict()
 					tt['value'] = r['v']
 					tt['type'] = r['t']
 					blitem[r['s']] = r['v']
-				blitem['fields'] = slugs
+				blitem['fields'] = fields
 			
 			blitem['tags'] = doc.get('tg','')
 			blitem['comments'] = self.getComments(blitem_id)
@@ -140,8 +150,7 @@ class Blitem(BaseObject):
 
 	def getFlat(self, obj_id):
 		doc = self.objects.find_one({ u'_id': ObjectId(obj_id)	})		
-		item = self.flatObject(doc)
-		return json.dumps(item)
+		return self.flatObject(doc)
 
 	def getComments(self,obj_id):
 		c = Comment()
@@ -154,30 +163,30 @@ class Blitem(BaseObject):
 		return docs
 
 	def getAllItemsFlat(self,blibb_id, page):
-		docs = self.getItemsPage({u'b': ObjectId(blibb_id)},{'i':1, 'tg': 1}, page)
-		result = dict()
-		blitems = []
-		for d in docs:
-			blitems.append(self.flatObject(d))
-		result['b_id'] = blibb_id
-		result['count'] = len(blitems)
-		result['items'] = blitems
+		if utils.isValidId(blibb_id):
+			docs = self.getItemsPage({u'b': ObjectId(blibb_id)},{'i':1, 'tg': 1}, page)
+			result = dict()
+			blitems = []
+			for d in docs:
+				blitems.append(self.flatObject(d))
+			result['b_id'] = blibb_id
+			result['count'] = len(blitems)
+			result['items'] = blitems
 
-		return json.dumps(result,default=json_util.default)
-
+			return result
+		return Message.get('id_not_valid')
 
 	def getItemsByTag(self, blibb_id, tag):
-		docs = self.getItemsPage({'b': ObjectId(blibb_id), 'tg': tag}, {'i':1, 'tg': 1})
-		result = dict()
-		blitems = []
-		
-		for d in docs:
-			blitems.append(self.flatObject(d))
-			# blitems.append(blitem)
+		if utils.isValidId(blibb_id):
+			docs = self.getItemsPage({'b': ObjectId(blibb_id), 'tg': tag}, {'i':1, 'tg': 1})
+			result = dict()
+			blitems = []		
+			for d in docs:
+				blitems.append(self.flatObject(d))
 
-		result['count'] = len(blitems)
-		result['items'] = blitems
+			result['count'] = len(blitems)
+			result['items'] = blitems
 
-
-		return result
+			return result
+		return Message.get('id_not_valid')
 	
