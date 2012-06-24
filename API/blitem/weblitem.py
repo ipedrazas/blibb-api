@@ -39,26 +39,33 @@ def newItem():
 
 	user = utils.getKey(key)
 	if utils.isValidId(bid):
-		b = Blibb()
-		labels = b.getLabelFromTemplate(bid)
-		blitem = Blitem()
-		bitems = utils.getItemsFromRequest(labels, request)
+		b = Blibb.getObject({'_id': ObjectId(bid)},{'u':1,'t.i.n': 1, 't.i.s': 1})
+		owner = b.get('u')
+		if owner == user:
+			labels = Blibb.getLabels(b.get('t'))
+			blitem = Blitem()
+			bitems = utils.getItemsFromRequest(labels, request)
 
-		blitem_id = blitem.insert(bid, user, bitems, tags)
-		if blitem_id:
-			cond = {'_id': ObjectId(bid)}
-			b.incNumItem(cond)
-		utils.postProcess(blitem_id, bitems)
-		e.save()
-		return blitem_id
+			blitem_id = blitem.insert(bid, user, bitems, tags)
+			if blitem_id:
+				cond = {'_id': ObjectId(bid)}
+				Blibb.incNumItem(cond)
+			utils.postProcess(blitem_id, bitems)
+			e.save()
+			return blitem_id
+		else:
+			abort(401)
 	return jsonify(Message.get('id_not_valid'))
 
 @mod.route('/fields/<blibb_id>', methods=['GET'])
 @crossdomain(origin='*')
 def getBlitemFields(blibb_id=None):	
 	e = Event('web.blibb.getBlitemFields')
-	b = Blibb()
-	res = b.getLabelFromTemplate(blibb_id)
+	if utils.isValidId(blibb_id):
+		b = Blibb.getObject({'_id': ObjectId(blibb_id)},{'u':1,'t.i.n': 1, 't.i.s': 1})
+		res = Blibb.getLabels(b.get('t'))
+	else:
+		res = Message.get('id_not_valid')
 	e.save()
 	return jsonify(res)
 
@@ -125,7 +132,4 @@ def getItemsByBlibbAndView(blibb_id=None,view='Default'):
 		return r
 	else:
 		abort(404)
-
-
-			
 

@@ -105,22 +105,29 @@ class Blibb(BaseObject):
 
 
 	def incFollower(self,obj_id):
-		self.objects.update({ u'_id': ObjectId(obj_id)}, {"$inc": {'nf': 1}}, True)
-		return obj_id
+		if utils.isValidId(obj_id):
+			self.objects.update({ u'_id': ObjectId(obj_id)}, {"$inc": {'nf': 1}}, True)
+			return obj_id
 
 	def howMany(self):
 		return self.objects.count()
 
 	def addToBlibbGroup(self, obj_id, user):
-		self.objects.update({ u'_id': ObjectId(obj_id)}, {"$addToSet": {'gu': user}}, True)
-		return obj_id
+		if utils.isValidId(obj_id):
+			self.objects.update({ u'_id': ObjectId(obj_id)}, {"$addToSet": {'gu': user}}, True)
+			return obj_id
 	
 	def getByName(self,name):
 		doc = self._objects.find_one({ u'n': name	})
 		return json.dumps(doc,default=json_util.default)
 
-	def describe(self):
-		pass
+	@classmethod
+	def getLabels(self, t):
+		labels = dict()
+		i = t['i']
+		for r in i:
+			labels[r['s']] = r['n']
+		return labels
 
 	def getLabelFromTemplate(self, obj_id):
 		labels = dict()
@@ -138,12 +145,12 @@ class Blibb(BaseObject):
 			return {'error': 'Object id not valid'}
 		 
 	def getTemplateView(self, obj_id, view='Default'):
-		res =  self.objects.find_one({ u'_id': ObjectId(obj_id)}, {'t.v': 1, 'n':1, 'd':1, 'c':1, 'u':1, 'tg':1, 's':1, 'img':1, 'ni':1, 'st.v':1})
-
-		if '_id' in res:
-			return self.flatObject(res)
-		else:
-			return {'error': "view " + view + " does not exist"}
+		if utils.isValidId(obj_id):
+			res =  self.objects.find_one({ u'_id': ObjectId(obj_id)}, {'t.v': 1, 'n':1, 'd':1, 'c':1, 'u':1, 'tg':1, 's':1, 'img':1, 'ni':1, 'st.v':1})
+			if '_id' in res:
+				return self.flatObject(res)
+			else:
+				return "view " + view + " does not exist"
 
 
 	def flatObject(self, doc):
@@ -187,8 +194,8 @@ class Blibb(BaseObject):
 			
 			doc = self.objects.find_one({ u'_id': ObjectId(obj_id)	}, p)
 			return self.flatObject(doc)
-
 		return Message.get('id_not_valid')
+
 	def stripslashes(self,s):
 		r = s.replace('\\n','')
 		r = r.replace('\\t','')
@@ -278,28 +285,30 @@ class Blibb(BaseObject):
 
 	@classmethod
 	def getFields(self, obj_id):
-		doc = objects.find_one({ u'_id': ObjectId(obj_id)	}, {'t.i':1})
-		template = doc.get('t').get('i')
+		if utils.isValidId(obj_id):
+			doc = objects.find_one({ u'_id': ObjectId(obj_id)	}, {'t.i':1})
+			template = doc.get('t').get('i')
 
-		fields = []
-		for elem in template:
-			fields.append(elem.get('tx') + '-' + elem.get('s'))
+			fields = []
+			for elem in template:
+				fields.append(elem.get('tx') + '-' + elem.get('s'))
 
-		return fields
+			return fields
 
 	def getWebhooks(self, obj_id):
-		doc = self.objects.find_one({ u'_id': ObjectId(obj_id)	}, {'wh':1})
-		whs = doc.get('wh',[])
-		# return template
-		webhooks = []
-		for wh in whs:
-			w = {'action': wh.get('a'), 'callback': wh.get('u'), 'fields': wh.get('f')}
-			webhooks.append(w)
-		return webhooks
+		if utils.isValidId(obj_id):
+			doc = self.objects.find_one({ u'_id': ObjectId(obj_id)	}, {'wh':1})
+			whs = doc.get('wh',[])
+			# return template
+			webhooks = []
+			for wh in whs:
+				w = {'action': wh.get('a'), 'callback': wh.get('u'), 'fields': wh.get('f')}
+				webhooks.append(w)
+			return webhooks
 
-
+	@classmethod
 	def incNumItem(self, condition):
-		self.objects.update(condition, {"$inc": {'ni': 1}})
+		objects.update(condition, {"$inc": {'ni': 1}})
 
 	def incView(self, condition, field):
 		self.objects.update(condition, {"$inc": {'st.' + field: 1}})
@@ -322,3 +331,7 @@ class Blibb(BaseObject):
 			self.objects.update({'_id': ObjectId(object_id)},{'$addToSet':{'wh': webhook}})
 		else:
 			return Message.get('id_not_valid')
+
+	@classmethod
+	def getObject(self, filter,fields):
+		return objects.find_one(filter, fields)
