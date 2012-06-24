@@ -13,7 +13,13 @@ from API.base import BaseObject
 from API.template.template import Template
 from API.contenttypes.picture import Picture
 from API.error import Message
+from pymongo import Connection
 
+
+
+conn = Connection()
+db = conn['blibb']
+objects = db['blibbs']
 
 class Blibb(BaseObject):
 
@@ -270,8 +276,9 @@ class Blibb(BaseObject):
 		result = self.getBlibbs({ 'gu': username },{'t' : 0}, page)
 		return self.resultSetToJson(result)
 
+	@classmethod
 	def getFields(self, obj_id):
-		doc = self.objects.find_one({ u'_id': ObjectId(obj_id)	}, {'t.i':1})
+		doc = objects.find_one({ u'_id': ObjectId(obj_id)	}, {'t.i':1})
 		template = doc.get('t').get('i')
 
 		fields = []

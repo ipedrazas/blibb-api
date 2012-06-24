@@ -40,9 +40,8 @@ def getWebhooks(bid=None):
 @mod.route('/meta/fields/<bid>', methods=['GET'])
 def getBlibbFields(bid=None):
 	if bid is not None:
-		b = Blibb()
-		fields = b.getFields(bid)
-		return jsoninfy(fields)
+		fields = Blibb.getFields(bid)
+		return jsonify({'fields':fields})
 
 @mod.route('', methods=['POST'])
 def newBlibb():
