@@ -32,6 +32,13 @@ ANON_APPS = {
 	'test': 'test'
 }
 
+@mod.route('/favicon.ico')
+@mod.route('/robots.txt')
+@mod.route('/index.html')
+@mod.route('/scripts/<path:any>')
+def handle(any=None):
+    abort(404)
+
 @mod.route('/hi')
 def hello_world():
 	return "Hello World, this is user'"
@@ -73,7 +80,7 @@ def deleteItem(username=None, slug=None, item_id=None):
 
 	e.save()
 
-@mod.route('/<username>/<slug>', methods=['POST'])
+@mod.route('/<username>/<slug>', methods=['POST', 'OPTIONS'])
 @crossdomain(origin='*')
 def addItemtoBlibb(username=None, slug=None):
 	e = Event('web.user.blibb.getBlibbBySlug')
