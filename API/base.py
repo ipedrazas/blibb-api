@@ -183,14 +183,6 @@ class BaseObject(object):
 		if filter is not None:
 			self._objects.remove(filter)
 
-
-	def isValidId(self, obj_id):
-		try:
-			o = ObjectId(obj_id)
-			return True
-		except InvalidId:
-			return False
-
 	def getObjects(self, filter_dict, fields_dict):
 		res = self.objects.find(filter_dict, fields_dict)
 		objects = []

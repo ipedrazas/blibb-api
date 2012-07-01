@@ -13,6 +13,11 @@ import re
 from bson import errors
 
 
+def allowed_file(filename):
+	allowed_extensions = current_app.config['ALLOWED_EXTENSIONS']
+	return '.' in filename and \
+		filename.rsplit('.',1)[1] in allowed_extensions
+
 def getTitle(url):
 		page = urllib2.urlopen(url)
 		soup = BeautifulSoup(page)

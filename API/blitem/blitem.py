@@ -6,40 +6,28 @@
 
 import logging
 from datetime import datetime
+
+from bson.objectid import ObjectId
+from pymongo import Connection
+
 from API.base import BaseObject
 from API.blibb.blibb import Blibb
 from API.comment.comment import Comment
 from API.contenttypes.song import Song
-from bson.objectid import ObjectId
-from bson import errors
 import API.utils as utils
 from API.error import Message
 
 
+conn = Connection()
+db = conn['blibb']
+objects = db['blitems']
+
 class Blitem(BaseObject):
-
-	@property
-	def items(self):
-		return self._items
-
-	@property
-	def blibb(self):
-		return self._blibb
-
-	@blibb.setter
-	def blibb(self,value):
-		self._blibb = value
-
-	@items.setter
-	def items(self,value):
-		self._items = value
 
 	def __init__(self):
 		super(Blitem,self).__init__('blibb','blitems')
 		self._blibb = None
 		self._items = []
-
-
 
 	def addItem(self, name, value):
 		item = dict()
@@ -67,21 +55,20 @@ class Blitem(BaseObject):
 
 	def insert(self, blibb_id, user, items, tags=None):
 		tag_list = []
-		b = Blibb()
 		if utils.isValidId(blibb_id):
-			b.load(blibb_id)
-			b.populate()
-			bs = b.slug
+			bid = ObjectId(blibb_id)
+			b = Blibb.getObject({'_id': bid},{'s':1, })
+			bs = b['s']
 			if tags is not None:
 				if ',' in tags:
 					tag_list = list(set(tags.lower().split(',')))
 				else:
 					tag_list = list(set(tags.lower().split()))
 				for t in tag_list:
-					b.addTag(blibb_id,t)
+					Blibb.addTag(blibb_id,t)
 
 			now = datetime.utcnow()
-			doc = {"b" : ObjectId(blibb_id), "u": user, "bs": bs ,"c": now, "i": items, "cc": 0, 'tg': tag_list}
+			doc = {"b" : bid, "u": user, "bs": bs ,"c": now, "i": items, 'tg': tag_list}
 			newId = self.objects.insert(doc)
 			return str(newId)
 		else:

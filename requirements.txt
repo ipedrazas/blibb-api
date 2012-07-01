@@ -3,7 +3,7 @@ gunicorn
 pytz
 beautifulsoup4
 httplib2
-
+boto
 
 pyzmq
 pymongo

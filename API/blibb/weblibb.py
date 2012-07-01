@@ -53,51 +53,24 @@ def newBlibb():
 	user = utils.getKey(key)
 	image_id = request.form['bimage']
 	slug = request.form['slug']
-	b = Blibb()
+	write_access = request.form['write_access']
+	read_access = request.form['read_access']
+
 	# check if a blibb with that slug already exists
-	if not b.getIdBySlug(user,slug):
+	if not Blibb.getIdBySlug(user,slug):
 		pict = Picture()
-		if pict.isValidId(image_id):		
+		if utils.isValidId(image_id):		
 			image = pict.dumpImage(image_id)
 		else:
 			image = 'blibb.png'
 
-		if request.form.get('bgroup', None) == "1":
-			group = True
-			if 'email_invites' in request.form:
-				invites = request.form['email_invites'] 
-			else:
-				invites = ''
-		else:
-			group = False
-			invites = ''
-		new_id = b.insert(user, name, slug, desc, template, image, group, invites)
+		new_id = Blibb.insert(user, name, slug, desc, template, image, read_access, write_access)
 		res = {'id': new_id}
 	else:
 		res = {'error': 'Blibb with that slug already exists'}
 
 	e.save()
 	return jsonify(res)	
-	
-
-	
-
-@mod.route('/adduser', methods=['POST'])
-def addUserToBlibbGroup():	
-	e = Event('web.blibb.addUserToBlibbGroup')
-	b = Blibb()
-	blibb_id = request.form['blibb_id']
-	userToAdd = request.form['user']
-	key = request.form['bkey']
-	user = utils.getKey(key)
-	if b.isOwner(blibb_id,user):
-		res = b.addToBlibbGroup(blibb_id,userToAdd)
-	else:
-		d = dict()
-		d['error'] = "Userkey is not valid for this operation"
-		res = d
-	e.save()
-	return jsonify(res)
 	
 
 @mod.route('/<blibb_id>/p/<params>', methods=['GET'])
@@ -135,12 +108,15 @@ def getBlibbTemplate(blibb_id=None):
 def getBlibbView(blibb_id=None, view_name='null'):
 	e = Event('web.blibb.getBlibbView')
 	b = Blibb()
-	r = b.getTemplateView(blibb_id, view_name)
-	e.save()
-	if r != 'null':
-		return jsonify(r)
+	if utils.isValidId(blibb_id):
+		r = Blibb.getTemplateView(blibb_id, view_name)
+		e.save()
+		if r != 'null':
+			return jsonify(r)
+		else:
+			abort(404)
 	else:
-		abort(404)
+		abort(400)
 
 @mod.route('/<username>', methods=['GET'])
 @support_jsonp
@@ -189,12 +165,13 @@ def newTag():
 @mod.route('/del', methods=['POST'])
 def deleteBlibb():
 	e = Event('web.blibb.deleteBlibb') 
-	key = request.form['k']
-	bid = request.form['b']
+	key = request.form['login_key']
+	bid = request.form['blibb_id']
 	user = utils.getKey(key)
-	b = Blibb()
-	filter = {'_id': ObjectId(bid), 'u': user}
-	b.remove(filter)
+	
+	if utils.isValidId(bid):
+		filter = {'_id': ObjectId(bid), 'u': user}
+		Blibb.remove(filter)
 	e.save()
 	return jsonify({'ret': 1})
 
@@ -248,7 +225,7 @@ def addWebhook():
 	if utils.isValidId(bid):
 		b = Blibb()
 		if b.isOwner(bid,user):
-			b.addWebhook(bid, wb)
+			Blibb.addWebhook(bid, wb)
 			res['result'] = 'ok'
 		else:
 			abort(401)

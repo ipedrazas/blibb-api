@@ -98,22 +98,17 @@ def addItemtoBlibb(username=None, slug=None):
 	if not user:
 		user = utils.getKey(key)
 
-	b = Blibb()
-	dres =  b.getBySlug(username,slug)	
-	results = dres.get('results')
-	count = dres.get('count')
-	if count == 1:
-		jblibb = results[0]
-		bid = jblibb['id']
-		e.addLog({'b': bid})
-		blitem = Blitem()
-		labels = b.getLabelFromTemplate(bid)
-		bitems = utils.getItemsFromRequest(labels, request)
+	blibb =  Blibb.getBySlug(username,slug)	
+	bid = blibb['id']
+	e.addLog({'b': bid})
+	blitem = Blitem()
+	labels = Blibb.getLabelFromTemplate(bid)
+	bitems = utils.getItemsFromRequest(labels, request)
 
 	blitem_id = blitem.insert(bid, user, bitems, tags)
-	if blitem_id:
+	if utils.isValidId(blitem_id):
 		cond = { 's': slug, 'u': username }
-		b.incNumItem(cond)
+		Blibb.incNumItem(cond)
 
 	utils.postProcess(blitem_id, bitems)
 	e.save()
@@ -131,29 +126,24 @@ def isAnonApp(key):
 @support_jsonp
 def getBlibbBySlug(username=None, slug=None):	
 	e = Event('web.user.blibb.getBlibbBySlug')
-	b = Blibb()
 	if username is None:
 		abort(404)
 	if slug is None:
 		abort(404)
 
-	page = request.args.get('page',1)	
-	dres =  b.getBySlug(username,slug)	
-	results = dres.get('results')
-	count = dres.get('count')
+	page = request.args.get('page',1)
+	comments = request.args.get('comments',0)
+	blibb =  Blibb.getBySlug(username,slug)	
 	ret = dict()
 	cond = { 's': slug, 'u': username }
-	b.incView(cond, 'v')
-	if count == 1:
-		jblibb = results[0]
-		bid = jblibb['id']
-		ret['blibb'] = jblibb
-		bl = Blitem()
-		rs_items = bl.getAllItemsFlat(bid,int(page))
-		# rs_items = json.loads(jitems)
-		for i in rs_items:
-			pass
-		ret['items'] = rs_items['items']
+	Blibb.incView(cond, 'v')
+	ret['blibb'] = blibb
+	bl = Blitem()
+	rs_items = bl.getAllItemsFlat(blibb['id'],int(page))
+	# rs_items = json.loads(jitems)
+	for i in rs_items:
+		pass
+	ret['items'] = rs_items['items']
 	e.save()
 	return  jsonify(ret)
 
@@ -286,3 +276,14 @@ def getItemById(username=None, slug=None, id=None):
 			abort(404)
 	else:
 		return jsonify(Message.get('id_not_valid'))
+
+@mod.route('/<username>/<slug>/upload/image', methods=['POST'])
+def upload_image():
+	file = request.files.get('image')
+	if file:
+		mimetype = file.content_type
+		filename = werkzeug.secure.filename(file.filename)
+		file.save(os.path.join(UPLOAD_FOLDER,filename))
+		return {'upload': 'ok'};
+
+	return {'upload': 'error'}

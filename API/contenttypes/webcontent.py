@@ -1,7 +1,9 @@
 
 import redis
-from flask import Blueprint, request, redirect, abort
+from flask import Blueprint, request, redirect, abort,current_app
+from werkzeug import secure_filename
 import json
+import os
 
 from API.contenttypes.song import Song
 from API.contenttypes.picture import Picture
@@ -11,9 +13,15 @@ import API.utils as utils
 mod = Blueprint('content', __name__, url_prefix='')
 
 
-@mod.route('/hi')
-def hello_world():
-	return "Hello World, this is content'"
+@mod.route('/image/upload', methods=['POST','OPTIONS'])
+def upload():
+	file = request.files['file']
+	if file and utils.allowed_file(file.filename):
+		filename = secure_filename(file.filename)
+		file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+		return jsonify({'return': 'ok'})
+	return jsonify({'error': 'unable to upload file'})
+
 
 
 

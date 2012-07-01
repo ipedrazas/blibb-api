@@ -25,8 +25,8 @@ def validate(code=None):
 
 @mod.route('/add/tobeta', methods=['POST'])
 @crossdomain(origin='*')
-def addToBetaList():
-	e = Event('web.wmanager.addToBetaList')
+def add_to_beta_list():
+	e = Event('web.wmanager.add_to_beta_list')
 	email = request.form['email']
 	ip = request.form['ip']
 	browser = request.form['browser']
@@ -37,8 +37,8 @@ def addToBetaList():
 
 @mod.route('/add/code', methods=['POST'])
 @crossdomain(origin='*')
-def addCode():
-	e = Event('web.wmanager.addCode')
+def add_code():
+	e = Event('web.wmanager.add_code')
 	key = request.form['k']
 	code = request.form['c']
 	if key == 'ivan':
