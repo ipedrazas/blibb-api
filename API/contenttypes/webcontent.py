@@ -1,6 +1,6 @@
 
 import redis
-from flask import Blueprint, request, redirect, abort,current_app
+from flask import Blueprint, request, redirect, abort, current_app, jsonify
 from werkzeug import secure_filename
 import json
 import os
@@ -12,6 +12,9 @@ import API.utils as utils
 
 mod = Blueprint('content', __name__, url_prefix='')
 
+#####################
+##### PICTURES  #####
+#####################
 
 @mod.route('/image/upload', methods=['POST','OPTIONS'])
 def upload():
@@ -19,15 +22,10 @@ def upload():
 	if file and utils.allowed_file(file.filename):
 		filename = secure_filename(file.filename)
 		file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-		return jsonify({'return': 'ok'})
-	return jsonify({'error': 'unable to upload file'})
+		return jsonify({'upload': 'ok'})
 
-
-
-
-#####################
-##### PICTURES  #####
-#####################
+	return jsonify({'upload': 'error'})
+	 
 @mod.route('/picture/data', methods=['POST'])
 def setPictureData():
 	e = Event('getImage.setPictureData')

@@ -277,13 +277,3 @@ def getItemById(username=None, slug=None, id=None):
 	else:
 		return jsonify(Message.get('id_not_valid'))
 
-@mod.route('/<username>/<slug>/upload/image', methods=['POST'])
-def upload_image():
-	file = request.files.get('image')
-	if file:
-		mimetype = file.content_type
-		filename = werkzeug.secure.filename(file.filename)
-		file.save(os.path.join(UPLOAD_FOLDER,filename))
-		return {'upload': 'ok'};
-
-	return {'upload': 'error'}

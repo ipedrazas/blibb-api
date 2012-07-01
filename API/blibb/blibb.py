@@ -160,7 +160,7 @@ class Blibb(object):
 		return docs
 
 	def getByUser(self,username, page=1):
-		r = self.getBlibbs({ 'u': username },{'t': 0}, page)
+		r = self.getBlibbs({ 'u': username, 'del': {'$ne' : True} },{'t': 0}, page)
 		rs = []
 		count = 0
 		for result in r:
@@ -261,5 +261,5 @@ class Blibb(object):
 	@classmethod
 	def remove(self, filter):
 		if filter is not None:
-			objects.remove(filter)
+			objects.update(filter, {'$set': {'del': True}})
 
