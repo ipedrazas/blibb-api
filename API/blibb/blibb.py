@@ -11,13 +11,12 @@ from datetime import datetime
 from bson.objectid import ObjectId
 from pymongo import Connection
 
-import API.utils as utils
 from API.base import BaseObject
 from API.template.template import Template
 from API.contenttypes.picture import Picture
 from API.error import Message
 
-
+import API.utils as utils
 
 
 conn = Connection()
@@ -29,11 +28,10 @@ class Blibb(object):
 	def __init__(self):
 		pass
 
-
 	@classmethod
 	def insert(self, user, name, slug, desc, template_id, image, read_access, write_access):
 		t = Template()
-		if utils.isValidId(template_id):
+		if utils.is_valid_id(template_id):
 			t.load(template_id)
 			now = datetime.utcnow()
 			acl = dict()
@@ -47,7 +45,7 @@ class Blibb(object):
 			return Message.get('id_not_valid')
 
 	def getTemplate(self,obj_id):
-		if utils.isValidId(obj_id):
+		if utils.is_valid_id(obj_id):
 			template =  self._objects.find_one({ '_id': ObjectId(obj_id)}, {u't':1})
 			return json.dumps(template,default=json_util.default)
 		else:
@@ -55,7 +53,7 @@ class Blibb(object):
 
 
 	def incFollower(self,obj_id):
-		if utils.isValidId(obj_id):
+		if utils.is_valid_id(obj_id):
 			self.objects.update({ u'_id': ObjectId(obj_id)}, {"$inc": {'nf': 1}}, True)
 			return obj_id
 
@@ -63,7 +61,7 @@ class Blibb(object):
 		return self.objects.count()
 
 	def addToBlibbGroup(self, obj_id, user):
-		if utils.isValidId(obj_id):
+		if utils.is_valid_id(obj_id):
 			self.objects.update({ u'_id': ObjectId(obj_id)}, {"$addToSet": {'gu': user}}, True)
 			return obj_id
 	
@@ -72,7 +70,7 @@ class Blibb(object):
 		return json.dumps(doc,default=json_util.default)
 
 	@classmethod
-	def getLabels(self, t):
+	def get_labels(self, t):
 		labels = dict()
 		i = t['i']
 		for r in i:
@@ -82,7 +80,7 @@ class Blibb(object):
 	@classmethod
 	def getLabelFromTemplate(self, obj_id):
 		labels = dict()
-		if utils.isValidId(obj_id):
+		if utils.is_valid_id(obj_id):
 			result = objects.find_one({ '_id': ObjectId(obj_id)}, {'t.i.n': 1, 't.i.s': 1})					
 			if result is not None:
 				t = result['t']
@@ -97,7 +95,7 @@ class Blibb(object):
 	
 	@classmethod 
 	def getTemplateView(self, obj_id, view='Default'):
-		if utils.isValidId(obj_id):
+		if utils.is_valid_id(obj_id):
 			res =  objects.find_one({ u'_id': ObjectId(obj_id)}, {'t.v': 1, 'n':1, 'd':1, 'c':1, 'u':1, 'tg':1, 's':1, 'img':1, 'ni':1, 'st.v':1})
 			if '_id' in res:
 				return self.flatObject(res)
@@ -139,7 +137,7 @@ class Blibb(object):
 
 	def getByIdParams(self, obj_id, params):
 		p = dict()
-		if utils.isValidId(obj_id):
+		if utils.is_valid_id(obj_id):
 			listparams = params.split(",")
 			for param in listparams:
 				p[param] = 1
@@ -154,6 +152,7 @@ class Blibb(object):
 		r = r.replace('\\','')
 		return r
 
+	@classmethod
 	def getBlibbs(self, filter, fields, page=1):
 		PER_PAGE = 20
 		docs = objects.find(filter,fields).sort("c", -1).skip(PER_PAGE * (page - 1)).limit(PER_PAGE )
@@ -194,7 +193,7 @@ class Blibb(object):
 
 	@classmethod
 	def getFields(self, obj_id):
-		if utils.isValidId(obj_id):
+		if utils.is_valid_id(obj_id):
 			doc = objects.find_one({ u'_id': ObjectId(obj_id)	}, {'t.i':1})
 			template = doc.get('t').get('i')
 
@@ -206,7 +205,7 @@ class Blibb(object):
 
 	@classmethod
 	def getWebhooks(self, obj_id):
-		if utils.isValidId(obj_id):
+		if utils.is_valid_id(obj_id):
 			doc = objects.find_one({ u'_id': ObjectId(obj_id)	}, {'wh':1})
 			whs = doc.get('wh',[])
 			# return template
@@ -227,12 +226,12 @@ class Blibb(object):
 
 	@classmethod
 	def addTag(self, obj_id, tag):
-		if utils.isValidId(obj_id):
+		if utils.is_valid_id(obj_id):
 			objects.update({ u'_id': ObjectId(obj_id)}, {"$addToSet": {'tg': tag.lower()}}, False)
 
 	
 	def addPicture(self, filter, picture_id):
-		if utils.isValidId(picture_id):
+		if utils.is_valid_id(picture_id):
 			p = Picture()
 			image = p.dumpImage(picture_id)
 			self.objects.update(filter, {"$set": {'img': image}})
@@ -243,7 +242,7 @@ class Blibb(object):
 		pass
 
 	def addWebhook(self, object_id, webhook):
-		if utils.isValidId(object_id):
+		if utils.is_valid_id(object_id):
 			self.objects.update({'_id': ObjectId(object_id)}, {'$pull': {'wh': {'a': webhook['a']}}})
 			self.objects.update({'_id': ObjectId(object_id)},{'$addToSet':{'wh': webhook}})
 		else:

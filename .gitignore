@@ -16,9 +16,8 @@ develop-eggs
 .installed.cfg
 
 
-<<<<<<< HEAD
 API/*.log
-=======
+
 # Unit test / coverage reports
 .coverage
 .tox
@@ -32,4 +31,5 @@ API/*.log
 .DS_Store
 
 API/test/twitter_cmd_test.py
-
+API/test/*.txt
+API/test/*.xls

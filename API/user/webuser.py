@@ -13,7 +13,7 @@ from API.blibb.blibb import Blibb
 from API.blitem.blitem import Blitem
 from API.event.event import Event
 from API.control.bcontrol import BControl
-import API.utils as utils
+import API.utils
 from bson.objectid import ObjectId
 from flask import Blueprint, request, redirect, abort, current_app, jsonify
 from functools import wraps
@@ -106,7 +106,7 @@ def addItemtoBlibb(username=None, slug=None):
 	bitems = utils.getItemsFromRequest(labels, request)
 
 	blitem_id = blitem.insert(bid, user, bitems, tags)
-	if utils.isValidId(blitem_id):
+	if utils.is_valid_id(blitem_id):
 		cond = { 's': slug, 'u': username }
 		Blibb.incNumItem(cond)
 
@@ -266,8 +266,8 @@ def getItemById(username=None, slug=None, id=None):
 
 	blibb = Blibb()
 	blibb_id = blibb.getIdBySlug(username,slug)
-	if utils.isValidId(id):
-		if utils.isValidId(blibb_id):
+	if utils.is_valid_id(id):
+		if utils.is_valid_id(blibb_id):
 			blitem = Blitem()
 			items = blitem.getItem({'_id': ObjectId(id), 'b': ObjectId(blibb_id)})
 			e.save()

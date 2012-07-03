@@ -8,7 +8,7 @@
 from datetime import datetime
 from API.base import BaseObject
 from bson.objectid import ObjectId
-import API.utils as utils
+import API.utils
 
 
 class Manager(BaseObject):

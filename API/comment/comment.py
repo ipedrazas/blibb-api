@@ -24,7 +24,7 @@ class Comment(BaseObject):
 		
 	def insert(self, parent, owner, text):
 		now = datetime.utcnow()
-		if utils.isValidId(parent):
+		if utils.is_valid_id(parent):
 			doc = {"p" : ObjectId(parent), "u": owner, "c": now, "t": text}
 			newId = self.objects.insert(doc)
 			return str(newId)
@@ -38,7 +38,7 @@ class Comment(BaseObject):
 		return sId
 
 	def getCommentsById(self, obj_id):
-		if utils.isValidId(obj_id):
+		if utils.is_valid_id(obj_id):
 			docs = self.objects.find({ 'p': ObjectId(obj_id)}).sort("c", -1)
 			ddocs = []
 			for d in docs:
@@ -63,7 +63,7 @@ class Comment(BaseObject):
 
 
 	def getCommentFlat(self, obj_id):
-		if utils.isValidId(obj_id):
+		if utils.is_valid_id(obj_id):
 			doc = self.objects.find_one({ '_id': ObjectId(obj_id)	})			
 			return self.flatObject(doc)
 

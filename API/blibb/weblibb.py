@@ -16,13 +16,6 @@ import logging
 
 mod = Blueprint('blibb', __name__, url_prefix='/blibb')
 
-logger = logging.getLogger('twitter_worker')
-logger.setLevel(logging.DEBUG)
-ch = logging.StreamHandler()
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-ch.setFormatter(formatter)
-logger.addHandler(ch)
-
 
 @mod.route('/hi')
 def hello_world():
@@ -30,7 +23,7 @@ def hello_world():
 
 @mod.route('/meta/webhooks/<bid>', methods=['GET'])
 def getWebhooks(bid=None):
-	if utils.isValidId(bid):
+	if utils.is_valid_id(bid):
 		b = Blibb()
 		fields = b.getWebhooks(bid)
 		return jsonify({'webhooks': fields})
@@ -59,7 +52,7 @@ def newBlibb():
 	# check if a blibb with that slug already exists
 	if not Blibb.getIdBySlug(user,slug):
 		pict = Picture()
-		if utils.isValidId(image_id):		
+		if utils.is_valid_id(image_id):		
 			image = pict.dumpImage(image_id)
 		else:
 			image = 'blibb.png'
@@ -108,7 +101,7 @@ def getBlibbTemplate(blibb_id=None):
 def getBlibbView(blibb_id=None, view_name='null'):
 	e = Event('web.blibb.getBlibbView')
 	b = Blibb()
-	if utils.isValidId(blibb_id):
+	if utils.is_valid_id(blibb_id):
 		r = Blibb.getTemplateView(blibb_id, view_name)
 		e.save()
 		if r != 'null':
@@ -169,7 +162,7 @@ def deleteBlibb():
 	bid = request.form['blibb_id']
 	user = utils.getKey(key)
 	
-	if utils.isValidId(bid):
+	if utils.is_valid_id(bid):
 		filter = {'_id': ObjectId(bid), 'u': user}
 		Blibb.remove(filter)
 	e.save()
@@ -222,7 +215,7 @@ def addWebhook():
 	user = utils.getKey(key)
 	res = dict()
 	wb = {'a': action, 'u': callback, 'f': fields}
-	if utils.isValidId(bid):
+	if utils.is_valid_id(bid):
 		b = Blibb()
 		if b.isOwner(bid,user):
 			Blibb.addWebhook(bid, wb)
@@ -234,5 +227,4 @@ def addWebhook():
 	
 	e.save()
 	return jsonify(res)
-
 

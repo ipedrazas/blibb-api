@@ -5,10 +5,17 @@ from werkzeug import secure_filename
 import json
 import os
 
+from API.blitem.blitem import Blitem
+from API.blibb.blibb import Blibb
 from API.contenttypes.song import Song
 from API.contenttypes.picture import Picture
 from API.event.event import Event
+
 import API.utils as utils
+import API.loader.excel as loader
+
+from API.decorators import crossdomain
+from API.decorators import support_jsonp
 
 mod = Blueprint('content', __name__, url_prefix='')
 
@@ -125,4 +132,52 @@ def newBookmark(song_id=None):
 		tags = request.form['tags']
 	bk_id = bk.insert(b, user, url, t, bn, tags )
 	return  json.dumps(bk_id,default=json_util.default)
+
+####
+####
+####	Excel Loader
+####
+####
+@mod.route('/loader/excel', methods=['POST'])
+@crossdomain(origin='*')
+def loader_excel():
+	event = Event('web.content.loader_excel')
+	key = request.form['login_key']
+	bid = request.form['blibb_id']
+	user = utils.getKey(key)
+	res = dict()
+
+	file = request.files['file']
+	if file and utils.allowed_file(file.filename):
+		try:
+			filename = secure_filename(file.filename)
+			excel_file = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+			file.save(excel_file)
+			if utils.is_valid_id(bid):
+				fields = Blibb.getFields(bid)
+				excel_data = loader.excel_to_dict(excel_file, fields)
+				current_app.logger.debug(excel_data)
+				if len(excel_data):
+					a = Blitem.bulk_insert(bid, user, excel_data)
+					current_app.logger.debug(a)
+					res['result'] = 'ok'
+				else:
+					res['error'] = 'No data found in file'
+			else:
+				res['error'] = 'Object Id is not valid'
+		except Exception, e:
+			current_app.logger.error(e)
+			res['error'] = 'Error processing spreadsheet'
+
+		finally:
+			if os.path.isfile(filename):
+				os.unlink(filename)
+		
+	else:
+		res['error'] = 'File was not uploaded'
+	
+	event.save()
+	return jsonify(res)
+
+
 

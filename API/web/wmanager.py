@@ -1,7 +1,6 @@
 
 from API.om.manager import Manager
 from API.event.event import Event
-import API.utils as utils
 
 from flask import Blueprint, request, redirect, abort, current_app, jsonify
 from functools import wraps

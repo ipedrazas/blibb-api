@@ -4,7 +4,7 @@
 #
 #
 
-import logging
+
 from datetime import datetime
 
 from bson.objectid import ObjectId
@@ -12,50 +12,28 @@ from pymongo import Connection
 
 from API.base import BaseObject
 from API.blibb.blibb import Blibb
+from API.control.bcontrol import BControl
 from API.comment.comment import Comment
 from API.contenttypes.song import Song
-import API.utils as utils
+
 from API.error import Message
+import API.utils as utils
+
 
 
 conn = Connection()
 db = conn['blibb']
 objects = db['blitems']
 
-class Blitem(BaseObject):
+class Blitem(object):
 
 	def __init__(self):
-		super(Blitem,self).__init__('blibb','blitems')
-		self._blibb = None
-		self._items = []
+		pass
 
-	def addItem(self, name, value):
-		item = dict()
-		item['l'] = name
-		item['v'] = value
-		self._items.append(item)
-	
-	def getItem(self,key):
-		return self._items.get(key)
-
-	def getKeys(self):
-		return self._items.keys()
-
-	def getValues(self):
-		return self._items.values()
-
-	def populate(self):
-		if self.doc is not None:
-			self.owner = self.doc.get('u')
-			self.created = self.doc.get('c')
-			self.id = self.doc.get('_id')
-			self.items = self.doc.get('i')
-			self.tags = self.doc.get('tg','')
-			self.blibb = self.doc.get('b')
-
+	@classmethod
 	def insert(self, blibb_id, user, items, tags=None):
 		tag_list = []
-		if utils.isValidId(blibb_id):
+		if utils.is_valid_id(blibb_id):
 			bid = ObjectId(blibb_id)
 			b = Blibb.getObject({'_id': bid},{'s':1, })
 			bs = b['s']
@@ -69,7 +47,7 @@ class Blitem(BaseObject):
 
 			now = datetime.utcnow()
 			doc = {"b" : bid, "u": user, "bs": bs ,"c": now, "i": items, 'tg': tag_list}
-			newId = self.objects.insert(doc)
+			newId = objects.insert(doc)
 			return str(newId)
 		else:
 			return Message.get('id_not_valid')
@@ -87,7 +65,7 @@ class Blitem(BaseObject):
 		
 		
 	def getAllItems(self,blibb_id):
-		if utils.isValidId(blibb_id):
+		if utils.is_valid_id(blibb_id):
 			docs = self.objects.find({u'b': ObjectId(blibb_id)},{'i':1}).sort("c", -1)
 			return docs
 		return Message.get('id_not_valid')
@@ -97,12 +75,12 @@ class Blitem(BaseObject):
 		return self.flatObject(doc)
 
 	def getById(self,obj_id):
-		if utils.isValidId(obj_id):
+		if utils.is_valid_id(obj_id):
 			return self.getItem({'_id': ObjectId(obj_id)})
 		return Message.get('id_not_valid')
 
 	def getRead(self,obj_id):
-		if utils.isValidId(obj_id):
+		if utils.is_valid_id(obj_id):
 			doc = self.objects.find_one({ '_id': ObjectId(obj_id)},{'i':1})
 			items = doc['i']
 			return str(items['ri'])
@@ -144,14 +122,15 @@ class Blitem(BaseObject):
 		cs = c.getCommentsById(obj_id)
 		return cs
 
-	def getItemsPage(self, filter, fields, page=1):
+	@classmethod
+	def get_items_page(self, filter, fields, page=1):
 		PER_PAGE = 20
-		docs = self.objects.find(filter,fields).sort("c", -1).skip(PER_PAGE * (page - 1)).limit(PER_PAGE )
+		docs = objects.find(filter,fields).sort("c", -1).skip(PER_PAGE * (page - 1)).limit(PER_PAGE )
 		return docs
 
 	def getAllItemsFlat(self,blibb_id, page):
-		if utils.isValidId(blibb_id):
-			docs = self.getItemsPage({u'b': ObjectId(blibb_id)},{'i':1, 'tg': 1}, page)
+		if utils.is_valid_id(blibb_id):
+			docs = self.get_items_page({u'b': ObjectId(blibb_id)},{'i':1, 'tg': 1}, page)
 			result = dict()
 			blitems = []
 			for d in docs:
@@ -164,8 +143,8 @@ class Blitem(BaseObject):
 		return Message.get('id_not_valid')
 
 	def getItemsByTag(self, blibb_id, tag):
-		if utils.isValidId(blibb_id):
-			docs = self.getItemsPage({'b': ObjectId(blibb_id), 'tg': tag}, {'i':1, 'tg': 1})
+		if utils.is_valid_id(blibb_id):
+			docs = self.get_items_page({'b': ObjectId(blibb_id), 'tg': tag}, {'i':1, 'tg': 1})
 			result = dict()
 			blitems = []		
 			for d in docs:
@@ -176,4 +155,59 @@ class Blitem(BaseObject):
 
 			return result
 		return Message.get('id_not_valid')
+
+	@classmethod
+	def get_blitem_item(self, key, value, labels):
+		value = value.strip()
+		slug = key[3:]
+		typex = key[:2]
+		blitem = {}
+		blitem['t'] = typex
+		blitem['s'] = slug
+		if BControl.isMultitext(typex):
+			value = BControl.autoP(value)
+		elif BControl.isMp3(typex):
+			song = Song()
+			song.load(value)
+			value = song.dumpSong()
+		elif BControl.isImage(typex):
+			value = ObjectId(value)
+		elif BControl.isDate(typex):
+			# TODO: convert dates to MongoDates
+			# and back
+			value = value
+		elif BControl.isTwitter(typex):
+			value = re.sub('[!@#$]', '', value)
+
+		blitem['v'] = value
+		blitem['l'] = labels.get(slug)
+		return blitem
+
+	@classmethod
+	def get_blitem_from_dict(self, items, labels):
+		blitem = []
+		for key, value in items.iteritems():
+			blitem.append(self.get_blitem_item(key, value, labels))
+
+		return blitem
+			
 	
+	@classmethod
+	def bulk_insert(self, blibb_id, user, items, tags=None):
+		tag_list = []
+		if utils.is_valid_id(blibb_id):
+			bid = ObjectId(blibb_id)
+			b = Blibb.getObject({'_id': bid},{'s':1, 'u':1, 't.i.n': 1, 't.i.s': 1})
+			blibb_slug = b.get('s')
+			labels = Blibb.get_labels(b.get('t'))
+			count = 0
+			for item in items:
+				now = datetime.utcnow()
+				i = self.get_blitem_from_dict(item, labels)
+				doc = {"b" : bid, "u": user, "bs": blibb_slug ,"c": now, "i": i}
+				objects.insert(doc)
+				count = count + 1
+
+			return str(count) + 'elements added'
+		else:
+			return Message.get('id_not_valid')

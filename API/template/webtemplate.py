@@ -6,7 +6,7 @@ from bson import json_util
 
 from API.template.template import Template
 from API.event.event import Event
-import API.utils as utils
+import API.utils
 
 
 mod = Blueprint('template', __name__, url_prefix='/template')

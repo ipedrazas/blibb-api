@@ -1,7 +1,7 @@
 
-
 from bs4 import BeautifulSoup
 import urllib2
+
 from API.control.bcontrol import BControl
 from bson.objectid import ObjectId
 import zmq
@@ -95,11 +95,12 @@ def queueTwitterResolution(obj_id, twiter_screen_name):
 	if obj_id is not None:
 		socket.send (str( obj_id + '##' + twiter_screen_name))
 
-def isValidId(obj_id):
-	try:
-		oid = ObjectId(obj_id)
-		return True
-	except errors.InvalidId:
-		return False
-	except TypeError:
-		return False
+
+def is_valid_id(obj_id):
+		try:
+			oid = ObjectId(obj_id)
+			return True
+		except errors.InvalidId:
+			return False
+		except TypeError:
+			return False

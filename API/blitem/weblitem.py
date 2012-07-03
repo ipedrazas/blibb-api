@@ -12,7 +12,6 @@ from API.control.bcontrol import BControl
 from API.contenttypes.bookmark import Bookmark
 import API.utils as utils
 from bson.objectid import ObjectId
-import API.utils as utils
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
 from API.error import Message
@@ -38,15 +37,14 @@ def newItem():
 	tags = request.form['tags']
 
 	user = utils.getKey(key)
-	if utils.isValidId(bid):
+	if utils.is_valid_id(bid):
 		b = Blibb.getObject({'_id': ObjectId(bid)},{'u':1,'t.i.n': 1, 't.i.s': 1})
 		owner = b.get('u')
 		if owner == user:
-			labels = Blibb.getLabels(b.get('t'))
-			blitem = Blitem()
+			labels = Blibb.get_labels(b.get('t'))
 			bitems = utils.getItemsFromRequest(labels, request)
 
-			blitem_id = blitem.insert(bid, user, bitems, tags)
+			blitem_id = Blitem.insert(bid, user, bitems, tags)
 			if blitem_id:
 				cond = {'_id': ObjectId(bid)}
 				Blibb.incNumItem(cond)
@@ -61,7 +59,7 @@ def newItem():
 @crossdomain(origin='*')
 def getBlitemFields(blibb_id=None):	
 	e = Event('web.blibb.getBlitemFields')
-	if utils.isValidId(blibb_id):
+	if utils.is_valid_id(blibb_id):
 		b = Blibb.getObject({'_id': ObjectId(blibb_id)},{'u':1,'t.i.n': 1, 't.i.s': 1})
 		res = Blibb.getLabels(b.get('t'))
 	else:
