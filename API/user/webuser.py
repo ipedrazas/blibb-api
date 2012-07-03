@@ -13,7 +13,7 @@ from API.blibb.blibb import Blibb
 from API.blitem.blitem import Blitem
 from API.event.event import Event
 from API.control.bcontrol import BControl
-import API.utils
+import API.utils as utils
 from bson.objectid import ObjectId
 from flask import Blueprint, request, redirect, abort, current_app, jsonify
 from functools import wraps
@@ -214,13 +214,7 @@ def newUser():
 
 	m = Manager()
 	if m.validateCode(code):
-		u = User()
-		u.name = user
-		u.email = email
-		u.password = pwd
-		u.code = code
-		
-		u_id = u.save()
+		u_id = User.create(user, email, pwd, code)
 		return jsonify({'id': u_id})
 	else:
 		return jsonify({'error': 'Code is not valid'})

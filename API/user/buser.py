@@ -7,33 +7,32 @@
 from API.contenttypes.picture import Picture
 
 from datetime import datetime
-from API.base import BaseObject
+
 from bson.objectid import ObjectId
+from pymongo import Connection
 import API.utils as utils
 import json
 import hashlib
 
+conn = Connection()
+db = conn['blibb']
+objects = db['users']
 
-class User(BaseObject):
+class User(object):
 
 	def __init__(self):
-		super(User,self).__init__('blibb','users')
-		self.__name = None
-		self.__email = None
-		self.__password = None
-		self.__pub_salt = None
-		self.__salt = None
-		self.__active = False
-		self.__created =  datetime.utcnow()
-		self.__last_access = None
-		self.__reset_code = None		
-		self.__reg_code = None
-		
-	def save(self):
-		user_id = self.objects.insert(
-				{"n": self.name, "e" : self.email, "p": self.password, 
-				"s": self.salt, "ps": self.pub_salt, "c" : self.created, 
-				"a": self.active, 'l': self.last_access, 'rc': self.code,'rp': self.reset_code})
+		pass
+
+	@classmethod
+	def create(self, name, email, password, code):
+		now = datetime.utcnow()
+		salt =  hashlib.sha1(email + str(datetime.utcnow())).hexdigest()
+		pub_salt = hashlib.sha1(email + str(datetime.utcnow())).hexdigest()
+		reset_password = hashlib.sha1(email + str(datetime.utcnow())).hexdigest()
+		user_id = objects.insert(
+				{"n": name, "e" : email, "p": password, 
+				"s": salt, "ps": pub_salt, "c" : now, 
+				"a": True, 'l': now, 'rc': code,'rp': reset_password})
 		return str(user_id)
 
 	def toJson(self):
