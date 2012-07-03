@@ -27,6 +27,7 @@ class User(object):
 		salt =  hashlib.sha1(email + str(datetime.utcnow())).hexdigest()
 		pub_salt = hashlib.sha1(email + str(datetime.utcnow())).hexdigest()
 		reset_password = hashlib.sha1(email + str(datetime.utcnow())).hexdigest()
+		password = hashlib.sha1(password + salt).hexdigest()
 		user_id = objects.insert(
 				{"n": name, "e" : email, "p": password, 
 				"s": salt, "ps": pub_salt, "c" : now, 
