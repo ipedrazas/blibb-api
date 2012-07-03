@@ -5,13 +5,11 @@
 #
 
 from API.contenttypes.picture import Picture
-
 from datetime import datetime
 
 from bson.objectid import ObjectId
 from pymongo import Connection
 import API.utils as utils
-import json
 import hashlib
 
 conn = Connection()
@@ -35,20 +33,10 @@ class User(object):
 				"a": True, 'l': now, 'rc': code,'rp': reset_password})
 		return str(user_id)
 
-	def toJson(self):
-		u = dict()
-		u['name'] = self.doc['n']
-		u['id'] = str(self.doc['_id'])
-		u['email'] = self.doc['e']
-		if 'm' in self.doc:
-			u['mini'] = self.doc['m']
-		if 't' in self.doc:
-			u['thumbnail'] = self.doc['t']
 
-		return json.dumps(u)
-
+	@classmethod
 	def authenticate(self, user, password):
-		stUser = self.objects.find_one( {'$or': [{'e': user.strip()}, {'n':user.strip()}] })
+		stUser = objects.find_one( {'$or': [{'e': user.strip()}, {'n':user.strip()}] })
 		if stUser is not None:
 			shPwd = hashlib.sha1(password + stUser['s'])
 			print shPwd.hexdigest()
@@ -60,7 +48,7 @@ class User(object):
 					return self.setKey(str(stUser['_id']),stUser['n'],stUser['e'])
 		return False
 
-
+	@classmethod
 	def setKey(self,user_id, user_name, email, user_image=None):
 		r = utils.getRedis()
 		userkey = hashlib.sha1(user_name + user_id + str(datetime.utcnow())).hexdigest()
@@ -88,9 +76,9 @@ class User(object):
 
 		return userkey
 
-
+	@classmethod
 	def getByName(self,username):
-		r = self.objects.find_one({ 'n': username },{ 'n': 1, 'e': 1, 'i': 1})
+		r = objects.find_one({ 'n': username },{ 'n': 1, 'e': 1, 'i': 1})
 		res = dict()
 		if r is not None:
 			res['id'] = str(r.get('_id'))
@@ -107,12 +95,12 @@ class User(object):
 
 		return res
 
-
+	@classmethod
 	def addPicture(self, filter, picture_id):
 		if picture_id is not None:
 			p = Picture()
 			image = p.dumpImage(picture_id)
-			self.objects.update(filter, {"$set": {'i': image}}, True)
+			objects.update(filter, {"$set": {'i': image}}, True)
 			return picture_id
 		return 'error'
 

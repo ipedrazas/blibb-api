@@ -192,8 +192,7 @@ def doLogin():
 	e = Event('web.user.doLogin')
 	user = request.form['u']
 	pwd = request.form['p']		
-	u = User()
-	key = u.authenticate(user,pwd)
+	key = User.authenticate(user,pwd)
 	if key:
 		d = dict()
 		d['key'] = key
