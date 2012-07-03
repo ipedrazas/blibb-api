@@ -8,7 +8,7 @@ from API.blibb.blibb import Blibb
 from API.blitem.blitem import Blitem
 from bson import json_util
 import logging
-import API.utils
+import API.utils as utils
 
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
