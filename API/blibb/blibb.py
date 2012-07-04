@@ -252,6 +252,8 @@ class Blibb(object):
 				group = blibb['g']
 				if user in group:
 					return True	
+			if acl.get('write') == 11:
+				return True;
 			
 		return False
 
