@@ -6,6 +6,7 @@ from API.blitem.blitem import Blitem
 from API.blibb.blibb import Blibb
 from API.event.event import Event
 from API.contenttypes.picture import Picture
+from API.user.buser import User
 import API.utils as utils
 from bson.objectid import ObjectId
 
@@ -33,7 +34,7 @@ def getWebhooks(bid=None):
 @mod.route('/meta/fields/<bid>', methods=['GET'])
 def getBlibbFields(bid=None):
 	if bid is not None:
-		fields = Blibb.getFields(bid)
+		fields = Blibb.get_fields(bid)
 		return jsonify({'fields':fields})
 
 @mod.route('', methods=['POST'])
@@ -50,7 +51,11 @@ def newBlibb():
 	read_access = request.form['read_access']
 
 	# check if a blibb with that slug already exists
-	if not Blibb.getIdBySlug(user,slug):
+	blibb = Blibb.get_by_slug(user,slug)
+	# return jsonify(blibb)
+
+	if not blibb:
+		res = {'error': 'None'}
 		pict = Picture()
 		if utils.is_valid_id(image_id):		
 			image = pict.dumpImage(image_id)
@@ -72,11 +77,11 @@ def getBlibb(blibb_id=None,params=None):
 	e = Event('web.blibb.getBlibb')
 	if blibb_id is None:
 		abort(404)
-	b = Blibb()
+
 	if params is None:
-		r = b.getById(blibb_id)
+		r = Blibb.get_by_id(blibb_id)
 	else:
-		r = b.getByIdParams(blibb_id,params)
+		r = Blibb.get_by_id_params(blibb_id,params)
 
 	e.save()
 	if r != 'null':
@@ -118,7 +123,7 @@ def getBlibbByUser(username=None):
 	b = Blibb()
 	if username is None:
 		abort(404)
-	res = b.getByUser(username)
+	res = b.get_by_user(username)
 	e.save()
 	return jsonify(res)
 
@@ -146,9 +151,7 @@ def newTag():
 	key = request.form['k']
 	user = utils.getKey(key)
 	target_id = request.form['b']
-	target = Blibb()	
-
-	if target.isOwner(target_id,user):
+	if Blibb.can_write(target_id,user):
 		tag = request.form['t']
 		t = target.addTag(target_id, tag)
 
@@ -161,33 +164,12 @@ def deleteBlibb():
 	key = request.form['login_key']
 	bid = request.form['blibb_id']
 	user = utils.getKey(key)
-	
 	if utils.is_valid_id(bid):
 		filter = {'_id': ObjectId(bid), 'u': user}
 		Blibb.remove(filter)
 	e.save()
 	return jsonify({'ret': 1})
 
-########################
-####### FOLLOWERS ######
-########################
-
-@mod.route('/fol', methods=['POST'])
-def addFollower():
-	e = Event('web.blibb.addFollower') 
-	key = request.form['k']
-	bid = request.form['b']
-	follow= request.form['f']
-	user = utils.getKey(key)
-	b = Blibb()
-	res = dict()
-	if b.isOwner(bid,user):		
-		res['error'] = 'You are always your first follower!'
-	else:
-		b.addFollower(bid, follow)
-		res['result'] = 'Ok'
-	e.save()
-	return jsonify(res)
 
 
 @mod.route('/action/image', methods=['POST'])
@@ -205,8 +187,8 @@ def updateImage():
 
 @mod.route('/actions/webhook', methods=['POST'])
 @crossdomain(origin='*')
-def addWebhook():
-	e = Event('web.blibb.addWebhook')
+def add_webhook():
+	e = Event('web.blibb.add_webhook')
 	key = request.form['login_key']
 	bid = request.form['blibb_id']
 	callback = request.form['callback']
@@ -216,12 +198,37 @@ def addWebhook():
 	res = dict()
 	wb = {'a': action, 'u': callback, 'f': fields}
 	if utils.is_valid_id(bid):
-		b = Blibb()
-		if b.isOwner(bid,user):
-			Blibb.addWebhook(bid, wb)
+		if Blibb.can_write(bid,user):
+			Blibb.add_webhook(bid, wb)
 			res['result'] = 'ok'
 		else:
 			abort(401)
+	else:
+		res['error'] = 'Object Id is not valid'
+	
+	e.save()
+	return jsonify(res)
+
+
+@mod.route('/actions/group', methods=['POST'])
+@crossdomain(origin='*')
+def add_user_to_group():
+	e = Event('web.blibb.add_user_to_group')
+	key = request.form['login_key']
+	bid = request.form['blibb_id']
+	username = request.form['username']
+	user = utils.getKey(key)
+	res = dict()
+	if utils.is_valid_id(bid):
+		user_to_add = User.get_by_name(username)
+		if user_to_add:
+			if Blibb.can_write(user, bid):
+				Blibb.add_user_to_group(username, bid)
+				res['result'] = 'ok'
+			else:
+				res['error'] = 'Not permissions'
+		else:
+			res['error'] = 'User not found'
 	else:
 		res['error'] = 'Object Id is not valid'
 	

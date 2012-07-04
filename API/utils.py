@@ -35,7 +35,7 @@ def sendUrl(obj_id, url):
 		socket.send (str(obj_id + '##' + url))
 
 
-def getBlitemFromRequest(key, value, labels):
+def get_blitem_from_request(key, value, labels):
 	value = value.strip()
 	slug = key[3:]
 	typex = key[:2]
@@ -61,11 +61,11 @@ def getBlitemFromRequest(key, value, labels):
 	blitem['l'] = labels.get(slug)
 	return blitem
 
-def getItemsFromRequest(labels, request):
+def get_items_from_request(labels, request):
 	bitems = []
 	for key,value in request.form.iteritems():
 		if '-' in key:
-			elem = getBlitemFromRequest(key, value, labels)
+			elem = get_blitem_from_request(key, value, labels)
 			bitems.append(elem)
 	return bitems
 

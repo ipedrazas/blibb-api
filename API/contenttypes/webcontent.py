@@ -138,7 +138,7 @@ def newBookmark(song_id=None):
 ####	Excel Loader
 ####
 ####
-@mod.route('/loader/excel', methods=['POST'])
+@mod.route('/loader/excel', methods=['POST','OPTIONS'])
 @crossdomain(origin='*')
 def loader_excel():
 	event = Event('web.content.loader_excel')
@@ -146,7 +146,6 @@ def loader_excel():
 	bid = request.form['blibb_id']
 	user = utils.getKey(key)
 	res = dict()
-
 	file = request.files['file']
 	if file and utils.allowed_file(file.filename):
 		try:
@@ -154,7 +153,7 @@ def loader_excel():
 			excel_file = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
 			file.save(excel_file)
 			if utils.is_valid_id(bid):
-				fields = Blibb.getFields(bid)
+				fields = Blibb.get_fields(bid)
 				excel_data = loader.excel_to_dict(excel_file, fields)
 				current_app.logger.debug(excel_data)
 				if len(excel_data):
@@ -164,6 +163,9 @@ def loader_excel():
 				else:
 					res['error'] = 'No data found in file'
 			else:
+				if bid == '-1':
+					res['error'] = 'create new blibb from file'	
+					
 				res['error'] = 'Object Id is not valid'
 		except Exception, e:
 			current_app.logger.error(e)

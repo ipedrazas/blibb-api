@@ -97,22 +97,26 @@ def addItemtoBlibb(username=None, slug=None):
 	user = isAnonApp(key)
 	if not user:
 		user = utils.getKey(key)
-
-	blibb =  Blibb.getBySlug(username,slug)	
-	bid = blibb['id']
-	e.addLog({'b': bid})
-	blitem = Blitem()
-	labels = Blibb.getLabelFromTemplate(bid)
-	bitems = utils.getItemsFromRequest(labels, request)
-
-	blitem_id = blitem.insert(bid, user, bitems, tags)
-	if utils.is_valid_id(blitem_id):
-		cond = { 's': slug, 'u': username }
-		Blibb.incNumItem(cond)
-
-	utils.postProcess(blitem_id, bitems)
+		
+	blibb =  Blibb.get_by_slug(username,slug)
+	if blibb:
+		owner = blibb.get('u','')
+		if owner == user:
+			bid = blibb['id']
+			e.addLog({'b': bid})
+			blitem = Blitem()
+			labels = Blibb.get_label_from_template(bid)
+			bitems = utils.get_items_from_request(labels, request)
+			blitem_id = Blitem.insert(bid, user, bitems, tags)
+			if utils.is_valid_id(blitem_id):
+				cond = { 's': slug, 'u': username }
+				Blibb.incNumItem(cond)
+				utils.postProcess(blitem_id, bitems)
+				res = {'id': blitem_id}
+		else:
+			res = {'error': ''}
 	e.save()
-	return jsonify({'id':blitem_id})
+	return jsonify(res)
 
 
 def isAnonApp(key):
@@ -133,13 +137,12 @@ def getBlibbBySlug(username=None, slug=None):
 
 	page = request.args.get('page',1)
 	comments = request.args.get('comments',0)
-	blibb =  Blibb.getBySlug(username,slug)	
+	blibb =  Blibb.get_by_slug(username,slug)	
 	ret = dict()
 	cond = { 's': slug, 'u': username }
-	Blibb.incView(cond, 'v')
+	Blibb.increase_view(cond, 'v')
 	ret['blibb'] = blibb
-	bl = Blitem()
-	rs_items = bl.getAllItemsFlat(blibb['id'],int(page))
+	rs_items = Blitem.get_all_items(blibb['id'],int(page))
 	# rs_items = json.loads(jitems)
 	for i in rs_items:
 		pass
@@ -154,23 +157,10 @@ def getUserByName(user_name=None):
 	e = Event('web.user.getUserByName')
 	if user_name is None:
 		abort(404)
-	user = User()
-	u = user.getByName(user_name)
-	
+	u = User.get_by_name(user_name)
 	e.save()
 	return jsonify(u)
 
-@mod.route('/user/<user_id>', methods=['GET'])
-@support_jsonp
-def getUser(user_id=None):	
-	e = Event('web.user.getUser')
-	if user_id is None:
-		abort(404)
-	user = User()
-	user.load(user_id)
-	
-	e.save()
-	return jsonify(user)
 
 @mod.route('/user/image', methods=['POST'])
 @crossdomain(origin='*')
@@ -180,8 +170,8 @@ def setImageUser():
 	image_id = request.form['image_id']
 	if user_id is None:
 		abort(404)
-	user = User()
-	user.addPicture({'_id': ObjectId(user_id)}, image_id)	
+	if utils.is_valid_id(user_id):
+		User.add_picture({'_id': ObjectId(user_id)}, image_id)	
 	e.save()
 	return 'ok'
 
@@ -221,8 +211,8 @@ def newUser():
 
 @mod.route('/<username>/<slug>/tag/<tag>', methods=['GET'])
 @support_jsonp
-def getItemsByTag(username=None, slug=None, tag=None):	
-	e = Event('web.user.blibb.getItemsByTag')
+def get_items_by_tag(username=None, slug=None, tag=None):	
+	e = Event('web.user.blibb.get_items_by_tag')
 
 	if username is None:
 		abort(404)
@@ -234,11 +224,9 @@ def getItemsByTag(username=None, slug=None, tag=None):
 	ip = request.remote_addr
 	e.addLog(ip)
 
-	# current_app.logger.debug("Done " + username)
-	blibb = Blibb()
-	blibb_id = blibb.getIdBySlug(username,slug)
+	blibb_id = Blibb.get_id_by_slug(username,slug)
 	cond = { 's': slug, 'u': username }
-	blibb.incView(cond, 'vt')
+	Blibb.increase_view(cond, 'vt')
 	
 	# return blibb_id
 	b = Blitem()
@@ -248,8 +236,8 @@ def getItemsByTag(username=None, slug=None, tag=None):
 
 @mod.route('/<username>/<slug>/<id>', methods=['GET'])
 @support_jsonp
-def getItemById(username=None, slug=None, id=None):
-	e = Event('web.user.blibb.getItemsByTag')
+def get_item_by_id(username=None, slug=None, id=None):
+	e = Event('web.user.blibb.get_item_by_id')
 	if username is None:
 		abort(404)
 	if slug is None:
@@ -257,12 +245,11 @@ def getItemById(username=None, slug=None, id=None):
 	if id is None:
 		abort(404)
 
-	blibb = Blibb()
-	blibb_id = blibb.getIdBySlug(username,slug)
+	blibb_id = Blibb.get_id_by_slug(username,slug)
 	if utils.is_valid_id(id):
 		if utils.is_valid_id(blibb_id):
 			blitem = Blitem()
-			items = blitem.getItem({'_id': ObjectId(id), 'b': ObjectId(blibb_id)})
+			items = Blitem.get_item({'_id': ObjectId(id), 'b': ObjectId(blibb_id)})
 			e.save()
 			return  jsonify(items)
 		else:

@@ -14,10 +14,11 @@ from pymongo import Connection
 from API.base import BaseObject
 from API.template.template import Template
 from API.contenttypes.picture import Picture
+from API.om.acl import ACL
 from API.error import Message
 
 import API.utils as utils
-
+import sys
 
 conn = Connection()
 db = conn['blibb']
@@ -25,8 +26,10 @@ objects = db['blibbs']
 
 class Blibb(object):
 
-	def __init__(self):
-		pass
+	# soh = logging.StreamHandler(sys.stdout)
+	# soh.setLevel(logging.DEBUG)
+	# logger = logging.getLogger()
+	# logger.addHandler(soh)
 
 	@classmethod
 	def insert(self, user, name, slug, desc, template_id, image, read_access, write_access):
@@ -52,23 +55,6 @@ class Blibb(object):
 			return Message.get('id_not_valid')
 
 
-	def incFollower(self,obj_id):
-		if utils.is_valid_id(obj_id):
-			self.objects.update({ u'_id': ObjectId(obj_id)}, {"$inc": {'nf': 1}}, True)
-			return obj_id
-
-	def howMany(self):
-		return self.objects.count()
-
-	def addToBlibbGroup(self, obj_id, user):
-		if utils.is_valid_id(obj_id):
-			self.objects.update({ u'_id': ObjectId(obj_id)}, {"$addToSet": {'gu': user}}, True)
-			return obj_id
-	
-	def getByName(self,name):
-		doc = self._objects.find_one({ u'n': name	})
-		return json.dumps(doc,default=json_util.default)
-
 	@classmethod
 	def get_labels(self, t):
 		labels = dict()
@@ -78,16 +64,12 @@ class Blibb(object):
 		return labels
 
 	@classmethod
-	def getLabelFromTemplate(self, obj_id):
+	def get_label_from_template(self, obj_id):
 		labels = dict()
 		if utils.is_valid_id(obj_id):
 			result = objects.find_one({ '_id': ObjectId(obj_id)}, {'t.i.n': 1, 't.i.s': 1})					
 			if result is not None:
-				t = result['t']
-				i = t['i']
-				for r in i:
-					labels[r['s']] = r['n']
-				return labels
+				return get_labels(result['t'])
 			else:
 				return {'count': 0}
 		else:
@@ -98,52 +80,55 @@ class Blibb(object):
 		if utils.is_valid_id(obj_id):
 			res =  objects.find_one({ u'_id': ObjectId(obj_id)}, {'t.v': 1, 'n':1, 'd':1, 'c':1, 'u':1, 'tg':1, 's':1, 'img':1, 'ni':1, 'st.v':1})
 			if '_id' in res:
-				return self.flatObject(res)
+				return self.flat_object(res)
 			else:
 				return "view " + view + " does not exist"
 
 	@classmethod
-	def flatObject(self, doc):
+	def flat_object(self, doc):
 		buf = dict()
-		
-		buf['id'] = str(doc['_id'])
-		if 't' in doc:
-			buf['template'] = doc['t']
-		if 'n' in doc:
-			buf['name'] = doc['n']
-		if 'd' in doc:
-			buf['description'] = doc['d']
-		if 'c' in doc:
-			buf['date'] = str(doc['c'])
-		if 'u' in doc:
-			buf['owner'] = doc['u']
-		if 's' in doc:
-			buf['slug'] = doc['s']
-		if 'ni' in doc:
-			buf['num_items'] = doc.get('ni',0)
-		if 'st' in doc:
-			stats = doc.get('st')
-			buf['num_views'] = stats.get('v',0)
-		if 'img' in doc:
-			img = doc['img']
-			if 'id' in img:
-				buf['img'] = img['id']
-			else:
-				buf['img'] = img
-		if 'tg' in doc:
-			buf['tags'] = doc['tg']
+		if doc:	
+			buf['id'] = str(doc['_id'])
+			if 't' in doc:
+				buf['template'] = doc['t']
+			if 'n' in doc:
+				buf['name'] = doc['n']
+			if 'd' in doc:
+				buf['description'] = doc['d']
+			if 'c' in doc:
+				buf['date'] = str(doc['c'])
+			if 'u' in doc:
+				buf['owner'] = doc['u']
+			if 's' in doc:
+				buf['slug'] = doc['s']
+			if 'ni' in doc:
+				buf['num_items'] = doc.get('ni',0)
+			if 'st' in doc:
+				stats = doc.get('st')
+				buf['num_views'] = stats.get('v',0)
+			if 'acl' in doc:
+				buf['access'] = {'read': ACL.get_access(doc.get('acl').get('read')), 'write': ACL.get_access(doc.get('acl').get('write'))}
+			if 'img' in doc:
+				img = doc['img']
+				if 'id' in img:
+					buf['img'] = img['id']
+				else:
+					buf['img'] = img
+			if 'tg' in doc:
+				buf['tags'] = doc['tg']
 
 		return buf
 
-	def getByIdParams(self, obj_id, params):
+	@classmethod
+	def get_by_id_params(self, obj_id, params):
 		p = dict()
 		if utils.is_valid_id(obj_id):
 			listparams = params.split(",")
 			for param in listparams:
 				p[param] = 1
 			
-			doc = self.getObject({ u'_id': ObjectId(obj_id)	}, p)
-			return self.flatObject(doc)
+			doc = self.get_object({ u'_id': ObjectId(obj_id)	}, p)
+			return self.flat_object(doc)
 		return Message.get('id_not_valid')
 
 	def stripslashes(self,s):
@@ -153,17 +138,17 @@ class Blibb(object):
 		return r
 
 	@classmethod
-	def getBlibbs(self, filter, fields, page=1):
+	def get_blibbs(self, filter, fields, page=1):
 		PER_PAGE = 20
 		docs = objects.find(filter,fields).sort("c", -1).skip(PER_PAGE * (page - 1)).limit(PER_PAGE )
 		return docs
 
-	def getByUser(self,username, page=1):
-		r = self.getBlibbs({ 'u': username, 'del': {'$ne' : True} },{'t': 0}, page)
+	def get_by_user(self,username, page=1):
+		r = self.get_blibbs({ 'u': username, 'del': {'$ne' : True} },{'t': 0}, page)
 		rs = []
 		count = 0
 		for result in r:
-			rs.append(self.flatObject(result))
+			rs.append(self.flat_object(result))
 			count += 1
 
 		resp = dict()
@@ -183,7 +168,7 @@ class Blibb(object):
 		return stats
 			
 	@classmethod
-	def getIdBySlug(self,username, slug):
+	def get_id_by_slug(self,username, slug):
 		r = objects.find_one({ 'u': username, 's': slug },{'_id' : 1})
 		if r is not None:
 			oid = r.get('_id', False)
@@ -192,11 +177,10 @@ class Blibb(object):
 
 
 	@classmethod
-	def getFields(self, obj_id):
+	def get_fields(self, obj_id):
 		if utils.is_valid_id(obj_id):
 			doc = objects.find_one({ u'_id': ObjectId(obj_id)	}, {'t.i':1})
 			template = doc.get('t').get('i')
-
 			fields = []
 			for elem in template:
 				fields.append(elem.get('tx') + '-' + elem.get('s'))
@@ -216,32 +200,26 @@ class Blibb(object):
 			return webhooks
 
 	@classmethod
-	def incNumItem(self, condition):
-		self.incView(condition, 'ni')
-		self.incView(condition, 'nw')
+	def inc_num_item(self, condition):
+		self.increase_view(condition, 'ni')
+		self.increase_view(condition, 'nw')
 
 	@classmethod
-	def incView(self, condition, field):
+	def increase_view(self, condition, field):
 		objects.update(condition, {"$inc": {'st.' + field: 1}})
 
 	@classmethod
-	def addTag(self, obj_id, tag):
+	def add_tag(self, obj_id, tag):
 		if utils.is_valid_id(obj_id):
 			objects.update({ u'_id': ObjectId(obj_id)}, {"$addToSet": {'tg': tag.lower()}}, False)
 
-	
-	def addPicture(self, filter, picture_id):
-		if utils.is_valid_id(picture_id):
-			p = Picture()
-			image = p.dumpImage(picture_id)
-			self.objects.update(filter, {"$set": {'img': image}})
-			return picture_id
-		return Message.get('id_not_valid')
+	@classmethod
+	def add_user_to_group(self, user, obj_id):
+		if utils.is_valid_id(obj_id):
+			objects.update({ u'_id': ObjectId(obj_id)}, {"$addToSet": {'g': user}}, False)
 
-	def addComment(self, object_id, comment):
-		pass
-
-	def addWebhook(self, object_id, webhook):
+	@classmethod
+	def add_webhook(self, object_id, webhook):
 		if utils.is_valid_id(object_id):
 			self.objects.update({'_id': ObjectId(object_id)}, {'$pull': {'wh': {'a': webhook['a']}}})
 			self.objects.update({'_id': ObjectId(object_id)},{'$addToSet':{'wh': webhook}})
@@ -249,16 +227,31 @@ class Blibb(object):
 			return Message.get('id_not_valid')
 
 	@classmethod
-	def getObject(self, filter,fields):
+	def get_object(self, filter,fields):
 		return objects.find_one(filter, fields)
 
 	@classmethod
-	def getBySlug(self,username, slug, page=1):		
-		doc = self.getObject({  'u': username, 's': slug },{'t' : 0})
-		return self.flatObject(doc)
+	def get_by_slug(self,username, slug):		
+		doc = self.get_object({  'u': username, 's': slug },{'t' : 0})
+		return self.flat_object(doc)
 
 	@classmethod
 	def remove(self, filter):
 		if filter is not None:
 			objects.update(filter, {'$set': {'del': True}})
+
+	@classmethod
+	def can_write(self, user, blibb_id):
+		if utils.is_valid_id(blibb_id):
+			blibb = self.get_object({'_id': ObjectId(blibb_id)},{'acl': 1, 'u': 1, 'g':1})
+			owner = blibb['u']
+			acl = blibb['acl']
+			if user == owner:
+				return True
+			if acl.get('write') == 5:
+				group = blibb['g']
+				if user in group:
+					return True	
+			
+		return False
 

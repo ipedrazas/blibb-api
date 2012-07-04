@@ -78,7 +78,7 @@ class User(object):
 		return userkey
 
 	@classmethod
-	def getByName(self,username):
+	def get_by_name(self,username):
 		r = objects.find_one({ 'n': username },{ 'n': 1, 'e': 1, 'i': 1})
 		res = dict()
 		if r is not None:
@@ -91,13 +91,11 @@ class User(object):
 				res['t160'] = '/actions/getImage?i=16&0id=' + image.get('id')
 				res['t260'] = '/actions/getImage?i=260&id=' + image.get('id')
 				res['image_id'] =  image.get('id')
-		else:
-			res['error'] = 'user not found'
 
 		return res
 
 	@classmethod
-	def addPicture(self, filter, picture_id):
+	def add_picture(self, filter, picture_id):
 		if picture_id is not None:
 			p = Picture()
 			image = p.dumpImage(picture_id)
