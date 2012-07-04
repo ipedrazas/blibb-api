@@ -24,6 +24,7 @@ conn = Connection()
 db = conn['blibb']
 objects = db['blibbs']
 
+
 class Blibb(object):
 
 	# soh = logging.StreamHandler(sys.stdout)
@@ -69,7 +70,7 @@ class Blibb(object):
 		if utils.is_valid_id(obj_id):
 			result = objects.find_one({ '_id': ObjectId(obj_id)}, {'t.i.n': 1, 't.i.s': 1})					
 			if result is not None:
-				return get_labels(result['t'])
+				return self.get_labels(result['t'])
 			else:
 				return {'count': 0}
 		else:
@@ -241,11 +242,23 @@ class Blibb(object):
 			objects.update(filter, {'$set': {'del': True}})
 
 	@classmethod
-	def can_write(self, user, blibb_id):
+	def can_write(self, user, app_token, blibb_id):
+		""" 
+			This method checks if a write operation can be performed.
+			The method fallsback to the lower writing preference.
+			First app_token, if it's valid, the method returns True.
+			Second, the user is the owner.
+			Third, the user belongs to a group with writing permission
+			Last, it checks if WORLD has writing capabilities
+		"""
+
 		if utils.is_valid_id(blibb_id):
-			blibb = self.get_object({'_id': ObjectId(blibb_id)},{'acl': 1, 'u': 1, 'g':1})
+			blibb = self.get_object({'_id': ObjectId(blibb_id)},{'acl': 1, 'u': 1, 'g':1, 'at':1})
+			atoken = blibb.get('at', 0)
 			owner = blibb['u']
 			acl = blibb['acl']
+			if atoken == app_token:
+				return self.is_valid_token(atoken)
 			if user == owner:
 				return True
 			if acl.get('write') == 5:
@@ -254,6 +267,13 @@ class Blibb(object):
 					return True	
 			if acl.get('write') == 11:
 				return True;
-			
+		
+		# logging.warning('say')
 		return False
 
+	@classmethod
+	def is_valid_token(self, token):
+		"""
+			This will check if it's a valid production token
+		"""
+		return True

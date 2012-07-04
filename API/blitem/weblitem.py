@@ -32,14 +32,15 @@ def hello_world():
 @mod.route('', methods=['POST'])
 def newItem():
 	e = Event('web.blitem.newItem')
-	bid = request.form['b']
-	key = request.form['k']
+	bid = request.form['blibb_id']
+	key = request.form['login_key']
 	tags = request.form['tags']
+	app_token = request.form['app_token']
 
 	user = utils.getKey(key)
 	if utils.is_valid_id(bid):
 		b = Blibb.get_object({'_id': ObjectId(bid)},{'u':1,'t.i.n': 1, 't.i.s': 1})
-		if Blibb.can_write(user, bid):
+		if Blibb.can_write(user, app_token, bid):
 			labels = Blibb.get_labels(b.get('t'))
 			bitems = utils.get_items_from_request(labels, request)
 			blitem_id = Blitem.insert(bid, user, bitems, tags)

@@ -88,35 +88,34 @@ def addItemtoBlibb(username=None, slug=None):
 		abort(404)
 	if slug is None:
 		abort(404)	
-	app_token = request.form['app_token']
-	key = request.form['key']
+	app_token = request.form['app_token'] if 'app_token' in request.form else ''
+	key = request.form['login_key'] if 'login_key' in request.form else ''
 	e.addLog({'at': app_token})
 	e.addLog({'s': slug})
 
-	tags = request.form['tags'] if 'tags' in request.form else ''
-	user = isAnonApp(key)
-	if not user:
-		user = utils.getKey(key)
-		
-	blibb =  Blibb.get_by_slug(username,slug)
-	if blibb:
-		owner = blibb.get('u','')
-		if owner == user:
-			bid = blibb['id']
-			e.addLog({'b': bid})
-			blitem = Blitem()
-			labels = Blibb.get_label_from_template(bid)
-			bitems = utils.get_items_from_request(labels, request)
-			blitem_id = Blitem.insert(bid, user, bitems, tags)
-			if utils.is_valid_id(blitem_id):
-				cond = { 's': slug, 'u': username }
-				Blibb.incNumItem(cond)
-				utils.postProcess(blitem_id, bitems)
-				res = {'id': blitem_id}
-		else:
-			res = {'error': ''}
-	e.save()
-	return jsonify(res)
+	tags = request.form['tags'] if 'tags' in request.form else ''	
+	user = utils.getKey(key)		
+	blibb_id =  Blibb.get_id_by_slug(username, slug)
+
+	if Blibb.can_write(user, app_token, blibb_id):		
+		e.addLog({'b': blibb_id})
+		blitem = Blitem()
+		labels = Blibb.get_label_from_template(blibb_id)
+		bitems = utils.get_items_from_request(labels, request)
+		blitem_id = Blitem.insert(blibb_id, user, bitems, tags)
+
+		if utils.is_valid_id(blitem_id):
+			cond = { 's': slug, 'u': username }
+			Blibb.inc_num_item(cond)
+			utils.postProcess(blitem_id, bitems)
+			res = {'id': blitem_id}
+			e.save()
+			return jsonify(res)
+	else:
+		e.save()
+		abort(401)
+	
+	
 
 
 def isAnonApp(key):
