@@ -9,8 +9,9 @@ from datetime import datetime
 
 from bson.objectid import ObjectId
 from pymongo import Connection
-import API.utils as utils
 import hashlib
+import redis
+
 
 conn = Connection()
 db = conn['blibb']
@@ -18,8 +19,9 @@ objects = db['users']
 
 class User(object):
 
-	def __init__(self):
-		pass
+	@classmethod
+	def get_redis(self):
+		return redis.StrictRedis(host='127.0.0.1', port=6379, db=0)
 
 	@classmethod
 	def create(self, name, email, password, code):
@@ -51,7 +53,7 @@ class User(object):
 
 	@classmethod
 	def setKey(self,user_id, user_name, email, user_image=None):
-		r = utils.getRedis()
+		r = self.get_redis()
 		userkey = hashlib.sha1(user_name + user_id + str(datetime.utcnow())).hexdigest()
 		r.set(userkey,user_name)
 		basekey = userkey + ':'
@@ -102,5 +104,10 @@ class User(object):
 			objects.update(filter, {"$set": {'i': image}}, True)
 			return picture_id
 		return 'error'
+
+
+	@classmethod
+	def is_admin(self, user):
+		return True
 
 

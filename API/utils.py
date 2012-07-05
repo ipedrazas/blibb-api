@@ -79,11 +79,16 @@ def postProcess(obj_id, items):
 			queueTwitterResolution(obj_id,blitem['v'])
 
 
-def getKey(key):
-	r = getRedis()
+def get_key(key):
+	r = get_redis()
 	return r.get(key)
 
-def getRedis():
+
+def getKey(key):
+	r = get_redis()
+	return r.get(key)
+
+def get_redis():
 	return redis.StrictRedis(host='127.0.0.1', port=6379, db=0)
 
 
@@ -104,3 +109,4 @@ def is_valid_id(obj_id):
 			return False
 		except TypeError:
 			return False
+			

@@ -8,10 +8,69 @@
 import json
 from datetime import datetime
 from bson.objectid import ObjectId
-from API.base import BaseObject
+from pymongo import Connection
+from API.user.buser import User
+
+conn = Connection()
+db = conn['blibb']
+objects = db['bcontrols']
+
+class Control(object):
+	@classmethod
+	def flat_object(self, doc):
+		buf = dict()
+		if doc:	
+			buf['id'] = str(doc['_id'])
+		if 'n' in doc:
+			buf['name'] = doc['n']
+		if 'c' in doc:
+			buf['date'] = str(doc['c'])
+		if 'u' in doc:
+			buf['owner'] = doc['u']
+		if 'ui' in doc:
+			buf['ui'] = doc['ui']
+		if 'bt' in doc:
+			buf['button'] = doc['bt']
+		if 'tx' in doc:
+			buf['type'] = doc['tx']
+		if 'v' in doc:
+			view = doc['v'] 
+			buf['default'] = view.get('default')
+
+		return buf
+
+	@classmethod
+	def get_all_controls(self):
+		doc = objects.find({ 'u': 'system'})
+		controls = []
+		for ctrl in doc:
+			controls.append(self.flat_object(ctrl))
+
+		return controls
+
+	@classmethod
+	def insert(self,name, owner, ui, type, default, button):
+		if User.is_admin(owner):
+			now = datetime.utcnow()
+			new_control = objects.insert({'n': name, 'c': now , 'u': 'system', 'tx': type})
+			ui = self.replace_values(ui, str(new_control), name, type)
+			default = self.replace_values(default, str(new_control), name, type)
+			button = self.replace_values(button, str(new_control), name, type)
+			d = {'default': default}
+			objects.update({'_id': new_control},{'$set': {'ui': ui, 'v': d, 'bt': button}})
+			return str(new_control)
+		return False
+
+	@classmethod
+	def replace_values(self, attribute, id, name, type):
+		attribute = attribute.replace('{{control_id}}', id)
+		attribute = attribute.replace('{{control_name}}', name)
+		attribute = attribute.replace('{{control_type}}', type)
+
+		return attribute
 
 
-class BControl(BaseObject):
+class BControl(object):
 
 	TEXT = 1
 	MULTITEXT = 2
@@ -24,78 +83,13 @@ class BControl(BaseObject):
 	TWITTER = 61
 
 
-	def __init__(self):
-		super(BControl,self).__init__('blibb','bcontrols')
-		self.__ui = None
-		self.__views = dict()
-		self.__name = None
-		self.__blibb = None
-		self.__css = None
-		self.__typex = None
-
-	@property
-	def name(self):
-		return self.__name
-
-	@property
-	def typex(self):
-		return self.__typex
-
-	@property
-	def css(self):
-		return self.__css
-
-	@property
-	def blibb(self):
-		return self.__blibb
-
-	@property
-	def ui(self):
-		return self.__ui
-
-	@property
-	def views(self):
-		return self.__views
-
-	@blibb.setter
-	def blibb(self,value):
-		self.__blibb = value
-
-	@typex.setter
-	def typex(self,value):
-		self.__typex = value
-
-	@css.setter
-	def css(self,value):
-		self.__css = value
-
-	@name.setter
-	def name(self,value):
-		self.__name = value
-
-	@ui.setter
-	def ui(self,value):
-		self.__ui = value
-
-	@views.setter
-	def views(self,value):
-		self.__views = value
-
-
-	def save(self, user, name, desc, template, group, invites):
-		pass
-
-	def populate(self):
-		if self.doc is not None:
-			self.ui= self.doc.get('ui')
-			self.css = self.doc.get('l')
 
 	def getUiDefTemplate(self,obj_id):
-		doc = self.objects.find_one({ '_id': ObjectId(obj_id)},{'ui':1})
+		doc = objects.find_one({ '_id': ObjectId(obj_id)},{'ui':1})
 		return doc['ui']
 
 	def getViewTemplate(self,obj_id):
-		doc = self.objects.find_one({ '_id': ObjectId(obj_id)},{'v.default':1,'t':1, 'tx':1})
+		doc = objects.find_one({ '_id': ObjectId(obj_id)},{'v.default':1,'t':1, 'tx':1})
 		res = dict()
 		view =  doc['v']
 		res['v'] = view['default']
@@ -105,19 +99,16 @@ class BControl(BaseObject):
 		return res
 
 	def save(self):
-		self.objects.update(
+		objects.update(
 				{u"_id" : ObjectId(self.id)},
 				{"n": self.name, "ui" : self.ui, "u": self.owner, "tx": self.typex, "c": self.date, "v" : self.views, "b": self.blibb, 'l': self.css},
 				True)
 
 
-	def getAllControls(self):
-		controls = self.objects.find({ 'u': 'system'})
-		return self.resultSetToJson(controls)
 
 	def getIdNameList(self):
-		docs = self.objects.find({ 'u': 'system'},{'n':1})
-		return self.resultSetToJson(docs)
+		docs = objects.find({ 'u': 'system'},{'n':1})
+		return resultSetToJson(docs)
 
 	@staticmethod
 	def getType(typex):

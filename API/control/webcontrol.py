@@ -1,19 +1,35 @@
 
-from flask import Blueprint, request, redirect, abort
+from flask import Blueprint, request, redirect, abort, jsonify
 
-import json
-from bson import json_util
+from API.control.bcontrol import BControl, Control
 
-from API.control.bcontrol import BControl
 from API.event.event import Event
+from API.decorators import crossdomain
+from API.decorators import support_jsonp
 
+import API.utils as utils
 
 mod = Blueprint('control', __name__, url_prefix='')
 
 
-@mod.route('/hi')
-def hello_world():
-	return "Hello World, this is control'"
+@mod.route('/control', methods=['POST'])
+@crossdomain(origin='*')
+def new_control():
+	e = Event('web.new_control')
+	key = request.form['login_key']
+	name = request.form['control_name']
+	ui = request.form['control_ui']
+	type = request.form['control_type']
+	default = request.form['default']
+	button = request.form['button']
+	
+	user = utils.get_key(key)
+	cid = Control.insert(name, user, ui, type, default, button)
+	res = {'id': cid}
+	e.save()
+	return jsonify(res)
+
+
 
 @mod.route('/ctrls/all', methods=['GET'])
 def getAllControls():
@@ -24,13 +40,12 @@ def getAllControls():
 	return res 
 
 
-@mod.route('/ctrls', methods=['GET'])
-def getCtrls():
-	e = Event('web.getCtrls')
-	c = BControl()
-	res = c.getIdNameList()
+@mod.route('/controls', methods=['GET'])
+def get_controls():
+	e = Event('web.get_controls')
+	res = Control.get_all_controls()
 	e.save()
-	return res
+	return jsonify({'controls': res})
 
 
 @mod.route('/ctrl/ui/<c_id>', methods=['GET'])
