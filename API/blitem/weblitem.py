@@ -37,7 +37,7 @@ def newItem():
 	tags = request.form['tags']
 	app_token = request.form['app_token']
 
-	user = utils.getKey(key)
+	user = utils.get_user_name(key)
 	if utils.is_valid_id(bid):
 		b = Blibb.get_object({'_id': ObjectId(bid)},{'u':1,'t.i.n': 1, 't.i.s': 1})
 		if Blibb.can_write(user, app_token, bid):
@@ -85,7 +85,7 @@ def newTag():
 	target_id = None
 	target = None
 	key = request.form['k']
-	user = utils.getKey(key)
+	user = utils.get_user_name(key)
 	target_id = request.form['i']
 
 	if Blitem.isOwner(target_id,user):

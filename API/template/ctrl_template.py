@@ -55,10 +55,10 @@ class ControlTemplate(object):
 				item['o'] = int(control['order'])
 				item['s'] = slugify(control['name'])
 				
-				control_name = control['type'] + '-' + control['name']
-				control_id = cid + '-' + control['order']
-				html = '<div id="'+ control_id +'" class="control class"><label for="'+control_name+'">'+control['name']+':</label><input name="'+control_name+'" placeholder="'+control['help']+'" size="50" type="text" /></div>'
-				item['w'] = html
+				# control_name = control['type'] + '-' + control['name']
+				# control_id = cid + '-' + control['order']
+				# #html = '<div id="'+ control_id +'" class="control class"><label for="'+control_name+'">'+control['name']+':</label><input name="'+control_name+'" placeholder="'+control['help']+'" size="50" type="text" /></div>'
+				# #item['w'] = html
 				items.append(item)
 			logger.info(items)
 			objects.update({'_id': ObjectId(template_id)},{'$push':{'i': items}})
@@ -68,5 +68,38 @@ class ControlTemplate(object):
 	def get_object(self, filter,fields):
 		return objects.find_one(filter, fields)
 
+	@classmethod
+	def get_templates(self, filter, fields, page=1):
+		PER_PAGE = 20
+		docs = objects.find(filter,fields).sort("c", -1).skip(PER_PAGE * (page - 1)).limit(PER_PAGE )
+		return docs
 
 
+	@classmethod
+	def flat_object(self, doc):
+		buf = dict()
+		if doc:	
+			buf['id'] = str(doc['_id'])
+			if 'n' in doc:
+				buf['name'] = doc['n']
+			if 'c' in doc:
+				buf['date'] = str(doc['c'])
+			if 'u' in doc:
+				buf['owner'] = doc['u']
+			if 's' in doc:
+				buf['slug'] = doc['s']
+			if 'q' in doc:
+				buf['status'] = doc['q']
+			if 't' in doc:
+				buf['thumbnail'] = doc['t']
+
+		return buf
+
+	@classmethod
+	def get_templates_by_user(self, username, page=0):
+		templates = []
+		docs  = self.get_templates({'u': username},{'i':0})
+		for doc in docs:
+			templates.append(self.flat_object(doc))
+
+		return templates

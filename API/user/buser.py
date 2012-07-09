@@ -11,7 +11,7 @@ from bson.objectid import ObjectId
 from pymongo import Connection
 import hashlib
 import redis
-
+import json
 
 conn = Connection()
 db = conn['blibb']
@@ -55,46 +55,21 @@ class User(object):
 	def setKey(self,user_id, user_name, email, user_image=None):
 		r = self.get_redis()
 		userkey = hashlib.sha1(user_name + user_id + str(datetime.utcnow())).hexdigest()
-		r.set(userkey,user_name)
-		basekey = userkey + ':'
-		namekey = basekey + 'name'
-		imagekey = basekey + 'thumbnail'
-		emailkey = basekey + 'email'
-		idkey = basekey + 'id'
-		r.set(namekey,user_name)
-		if user_image is None:
-			image = '/img/60x60.gif'
-		else:
-			image = user_image.get('id')
-
-		r.set(imagekey,image)
-		r.set(idkey,user_id) 
-		r.set(emailkey,email)
+		user = self.get_by_name(user_name)
+		r.set(userkey,json.dumps(user))
 		expire = 3600
 		r.expire(userkey,expire)
-		r.expire(namekey,expire)
-		r.expire(imagekey,expire)
-		r.expire(emailkey,expire)
-		r.expire(idkey,expire)
 
 		return userkey
 
 	@classmethod
-	def get_by_name(self,username):
-		r = objects.find_one({ 'n': username },{ 'n': 1, 'e': 1, 'i': 1})
-		res = dict()
-		if r is not None:
-			res['id'] = str(r.get('_id'))
-			res['name'] = r.get('n')
-			res['email'] = r.get('e')
-			if 'i' in r:
-				image = r.get('i')
-				res['t60'] = '/actions/getImage?i=60&id=' + image.get('id')
-				res['t160'] = '/actions/getImage?i=16&0id=' + image.get('id')
-				res['t260'] = '/actions/getImage?i=260&id=' + image.get('id')
-				res['image_id'] =  image.get('id')
+	def get_object(self, filter,fields):
+		return objects.find_one(filter, fields)
 
-		return res
+	@classmethod
+	def get_by_name(self,username):
+		doc = self.get_object({ 'n': username },{ 'p': 0, 's': 0})
+		return self.flat_object(doc)
 
 	@classmethod
 	def add_picture(self, filter, picture_id):
@@ -108,6 +83,32 @@ class User(object):
 
 	@classmethod
 	def is_admin(self, user):
-		return True
+		doc = self.get_by_name(user)
+		if doc is not None:
+			role = doc.get('r','')
+			if role == 'admin':
+				return True
+		return False
+
+
+	@classmethod
+	def flat_object(self, doc):
+		buf = dict()
+		if doc:	
+			buf['id'] = str(doc['_id'])
+		if 'n' in doc:
+				buf['username'] = doc['n']
+		if 'e' in doc:
+				buf['email'] = doc['e']
+		if 'r' in doc:
+				buf['role'] = doc['r']
+		if 'i' in doc:
+				img = doc['i']
+				buf['image'] = str(img['id'])
+		if 'a' in doc:
+				buf['status'] = doc['a']
+
+		
+		return buf
 
 

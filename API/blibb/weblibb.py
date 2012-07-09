@@ -44,7 +44,7 @@ def newBlibb():
 	desc = request.form['bdesc']
 	template = request.form['btemplate'] 
 	key = request.form['bkey']
-	user = utils.getKey(key)
+	user = utils.get_user_name(key)
 	image_id = request.form['bimage']
 	slug = request.form['slug']
 	write_access = request.form['write_access']
@@ -149,7 +149,7 @@ def newTag():
 	target_id = None
 	target = None
 	key = request.form['k']
-	user = utils.getKey(key)
+	user = utils.get_user_name(key)
 	target_id = request.form['b']
 	if Blibb.can_write(target_id,user):
 		tag = request.form['t']
@@ -163,7 +163,7 @@ def deleteBlibb():
 	e = Event('web.blibb.deleteBlibb') 
 	key = request.form['login_key']
 	bid = request.form['blibb_id']
-	user = utils.getKey(key)
+	user = utils.get_user_name(key)
 	if utils.is_valid_id(bid):
 		filter = {'_id': ObjectId(bid), 'u': user}
 		Blibb.remove(filter)

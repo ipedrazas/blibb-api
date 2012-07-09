@@ -10,6 +10,14 @@ from API.error import Message
 template = Blueprint('template', __name__, url_prefix='/template')
 
 
+@template.route('/<login_key>', methods=['GET'])
+def get_all_templates(login_key=None):
+	e = Event('web.get_all_templates')
+	user = utils.get_user_name(login_key)
+	templates = ControlTemplate.get_templates_by_user(user)
+	e.save()
+	return jsonify({'result': templates})
+
 
 
 @template.route('/<status>/<params>', methods=['GET'])
@@ -27,7 +35,7 @@ def newTemplate():
 	desc = request.form['description']
 	key = request.form['login_key']
 	thumb = request.form['thumbnail']
-	user = utils.getKey(key)
+	user = utils.get_user_name(key)
 	t = Template()
 	res = ControlTemplate.insert(name, desc, user, thumb)
 	e.save()
@@ -39,7 +47,7 @@ def add_controls():
 	template = request.form['template']
 	controls = request.form['controls']
 	key = request.form['login_key']
-	user = utils.getKey(key)
+	user = utils.get_user_name(key)
 	if utils.is_valid_id(template):	
 		res = ControlTemplate.add_controls(template, controls, user)
 	else:
@@ -54,7 +62,7 @@ def publishTemplate():
 	t_id = request.form['tid']
 	view = request.form['view']
 	key = request.form['k']
-	user = utils.getKey(key)
+	user = utils.get_user_name(key)
 	t = Template()
 	if t.isOwner(t_id, user):
 		t.load(t_id)
@@ -88,7 +96,7 @@ def addControl():
 	slug = request.form['slug']
 	typex = request.form['typex']
 	key = request.form['k']
-	user = utils.getKey(key)
+	user = utils.get_user_name(key)
 	t = Template()
 	if t.isOwner(t_id, user):
 		res = t.addControl(c_id, t_id, title, help, order, view, slug, typex)

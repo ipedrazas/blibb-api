@@ -11,7 +11,7 @@ from flask import make_response, request, current_app
 from functools import update_wrapper
 import re
 from bson import errors
-
+import json
 
 def allowed_file(filename):
 	allowed_extensions = current_app.config['ALLOWED_EXTENSIONS']
@@ -83,6 +83,11 @@ def get_key(key):
 	r = get_redis()
 	return r.get(key)
 
+def get_user_name(key):
+	r = get_redis()
+	juser = r.get(key)
+	user = json.loads(juser)
+	return user['username']
 
 def getKey(key):
 	r = get_redis()
