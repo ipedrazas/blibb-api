@@ -18,7 +18,6 @@ from API.om.acl import ACL
 from API.error import Message
 
 import API.utils as utils
-import sys
 
 conn = Connection()
 db = conn['blibb']
@@ -45,12 +44,11 @@ class Blibb(object):
 
 			newId = objects.insert(doc)
 			return str(newId)
-		else:
-			return Message.get('id_not_valid')
+
 
 	def getTemplate(self,obj_id):
 		if utils.is_valid_id(obj_id):
-			template =  self._objects.find_one({ '_id': ObjectId(obj_id)}, {u't':1})
+			template =  self._get_object({ '_id': ObjectId(obj_id)}, {u't':1})
 			return json.dumps(template,default=json_util.default)
 		else:
 			return Message.get('id_not_valid')
@@ -68,7 +66,7 @@ class Blibb(object):
 	def get_label_from_template(self, obj_id):
 		labels = dict()
 		if utils.is_valid_id(obj_id):
-			result = objects.find_one({ '_id': ObjectId(obj_id)}, {'t.i.n': 1, 't.i.s': 1})					
+			result = self.get_object({ '_id': ObjectId(obj_id)}, {'t.i.n': 1, 't.i.s': 1})					
 			if result is not None:
 				return self.get_labels(result['t'])
 			else:
@@ -79,7 +77,7 @@ class Blibb(object):
 	@classmethod 
 	def getTemplateView(self, obj_id, view='Default'):
 		if utils.is_valid_id(obj_id):
-			res =  objects.find_one({ u'_id': ObjectId(obj_id)}, {'t.v': 1, 'n':1, 'd':1, 'c':1, 'u':1, 'tg':1, 's':1, 'img':1, 'ni':1, 'st.v':1})
+			res =  self.get_object({ u'_id': ObjectId(obj_id)}, {'t.v': 1, 'n':1, 'd':1, 'c':1, 'u':1, 'tg':1, 's':1, 'img':1, 'ni':1, 'st.v':1})
 			if '_id' in res:
 				return self.flat_object(res)
 			else:
@@ -170,7 +168,7 @@ class Blibb(object):
 			
 	@classmethod
 	def get_id_by_slug(self,username, slug):
-		r = objects.find_one({ 'u': username, 's': slug },{'_id' : 1})
+		r = self.get_object({ 'u': username, 's': slug },{'_id' : 1})
 		if r is not None:
 			oid = r.get('_id', False)
 			return str(oid)
@@ -180,7 +178,7 @@ class Blibb(object):
 	@classmethod
 	def get_fields(self, obj_id):
 		if utils.is_valid_id(obj_id):
-			doc = objects.find_one({ u'_id': ObjectId(obj_id)	}, {'t.i':1})
+			doc = self.get_object({ u'_id': ObjectId(obj_id)	}, {'t.i':1})
 			template = doc.get('t').get('i')
 			fields = []
 			for elem in template:
@@ -191,7 +189,7 @@ class Blibb(object):
 	@classmethod
 	def getWebhooks(self, obj_id):
 		if utils.is_valid_id(obj_id):
-			doc = objects.find_one({ u'_id': ObjectId(obj_id)	}, {'wh':1})
+			doc = self.get_object({ u'_id': ObjectId(obj_id)	}, {'wh':1})
 			whs = doc.get('wh',[])
 			# return template
 			webhooks = []

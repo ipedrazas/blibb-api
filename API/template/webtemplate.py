@@ -1,22 +1,18 @@
 
-from flask import Blueprint, request, redirect, abort
-
-import json
-from bson import json_util
+from flask import Blueprint, request, redirect, abort, jsonify
 
 from API.template.template import Template
+from API.template.ctrl_template import ControlTemplate
 from API.event.event import Event
 import API.utils as utils
+from API.error import Message
+
+template = Blueprint('template', __name__, url_prefix='/template')
 
 
-mod = Blueprint('template', __name__, url_prefix='/template')
 
 
-@mod.route('/hi')
-def hello_world():
-	return "Hello World, this is template'"
-
-@mod.route('/<status>/<params>', methods=['GET'])
+@template.route('/<status>/<params>', methods=['GET'])
 def getTemplates(status=None, params=None):
 	e = Event('web.newTemplate')
 	template = Template()
@@ -24,21 +20,35 @@ def getTemplates(status=None, params=None):
 	e.save()
 	return res
 
-@mod.route('', methods=['POST'])
+@template.route('', methods=['POST'])
 def newTemplate():
 	e = Event('web.newTemplate')
-	name = request.form['bname']
-	desc = request.form['bdesc']
-	key = request.form['bkey']
-	status = request.form['bstatus']
+	name = request.form['name']
+	desc = request.form['description']
+	key = request.form['login_key']
 	thumb = request.form['thumbnail']
 	user = utils.getKey(key)
 	t = Template()
-	res = str(t.insert(name, desc, user, thumb, status))
+	res = ControlTemplate.insert(name, desc, user, thumb)
 	e.save()
-	return res
+	return jsonify({'result': res})
+
+@template.route('/controls', methods=['POST'])
+def add_controls():
+	e = Event('web.add_controls')
+	template = request.form['template']
+	controls = request.form['controls']
+	key = request.form['login_key']
+	user = utils.getKey(key)
+	if utils.is_valid_id(template):	
+		res = ControlTemplate.add_controls(template, controls, user)
+	else:
+		jsonify(Message.get('id_not_valid'))
 	
-@mod.route('/pub', methods=['POST'])
+	e.save()
+	return jsonify({'result': res})
+	
+@template.route('/pub', methods=['POST'])
 def publishTemplate():	
 	e = Event('web.publishTemplate')
 	t_id = request.form['tid']
@@ -55,7 +65,7 @@ def publishTemplate():
 	e.save()
 	return res
 
-@mod.route('/<template_id>', methods=['GET'])
+@template.route('/<template_id>', methods=['GET'])
 def getTemplate(template_id=None):	
 	e = Event('web.getTemplate')
 	t = Template()
@@ -66,7 +76,7 @@ def getTemplate(template_id=None):
 	else:
 		abort(404)
 
-@mod.route('/add', methods=['POST'])
+@template.route('/add', methods=['POST'])
 def addControl():
 	e = Event('web.addControl')
 	c_id = request.form['cid']
@@ -87,11 +97,3 @@ def addControl():
 	e.save()
 	return res
 
-
-def getMessage(message, asJson=True, key='response'):
-		res = dict()
-		res[key] = message
-		if asJson:
-			return json.dumps(res)
-		else:
-			return res

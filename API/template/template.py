@@ -76,12 +76,6 @@ class Template(BaseObject):
 		return cid
 
 
-	def insert(self, name, desc, user, thumbnail, status):
-		now = datetime.utcnow()
-		doc = {"n" : name, "d": desc, "u": user, "c": now, "s": self.slugify(name), 't': thumbnail, 'q': status }
-		newId = self.objects.insert(doc)
-		return str(newId)
-
 	def load(self, obj_id):
 		self.__doc = self.objects.find_one({ '_id': ObjectId(obj_id)})
 		self.populate()
@@ -235,4 +229,3 @@ class Template(BaseObject):
 
 		result = self.objects.find({'q': status},p)		
 		return self.resultSetToJson(result)
-

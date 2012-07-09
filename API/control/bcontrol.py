@@ -53,10 +53,13 @@ class Control(object):
 		if User.is_admin(owner):
 			now = datetime.utcnow()
 			new_control = objects.insert({'n': name, 'c': now , 'u': 'system', 'tx': type})
+
 			ui = self.replace_values(ui, str(new_control), name, type)
 			default = self.replace_values(default, str(new_control), name, type)
 			button = self.replace_values(button, str(new_control), name, type)
+			
 			d = {'default': default}
+			
 			objects.update({'_id': new_control},{'$set': {'ui': ui, 'v': d, 'bt': button}})
 			return str(new_control)
 		return False
