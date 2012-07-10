@@ -4,6 +4,9 @@
 #
 #
 
+
+
+
 from API.contenttypes.picture import Picture
 from datetime import datetime
 
@@ -17,7 +20,9 @@ conn = Connection()
 db = conn['blibb']
 objects = db['users']
 
+
 class User(object):
+
 
 	@classmethod
 	def get_redis(self):
@@ -85,7 +90,7 @@ class User(object):
 	def is_admin(self, user):
 		doc = self.get_by_name(user)
 		if doc is not None:
-			role = doc.get('r','')
+			role = doc.get('role','')
 			if role == 'admin':
 				return True
 		return False
@@ -96,17 +101,17 @@ class User(object):
 		buf = dict()
 		if doc:	
 			buf['id'] = str(doc['_id'])
-		if 'n' in doc:
-				buf['username'] = doc['n']
-		if 'e' in doc:
-				buf['email'] = doc['e']
-		if 'r' in doc:
-				buf['role'] = doc['r']
-		if 'i' in doc:
-				img = doc['i']
-				buf['image'] = str(img['id'])
-		if 'a' in doc:
-				buf['status'] = doc['a']
+			if 'n' in doc:
+					buf['username'] = doc['n']
+			if 'e' in doc:
+					buf['email'] = doc['e']
+			if 'r' in doc:
+					buf['role'] = doc['r']
+			if 'i' in doc:
+					img = doc['i']
+					buf['image'] = str(img['id'])
+			if 'a' in doc:
+					buf['status'] = doc['a']
 
 		
 		return buf

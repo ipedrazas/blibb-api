@@ -12,7 +12,7 @@ import API.utils as utils
 mod = Blueprint('control', __name__, url_prefix='')
 
 
-@mod.route('/control', methods=['POST'])
+@mod.route('/controls', methods=['POST'])
 @crossdomain(origin='*')
 def new_control():
 	e = Event('web.new_control')
@@ -20,10 +20,10 @@ def new_control():
 	name = request.form['control_name']
 	ui = request.form['control_ui']
 	type = request.form['control_type']
-	default = request.form['default']
-	button = request.form['button']
+	default = request.form['control_ui']
+	button = request.form['control_button']
 	
-	user = utils.get_key(key)
+	user = utils.get_user_name(key)
 	cid = Control.insert(name, user, ui, type, default, button)
 	res = {'id': cid}
 	e.save()

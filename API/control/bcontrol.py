@@ -11,6 +11,16 @@ from bson.objectid import ObjectId
 from pymongo import Connection
 from API.user.buser import User
 
+
+import logging
+import sys
+soh = logging.StreamHandler(sys.stdout)
+soh.setLevel(logging.DEBUG)
+logger = logging.getLogger()
+logger.addHandler(soh)
+
+
+
 conn = Connection()
 db = conn['blibb']
 objects = db['bcontrols']
@@ -51,6 +61,7 @@ class Control(object):
 	@classmethod
 	def insert(self,name, owner, ui, type, default, button):
 		if User.is_admin(owner):
+			logger.info('Is admin')
 			now = datetime.utcnow()
 			new_control = objects.insert({'n': name, 'c': now , 'u': 'system', 'tx': type})
 
@@ -62,6 +73,7 @@ class Control(object):
 			
 			objects.update({'_id': new_control},{'$set': {'ui': ui, 'v': d, 'bt': button}})
 			return str(new_control)
+		logger.info('No admin')
 		return False
 
 	@classmethod
