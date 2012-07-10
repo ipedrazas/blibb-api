@@ -18,17 +18,17 @@ else:
     app.config.from_object('API.config.ProductionConfig')
     app.logger.info("Config: Production")
 
-
-@app.errorhandler(404)
-def not_found(error):
-    return render_template('404.html'), 404
-
 # Logging
 import logging
 logging.basicConfig(
     level=logging.DEBUG,
     format='[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s', datefmt='%Y%m%d-%H:%M%p',
 )
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return render_template('404.html'), 404
 
 
 from API.web.wmanager import mod as ManagerModule

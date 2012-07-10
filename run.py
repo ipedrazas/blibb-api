@@ -1,4 +1,10 @@
 
 from API import app
 
-app.run(debug=True)
+
+import os
+
+# some code here
+os.putenv('DEV', 'yes')
+
+app.run()

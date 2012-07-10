@@ -45,7 +45,7 @@ class ControlTemplate(object):
                     item['c'] = ObjectId(cid)
                 item['n'] = control['name']
                 item['h'] = control['help']
-                item['tx'] = int(control['type'])
+                item['tx'] = control['type']
                 item['o'] = int(control['order'])
                 item['s'] = slugify(control['name'])
 
