@@ -20,11 +20,12 @@ def new_control():
     name = request.form['control_name']
     ui = request.form['control_ui']
     type = request.form['control_type']
-    default = request.form['control_ui']
+    read = request.form['control_read']
+    write = request.form['control_write']
     button = request.form['control_button']
 
     user = utils.get_user_name(key)
-    cid = Control.insert(name, user, ui, type, default, button)
+    cid = Control.insert(name, user, ui, type, read, write, button)
     res = {'id': cid}
     e.save()
     return jsonify(res)

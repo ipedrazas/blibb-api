@@ -9,7 +9,7 @@ from datetime import datetime
 from bson.objectid import ObjectId
 from pymongo import Connection
 from API.user.buser import User
-
+from flask import current_app
 
 import logging
 import sys
@@ -44,7 +44,12 @@ class Control(object):
             buf['type'] = doc['tx']
         if 'v' in doc:
             view = doc['v']
-            buf['default'] = view.get('default')
+            default = view.get('default')
+            if isinstance(default, dict):
+                read = default.get('r', '')
+                write = default.get('w', '')
+                buf['read'] = read
+                buf['write'] = write
 
         return buf
 
@@ -58,20 +63,22 @@ class Control(object):
         return controls
 
     @classmethod
-    def insert(self, name, owner, ui, type, default, button):
+    def insert(self, name, owner, ui, type, read, write, button):
         if User.is_admin(owner):
             logger.info('Is admin')
             now = datetime.utcnow()
-            new_control = objects.insert({'n': name, 'c': now, 'u': 'system', 'tx': type})
+            control_id = objects.insert({'n': name, 'c': now, 'u': 'system', 'tx': type})
 
-            ui = self.replace_values(ui, str(new_control), name, type)
-            default = self.replace_values(default, str(new_control), name, type)
-            button = self.replace_values(button, str(new_control), name, type)
+            ui = self.replace_values(ui, str(control_id), name, type)
+            button = self.replace_values(button, str(control_id), name, type)
+            read = self.replace_values(read, str(control_id), name, type)
+            write = self.replace_values(write, str(control_id), name, type)
 
-            d = {'default': default}
+            view = {'r': read, 'w': write}
+            d = {'default': view}
 
-            objects.update({'_id': new_control}, {'$set': {'ui': ui, 'v': d, 'bt': button}})
-            return str(new_control)
+            objects.update({'_id': control_id}, {'$set': {'ui': ui, 'v': d, 'bt': button}})
+            return str(control_id)
         logger.info('No admin')
         return False
 
@@ -82,6 +89,13 @@ class Control(object):
         attribute = attribute.replace('{{control_type}}', type)
 
         return attribute
+
+    @classmethod
+    def get_view_by_id(self, control_id, view='default'):
+        doc = objects.find_one({'_id': ObjectId(control_id)}, {'v.' + view: 1})
+        current_app.logger.info('view by id: ' + str(self.flat_object(doc)))
+        view = self.flat_object(doc)
+        return {'read': view['read'], 'write': view['write']}
 
 
 class BControl(object):

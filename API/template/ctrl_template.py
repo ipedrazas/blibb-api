@@ -1,4 +1,4 @@
-# 
+#
 #
 #   template.py
 #
@@ -10,8 +10,10 @@ from datetime import datetime
 from bson.objectid import ObjectId
 from pymongo import Connection
 from API.helpers import slugify
+from API.control.bcontrol import Control
 import API.utils as utils
 import json
+import pystache
 
 conn = Connection()
 db = conn['blibb']
@@ -36,6 +38,7 @@ class ControlTemplate(object):
     @classmethod
     def add_controls(self, template_id, controls, user):
         items = []
+        current_app.logger.info("add_controls " + str(controls))
         if utils.is_valid_id(template_id):
             controls = json.loads(controls)
             for control in controls:
@@ -43,17 +46,12 @@ class ControlTemplate(object):
                 cid = control.get('cid', '')
                 if utils.is_valid_id(cid):
                     item['c'] = ObjectId(cid)
-                item['n'] = control['name']
-                item['h'] = control['help']
-                item['tx'] = control['type']
-                item['o'] = int(control['order'])
-                item['s'] = slugify(control['name'])
-
-                # control_name = control['type'] + '-' + control['name']
-                # control_id = cid + '-' + control['order']
-                # #html = '<div id="'+ control_id +'" class="control class"><label for="'+control_name+'">'+control['name']+':</label><input name="'+control_name+'" placeholder="'+control['help']+'" size="50" type="text" /></div>'
-                # #item['w'] = html
-                items.append(item)
+                    item['n'] = control['name']
+                    item['h'] = control['help']
+                    item['tx'] = control['type']
+                    item['o'] = int(control['order'])
+                    item['s'] = slugify(control['name'])
+                    items.append(item)
             current_app.logger.info(items)
             objects.update({'_id': ObjectId(template_id)}, {'$set': {'i': items}})
 
@@ -133,10 +131,10 @@ class ControlTemplate(object):
             if controls:
                 for control in controls:
                     c = self.flaf_control(control)
-                    html_read += self.get_read_html(c)
-                    html_write += self.get_write_html(c)
+                    html = self.get_html(c)
+                    html_read += html.get('read', '')
+                    html_write += html.get('write', '')
 
-                # w rb sb ri si
                 res = dict()
                 res['rb'] = html_read
                 res['wb'] = html_write
@@ -146,14 +144,11 @@ class ControlTemplate(object):
         return False
 
     @classmethod
-    def get_read_html(self, control):
-        current_app.logger.info(control)
-        return '<div class="%(slug)s">{{{%(slug)s}}}</div>' % control
-
-    @classmethod
-    def get_write_html(self, control):
-        html = ('<div id="%(control_id)s_%(slug)s" class="templatedCtrl">'
-                    '<label for="%(type)s-%(slug)s">%(name)s:</label>'
-                    '<input name="%(type)s-%(slug)s" placeholder="" size="50" type="text" /> '
-                '</div>') % control
-        return html
+    def get_html(self, control):
+        current_app.logger.info('get html: ' + str(control))
+        view = Control.get_view_by_id(control['control_id'])
+        current_app.logger.info('view html: ' + str(view))
+        read = pystache.render('{{=<% %>=}}' + view['read'], control)
+        write = pystache.render('{{=<% %>=}}' + view['write'], control)
+        current_app.logger.info('write html: ' + write)
+        return {'read': read, 'write': write}

@@ -4,7 +4,7 @@ import os
 
 _basedir = os.path.abspath(os.path.dirname(__file__))
 
-DEBUG = False
+DEBUG = True
 
 ADMINS = frozenset(['hello@blibb.net'])
 SECRET_KEY = 'l354SFdDFakjhlre543f2skjdlan654dSSk7jfla'  # supersecret
