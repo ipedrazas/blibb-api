@@ -5,6 +5,7 @@ beautifulsoup4
 httplib2
 boto
 xlrd
+pystache
 
 pyzmq
 pymongo
