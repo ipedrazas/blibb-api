@@ -145,9 +145,8 @@ class ControlTemplate(object):
 
     @classmethod
     def get_html(self, control):
-        current_app.logger.info('get html: ' + str(control))
         view = Control.get_view_by_id(control['control_id'])
-        current_app.logger.info('view html: ' + str(view))
+        current_app.logger.info('view html: ' + str(view) + ' ' + str(control))
         read = pystache.render('{{=<% %>=}}' + view['read'], control)
         write = pystache.render('{{=<% %>=}}' + view['write'], control)
         current_app.logger.info('write html: ' + write)
