@@ -4,13 +4,14 @@
 #
 #
 
-from flask import jsonify
+
+from flask import jsonify, current_app
 from datetime import datetime
 
 from bson.objectid import ObjectId
 from pymongo import Connection
 from API.contenttypes.picture import Picture
-from API.template.template import Template
+from API.template.ctrl_template import ControlTemplate
 from API.om.acl import ACL
 from API.error import Message
 
@@ -23,21 +24,17 @@ objects = db['blibbs']
 
 class Blibb(object):
 
-    # soh = logging.StreamHandler(sys.stdout)
-    # soh.setLevel(logging.DEBUG)
-    # logger = logging.getLogger()
-    # logger.addHandler(soh)
-
     @classmethod
     def insert(self, user, name, slug, desc, template_id, image, read_access, write_access):
-        t = Template()
+
         if utils.is_valid_id(template_id):
-            t.load(template_id)
+            template = ControlTemplate.get_object({'_id': ObjectId(template_id)})
+            current_app.logger.info('insert blibb: ' + str(template))
             now = datetime.utcnow()
             acl = dict()
             acl['read'] = read_access
             acl['write'] = write_access
-            doc = {"n": name, "s": slug, "d": desc, "u": user, "c": now,  "t": t.dump(), "img": image, 'acl': acl}
+            doc = {"n": name, "s": slug, "d": desc, "u": user, "c": now,  "t": template, "img": image, 'acl': acl}
 
             newId = objects.insert(doc)
             return str(newId)

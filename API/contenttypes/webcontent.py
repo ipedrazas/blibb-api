@@ -54,7 +54,7 @@ def newPicture():
     pict = Picture()
     blibb = request.form['b']
     key = request.form['k']
-    user = utils.getKey(key)
+    user = utils.get_user_name(key)
     items = dict()
     r = pict.insert(blibb, user, items)
     e.save()
@@ -113,7 +113,7 @@ def newSong():
     song = Song()
     blibb = request.form['b']
     key = request.form['k']
-    user = utils.getKey(key)
+    user = utils.get_user_name(key)
     items = dict()
     r = song.insert(blibb, user, items)
     e.save()
@@ -135,7 +135,7 @@ def newBookmark(song_id=None):
     b = request.form['b']
     bn = request.form['bn']
     k = request.form['k']
-    user = utils.getKey(k)
+    user = utils.get_user_name(k)
     url = request.form['url']
     tags = []
     if 'tags' in request.form:
@@ -157,7 +157,7 @@ def loader_excel():
     event = Event('web.content.loader_excel')
     key = request.form['login_key']
     bid = request.form['blibb_id']
-    user = utils.getKey(key)
+    user = utils.get_user_name(key)
     res = dict()
     file = request.files['file']
     if file and utils.allowed_file(file.filename):

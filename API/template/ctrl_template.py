@@ -88,6 +88,8 @@ class ControlTemplate(object):
                 buf['thumbnail'] = doc['t']
             if 'i' in doc:
                 buf['controls'] = doc['i']
+            if 'v' in doc:
+                buf['views'] = doc['v']
 
         return buf
 
@@ -136,12 +138,21 @@ class ControlTemplate(object):
                     html_write += html.get('write', '')
 
                 res = dict()
-                res['rb'] = html_read
+                data = dict()
+                data['entry'] = html_read
+                res['rb'] = self.get_blibb_template_wrapper(data)
                 res['wb'] = html_write
 
                 objects.update({'_id': ObjectId(template_id)}, {"$push": {'v.' + view_name: res}, '$set': {'q': 'active'}}, True)
                 return True
         return False
+
+    @classmethod
+    def get_blibb_template_wrapper(self, data):
+        html = utils.read_file('/scripts/templates/base/base.html')
+        # current_app.logger.info('wrapper html: ' + str(data))
+        return html.replace('<blibb:entry/>', data['entry'] )
+        # return pystache.render('{{=<% %>=}}' + html, data)
 
     @classmethod
     def get_html(self, control):
