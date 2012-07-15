@@ -29,7 +29,6 @@ class Blibb(object):
 
         if utils.is_valid_id(template_id):
             template = ControlTemplate.get_object({'_id': ObjectId(template_id)})
-            current_app.logger.info('insert blibb: ' + str(template))
             now = datetime.utcnow()
             acl = dict()
             acl['read'] = read_access

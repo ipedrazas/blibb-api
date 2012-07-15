@@ -2,13 +2,11 @@
 from bs4 import BeautifulSoup
 import urllib2
 from os.path import join, abspath, dirname
-from API.control.bcontrol import BControl
 from bson.objectid import ObjectId
 import zmq
 import redis
-from datetime import timedelta
-from flask import make_response, request, current_app
-from functools import update_wrapper
+from flask import  current_app
+from unicodedata import normalize
 import re
 from bson import errors
 import json
@@ -35,52 +33,6 @@ def sendUrl(obj_id, url):
     socket.connect("tcp://localhost:5555")
     if obj_id is not None:
         socket.send(str(obj_id + '##' + url))
-
-
-def get_blitem_from_request(key, value, labels):
-    value = value.strip()
-    slug = key[3:]
-    typex = key[:2]
-    blitem = {}
-    blitem['t'] = typex
-    blitem['s'] = slug
-    if BControl.isMultitext(typex):
-        value = BControl.autoP(value)
-    # elif BControl.isMp3(typex):
-    #     song = Song()
-    #     song.load(value)
-    #     value = song.dumpSong()
-    elif BControl.isImage(typex):
-        value = ObjectId(value)
-    elif BControl.isDate(typex):
-        # TODO: convert dates to MongoDates
-        # and back
-        value = value
-    elif BControl.isTwitter(typex):
-        value = re.sub('[!@#$]', '', value)
-
-    blitem['v'] = value
-    blitem['l'] = labels.get(slug)
-    return blitem
-
-
-def get_items_from_request(labels, request):
-    bitems = []
-    for key, value in request.form.iteritems():
-        if '-' in key:
-            elem = get_blitem_from_request(key, value, labels)
-            bitems.append(elem)
-    return bitems
-
-
-def postProcess(obj_id, items):
-    for blitem in items:
-        # print blitem
-        typex = blitem['t']
-        if BControl.isURL(typex):
-            sendUrl(obj_id, blitem['v'])
-        if BControl.isTwitter(typex):
-            queueTwitterResolution(obj_id, blitem['v'])
 
 
 def get_key(key):
@@ -122,3 +74,15 @@ def read_file(filename):
     print path
     f = open(path, 'r')
     return f.read()
+
+
+def slugify(text, delim=u''):
+    """Generates an slightly worse ASCII-only slug."""
+    _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?:@\[\\\]^_`{|},.]+')
+    result = []
+    for word in _punct_re.split(text.lower()):
+        word = normalize('NFKD', unicode(word)).encode('ascii', 'ignore')
+        if word is not None:
+            result.append(word)
+
+    return unicode(delim.join(result))

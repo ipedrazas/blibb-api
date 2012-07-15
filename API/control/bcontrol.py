@@ -1,4 +1,4 @@
-# 
+#
 #
 #   BControl.py
 #
@@ -10,14 +10,7 @@ from bson.objectid import ObjectId
 from pymongo import Connection
 from API.user.buser import User
 from flask import current_app
-
-import logging
-import sys
-soh = logging.StreamHandler(sys.stdout)
-soh.setLevel(logging.DEBUG)
-logger = logging.getLogger()
-logger.addHandler(soh)
-
+import API.utils as utils
 
 conn = Connection()
 db = conn['blibb']
@@ -65,28 +58,30 @@ class Control(object):
     @classmethod
     def insert(self, name, owner, ui, type, read, write, button):
         if User.is_admin(owner):
-            logger.info('Is admin')
+            current_app.logger.info('Is admin')
             now = datetime.utcnow()
-            control_id = objects.insert({'n': name, 'c': now, 'u': 'system', 'tx': type})
+            slug = utils.slugify(name)
+            control_id = objects.insert({'n': name, 'c': now, 'u': 'system', 's': slug, 'tx': type})
 
-            ui = self.replace_values(ui, str(control_id), name, type)
-            button = self.replace_values(button, str(control_id), name, type)
-            read = self.replace_values(read, str(control_id), name, type)
-            write = self.replace_values(write, str(control_id), name, type)
+            ui = self.replace_values(ui, str(control_id), name, type, slug)
+            button = self.replace_values(button, str(control_id), name, type, slug)
+            read = self.replace_values(read, str(control_id), name, type, slug)
+            write = self.replace_values(write, str(control_id), name, type, slug)
 
             view = {'r': read, 'w': write}
             d = {'default': view}
 
             objects.update({'_id': control_id}, {'$set': {'ui': ui, 'v': d, 'bt': button}})
             return str(control_id)
-        logger.info('No admin')
+        current_app.logger.info('No admin')
         return False
 
     @classmethod
-    def replace_values(self, attribute, id, name, type):
+    def replace_values(self, attribute, id, name, type, slug):
         attribute = attribute.replace('{{control_id}}', id)
         attribute = attribute.replace('{{control_name}}', name)
         attribute = attribute.replace('{{control_type}}', type)
+        attribute = attribute.replace('{{control_slug}}', slug)
 
         return attribute
 

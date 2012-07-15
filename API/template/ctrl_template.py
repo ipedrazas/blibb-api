@@ -51,7 +51,11 @@ class ControlTemplate(object):
                     item['tx'] = control['type']
                     item['o'] = int(control['order'])
                     item['s'] = slugify(control['name'])
+                    if 'items' in control:
+                        item['i'] = control.get('items')
                     items.append(item)
+                else:
+                    current_app.logger.info('Control ID' + cid)
             current_app.logger.info(items)
             objects.update({'_id': ObjectId(template_id)}, {'$set': {'i': items}})
 
@@ -103,6 +107,8 @@ class ControlTemplate(object):
             c['name'] = control['n']
             c['slug'] = control['s']
             c['order'] = control['o']
+            if 'i' in control:
+                c['items'] = control['i']
         return c
 
     @classmethod
