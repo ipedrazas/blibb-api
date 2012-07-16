@@ -36,14 +36,28 @@ def upload():
 
 
 @mod.route('/picture/data', methods=['POST'])
-def setPictureData():
-    e = Event('getImage.setPictureData')
+def set_picture_data():
+    e = Event('getImage.set_picture_data')
     pict = Picture()
     jsonData = request.form['p']
     r = pict.updateJson(jsonData)
     e.save()
     if r != 'null':
         return r
+    else:
+        abort(404)
+
+
+@mod.route('/picture/<picture_id>', methods=['GET'])
+@support_jsonp
+def get_picture_data(picture_id=None):
+    e = Event('getImage.get_picture_data')
+    r = None
+    if utils.is_valid_id(picture_id):
+        r = Picture.dump_image(picture_id)
+    e.save()
+    if r is not None:
+        return jsonify(r)
     else:
         abort(404)
 
@@ -65,6 +79,7 @@ def newPicture():
 
 
 @mod.route('/picture/<pict_id>/<size>', methods=['GET'])
+@support_jsonp
 def getImage(pict_id=None, size=160):
     e = Event('web.content.getImage')
     r = None

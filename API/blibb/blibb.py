@@ -267,7 +267,7 @@ class Blibb(object):
     @classmethod
     def add_picture(self, filter, picture_id):
         if utils.is_valid_id(picture_id):
-            image = Picture.dumpImage(picture_id)
+            image = Picture.dump_image(picture_id)
             objects.update(filter, {"$set": {'img': image}})
             return picture_id
         return Message.get('id_not_valid')

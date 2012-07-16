@@ -43,8 +43,9 @@ def get_key(key):
 def get_user_name(key):
     r = get_redis()
     juser = r.get(key)
-    user = json.loads(juser)
-    return user['username']
+    if juser:
+        user = json.loads(juser)
+        return user['username']
 
 
 def get_redis():
