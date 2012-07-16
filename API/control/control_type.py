@@ -44,4 +44,4 @@ class ControlType(object):
 
     @classmethod
     def is_list(self, typex):
-    	return typex == self.get_type(self.LIST)
+        return typex == self.get_type(self.LIST)

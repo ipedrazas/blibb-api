@@ -38,6 +38,7 @@ def newItem():
     app_token = request.form['app_token']
 
     user = utils.get_user_name(key)
+    current_app.logger.info('labels: ' + str(user))
     if utils.is_valid_id(bid):
         b = Blibb.get_object({'_id': ObjectId(bid)}, {'u': 1, 't.i.n': 1, 't.i.s': 1})
         if Blibb.can_write(user, app_token, bid):

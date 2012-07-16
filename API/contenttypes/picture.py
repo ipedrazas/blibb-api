@@ -12,6 +12,9 @@ from bson import json_util
 from pymongo import Connection
 from bson.objectid import ObjectId
 
+from tempfile import NamedTemporaryFile
+from shutil import copyfileobj
+from os import remove
 
 conn = Connection()
 db = conn['blibb']
@@ -60,7 +63,7 @@ class Picture(BaseObject):
         return json.dumps(pict, default=json_util.default)
 
     @classmethod
-    def dumpImage(self, picture_id=None):
+    def dump_image(self, picture_id=None):
         image = dict()
         pictObj = objects.find_one({'_id': ObjectId(picture_id)})
         if pictObj is not None:
@@ -92,3 +95,7 @@ class Picture(BaseObject):
         for pict_id in res:
             pictures.append(str(pict_id.get('_id')))
         return pictures
+
+    @classmethod
+    def get_image_by_size(self, image, size):
+        return image['path'] + size + '/' + image['id'] + '.' + image['format']

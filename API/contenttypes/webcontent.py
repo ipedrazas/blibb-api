@@ -1,6 +1,6 @@
-
 from flask import Blueprint, request, abort, current_app, jsonify
 from werkzeug import secure_filename
+from werkzeug.wrappers import Response
 import json
 import os
 
@@ -64,13 +64,17 @@ def newPicture():
         abort(404)
 
 
-@mod.route('/picture/<pict_id>', methods=['GET'])
-def getImage(pict_id=None):
+@mod.route('/picture/<pict_id>/<size>', methods=['GET'])
+def getImage(pict_id=None, size=160):
     e = Event('web.content.getImage')
-    p = Picture()
     r = None
     if utils.is_valid_id(pict_id):
-        r = p.dumpImage(pict_id)
+        try:
+            img = Picture.dump_image(pict_id)
+            g = file(Picture.get_image_by_size(img, size))
+            return Response(g, direct_passthrough=True)
+        except IOError:
+            abort(404)
     e.save()
     if r != 'null':
         return json.dumps(r)

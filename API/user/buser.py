@@ -45,17 +45,16 @@ class User(object):
             print shPwd.hexdigest()
             print stUser['p']
             if stUser['p'] == shPwd.hexdigest():
-                if 'i' in stUser:
-                    return self.setKey(str(stUser['_id']), stUser['n'], stUser['e'], stUser['i'])
-                else:
-                    return self.setKey(str(stUser['_id']), stUser['n'], stUser['e'])
+                user = self.flat_object(stUser)
+                key = self.setKey(user)
+                user['key'] = key
+                return user
         return False
 
     @classmethod
-    def setKey(self, user_id, user_name, email, user_image=None):
+    def setKey(self, user):
         r = self.get_redis()
-        userkey = hashlib.sha1(user_name + user_id + str(datetime.utcnow())).hexdigest()
-        user = self.get_by_name(user_name)
+        userkey = hashlib.sha1(user['username'] + user['id'] + str(datetime.utcnow())).hexdigest()
         r.set(userkey, json.dumps(user))
         expire = 3600
         r.expire(userkey, expire)
