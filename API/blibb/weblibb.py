@@ -52,9 +52,8 @@ def newBlibb():
 
     if not blibb:
         res = {'error': 'None'}
-        pict = Picture()
         if utils.is_valid_id(image_id):
-            image = pict.dumpImage(image_id)
+            image = Picture.dump_image(image_id)
         else:
             image = 'blibb.png'
 
