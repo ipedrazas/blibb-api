@@ -95,8 +95,9 @@ class Blitem(object):
             blitem['comments'] = self.get_comments(blitem_id)
         return blitem
 
-    def getFlat(self, obj_id):
-        doc = self.objects.find_one({'_id': ObjectId(obj_id)})
+    @classmethod
+    def get_flat(self, obj_id):
+        doc = objects.find_one({'_id': ObjectId(obj_id)})
         return self.flat_object(doc)
 
     @classmethod

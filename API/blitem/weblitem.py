@@ -75,8 +75,7 @@ def getBlitemFields(blibb_id=None):
 @support_jsonp
 def getBlitem(blitem_id=None):
     e = Event('web.blitem.getBlitem')
-    i = Blitem()
-    r = i.getFlat(blitem_id)
+    r = Blitem.get_flat(blitem_id)
     e.save()
     if r != 'null':
         return jsonify(r)
