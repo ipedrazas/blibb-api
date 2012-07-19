@@ -1,11 +1,10 @@
-#S
 #
 #
 #
 #
 #
 #
-
+#
 
 from API.om.manager import Manager
 from API.user.buser import User
@@ -14,20 +13,14 @@ from API.blitem.blitem import Blitem
 from API.event.event import Event
 import API.utils as utils
 from bson.objectid import ObjectId
-from flask import Blueprint, request, abort, current_app, jsonify
+from flask import Blueprint, request, abort, current_app, jsonify, make_response
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
+from API.user.blibb2rss import blibb2rss
 
 from API.error import Message
 
-
 mod = Blueprint('user', __name__, url_prefix='')
-
-ANON_APPS = {
-    'QPGQ': 'quidprogquo',
-    'QUOTR': 'quotr',
-    'test': 'test'
-}
 
 
 @mod.route('/favicon.ico')
@@ -113,35 +106,49 @@ def addItemtoBlibb(username=None, slug=None):
         abort(401)
 
 
-def isAnonApp(key):
-    for app in ANON_APPS:
-        if key == app:
-            return key
-    return False
-
-
 @mod.route('/<username>/<slug>', methods=['GET'])
 @support_jsonp
-def getBlibbBySlug(username=None, slug=None):
-    e = Event('web.user.blibb.getBlibbBySlug')
-    if username is None:
-        abort(404)
-    if slug is None:
-        abort(404)
+def get_blibb_by_slug(username=None, slug=None):
+    e = Event('web.user.blibb.get_blibb_by_slug')
+    ret = get_by_slug(username, slug)
+    e.save()
+    return  jsonify(ret)
+
+
+@mod.route('/<username>/<slug>.rss', methods=['GET'])
+@support_jsonp
+def get_as_rss(username=None, slug=None):
+    e = Event('web.user.blibb.get_by_slug')
+    if username is None or slug is None:
+        return None
+    url = request.url
+    ret = get_by_slug(username, slug, url, {}, False)
+    rss = blibb2rss(ret)
+    response = make_response(str(rss.output()))
+    response.headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
+    current_app.logger.info(str(ret))
+    e.save()
+    return response #str(ret) #
+
+
+def get_by_slug(username=None, slug=None, url=None, attributes={}, flat=True):
+    e = Event('web.user.blibb.get_by_slug')
+    if username is None or slug is None:
+        return None
 
     page = request.args.get('page', 1)
     # comments = request.args.get('comments', 0)
     blibb = Blibb.get_by_slug(username, slug)
+    if url:
+        blibb['url'] = url
     ret = dict()
     cond = {'s': slug, 'u': username}
     Blibb.increase_view(cond, 'v')
     ret['blibb'] = blibb
-    rs_items = Blitem.get_all_items(blibb['id'], int(page))
-    for i in rs_items:
-        pass
+    rs_items = Blitem.get_all_items(blibb['id'], int(page), attributes, flat)
     ret['items'] = rs_items['items']
     e.save()
-    return  jsonify(ret)
+    return ret
 
 
 @mod.route('/user/name/<user_name>', methods=['GET'])
@@ -250,3 +257,4 @@ def get_item_by_id(username=None, slug=None, id=None):
             abort(404)
     else:
         return jsonify(Message.get('id_not_valid'))
+

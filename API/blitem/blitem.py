@@ -59,9 +59,13 @@ class Blitem(object):
             )
 
     @classmethod
+    def save(self, item):
+        objects.save(item)
+
+    @classmethod
     def get_item(self, filter, fields={}):
-        doc = self.objects.find_one(filter)
-        return self.flat_object(doc)
+        doc = objects.find_one(filter)
+        return doc
 
     def getById(self, obj_id):
         if utils.is_valid_id(obj_id):
@@ -69,9 +73,11 @@ class Blitem(object):
         return Message.get('id_not_valid')
 
     @classmethod
-    def flat_object(self, doc):
+    def flat_object(self, doc, attributes):
         blitem = dict()
         fields = []
+        elements = []
+
         if doc is not None:
             blitem_id = str(doc.get('_id', ''))
             blitem['id'] = blitem_id
@@ -85,14 +91,14 @@ class Blitem(object):
                     field = t + '-' + s
                     if field not in fields:
                         fields.append(field)
-                    tt = dict()
-                    tt['value'] = r['v']
-                    tt['type'] = r['t']
                     blitem[r['s']] = r['v']
                 blitem['fields'] = fields
-
-            blitem['tags'] = doc.get('tg', '')
-            blitem['comments'] = self.get_comments(blitem_id)
+                if attributes.get('elements', False):
+                    blitem['elements'] = elements
+            if attributes.get('tags', False):
+                blitem['tags'] = doc.get('tg', '')
+            if attributes.get('comments', False):
+                blitem['comments'] = self.get_comments(blitem_id)
         return blitem
 
     @classmethod
@@ -113,13 +119,16 @@ class Blitem(object):
         return docs
 
     @classmethod
-    def get_all_items(self, blibb_id, page):
+    def get_all_items(self, blibb_id, page, attributes={}, flat=True):
         if utils.is_valid_id(blibb_id):
             docs = self.get_items_page({'b': ObjectId(blibb_id)}, {'i': 1, 'tg': 1, 'b': 1}, page)
             result = dict()
             blitems = []
             for d in docs:
-                blitems.append(self.flat_object(d))
+                if flat:
+                    blitems.append(self.flat_object(d, attributes))
+                else:
+                    blitems.append(d)
             result['b_id'] = blibb_id
             result['count'] = len(blitems)
             result['items'] = blitems

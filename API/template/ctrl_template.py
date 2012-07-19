@@ -146,6 +146,7 @@ class ControlTemplate(object):
                 res = dict()
                 data = dict()
                 data['entry'] = html_read
+                res['ri'] = html_read
                 res['rb'] = self.get_blibb_template_wrapper(data)
                 res['wb'] = html_write
 
@@ -156,9 +157,7 @@ class ControlTemplate(object):
     @classmethod
     def get_blibb_template_wrapper(self, data):
         html = utils.read_file('/scripts/templates/base/base.html')
-        # current_app.logger.info('wrapper html: ' + str(data))
-        return html.replace('<blibb:entry/>', data['entry'] )
-        # return pystache.render('{{=<% %>=}}' + html, data)
+        return html.replace('<blibb:entry/>', data['entry'])
 
     @classmethod
     def get_html(self, control):
