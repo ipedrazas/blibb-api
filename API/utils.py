@@ -10,6 +10,7 @@ from unicodedata import normalize
 import re
 from bson import errors
 import json
+import datetime
 
 
 def allowed_file(filename):
@@ -87,3 +88,8 @@ def slugify(text, delim=u''):
             result.append(word)
 
     return unicode(delim.join(result))
+
+
+def date_to_str(obj):
+    if isinstance(obj, datetime.datetime):
+        return obj.strftime('%d-%m-%Y- %H:%M:%S')

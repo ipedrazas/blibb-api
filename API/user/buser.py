@@ -74,7 +74,7 @@ class User(object):
     def add_picture(self, filter, picture_id):
         if picture_id is not None:
             p = Picture()
-            image = p.dumpImage(picture_id)
+            image = p.dump_image(picture_id)
             objects.update(filter, {"$set": {'i': image}}, True)
             return picture_id
         return 'error'

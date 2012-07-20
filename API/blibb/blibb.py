@@ -65,14 +65,12 @@ class Blibb(object):
             return {'error': 'Object id not valid'}
 
     @classmethod
-    def getTemplateView(self, obj_id, view='Default'):
+    def get_template_view(self, obj_id):
         if utils.is_valid_id(obj_id):
-            fields = {'t.v': 1, 'n': 1, 'd': 1, 'c': 1, 'u': 1, 'tg': 1, 's': 1, 'img': 1, 'ni': 1, 'st.v': 1}
+            fields = {'t.v': 1, 'n': 1, 'd': 1, 'c': 1, 'u': 1, 'tg': 1, 's': 1, 'img': 1, 'ni': 1, 'st': 1}
             res = self.get_object({'_id': ObjectId(obj_id)}, fields)
             if '_id' in res:
                 return self.flat_object(res)
-            else:
-                return "view " + view + " does not exist"
 
     @classmethod
     def flat_object(self, doc):
@@ -86,7 +84,7 @@ class Blibb(object):
             if 'd' in doc:
                 buf['description'] = doc['d']
             if 'c' in doc:
-                buf['date'] = str(doc['c'])
+                buf['date'] = utils.date_to_str(doc['c'])
             if 'u' in doc:
                 buf['owner'] = doc['u']
             if 's' in doc:
@@ -95,7 +93,10 @@ class Blibb(object):
                 buf['num_items'] = doc.get('ni', 0)
             if 'st' in doc:
                 stats = doc.get('st')
-                buf['num_views'] = stats.get('v', 0)
+                nv = {'num_views': stats.get('v', 0)}
+                nw = {'num_writes': stats.get('nw', 0)}
+                ni = {'num_items': stats.get('ni', 0)}
+                buf['stats'] = [nv, nw, ni]
             if 'acl' in doc:
                 buf['access'] = {'read': ACL.get_access(doc.get('acl').get('read')), 'write': ACL.get_access(doc.get('acl').get('write'))}
             if 'img' in doc:

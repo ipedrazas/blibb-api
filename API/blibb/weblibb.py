@@ -99,11 +99,10 @@ def getBlibbTemplate(blibb_id=None):
 
 
 @mod.route('/<blibb_id>/view', methods=['GET'])
-@mod.route('/<blibb_id>/view/<view_name>', methods=['GET'])
 def getBlibbView(blibb_id=None, view_name='null'):
     e = Event('web.blibb.getBlibbView')
     if utils.is_valid_id(blibb_id):
-        r = Blibb.getTemplateView(blibb_id, view_name)
+        r = Blibb.get_template_view(blibb_id)
         e.save()
         if r != 'null':
             return jsonify(r)

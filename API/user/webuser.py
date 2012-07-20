@@ -115,7 +115,7 @@ def get_blibb_by_slug(username=None, slug=None):
     return  jsonify(ret)
 
 
-@mod.route('/<username>/<slug>.rss', methods=['GET'])
+@mod.route('/<username>/<slug>.xml', methods=['GET'])
 @support_jsonp
 def get_as_rss(username=None, slug=None):
     e = Event('web.user.blibb.get_by_slug')
@@ -128,7 +128,7 @@ def get_as_rss(username=None, slug=None):
     response.headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
     current_app.logger.info(str(ret))
     e.save()
-    return response #str(ret) #
+    return response
 
 
 def get_by_slug(username=None, slug=None, url=None, attributes={}, flat=True):

@@ -11,7 +11,7 @@ class blibb2rss:
         self.title = ""
         self.version = "0.2"
         self.link = ""
-        self.language = "en"
+        self.date = ""
         self.description = "a mapped dict2rss"
         self.itemio = StringIO()
 
@@ -22,14 +22,12 @@ class blibb2rss:
             element = blibb[key]
             if key == 'name':
                 self.title = element
-            elif key == 'version':
-                self.version = element
-            elif key == 'language':
-                self.language = element
             elif key == 'description':
                 self.description = element
             elif key == 'url':
                 self.link = element
+            elif key == 'date':
+                self.date = element
 
             sys.stdout = self.itemio
 
@@ -37,7 +35,7 @@ class blibb2rss:
             print(u'\t\t<item>')
             for element in item['i']:
                 # print(u'\t\t\t' + '<' + str(element['s']) + ' label="\>' + str(element['v']) + '</' + str(element['s']) + '>')
-                line = '\t\t\t<%(s)s label="%(l)s">%(v)s</%(s)s>' % element
+                line = '\t\t\t<%(s)s><label>%(l)s</label><value>%(v)s</value></%(s)s>' % element
                 print(line)
             print(u'\t\t</item>')
 
@@ -61,6 +59,7 @@ class blibb2rss:
         d += ('\t<title>%s</title>\n' % self.title)
         d += ('\t<link>%s</link>\n' % self.link)
         d += ('\t<description>%s</description>\n' % self.description)
+        d += ('\t<date>%s</date>\n' % self.date)
         d += self.itemio.getvalue()
         d += '</blibb>\n'
         return d.encode('utf-8')
