@@ -4,7 +4,7 @@
 #
 #
 
-
+from flask import current_app
 from datetime import datetime
 
 from bson.objectid import ObjectId
@@ -77,7 +77,7 @@ class Blitem(object):
         blitem = dict()
         fields = []
         elements = []
-
+        current_app.logger.info(str(attributes))
         if doc is not None:
             blitem_id = str(doc.get('_id', ''))
             blitem['id'] = blitem_id

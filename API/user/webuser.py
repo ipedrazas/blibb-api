@@ -110,7 +110,9 @@ def addItemtoBlibb(username=None, slug=None):
 @support_jsonp
 def get_blibb_by_slug(username=None, slug=None):
     e = Event('web.user.blibb.get_blibb_by_slug')
-    ret = get_by_slug(username, slug)
+    attributes = {'tags': True}
+    url = request.url
+    ret = get_by_slug(username, slug, url, attributes, True)
     e.save()
     return  jsonify(ret)
 
