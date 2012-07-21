@@ -38,6 +38,7 @@ def handle(any=None):
 
 @mod.route('/<username>/<slug>/action/delete', methods=['POST'])
 @crossdomain(origin='*')
+@support_jsonp
 def deleteBlibb(username=None, slug=None):
     e = Event('web.user.blibb.deleteItem')
     if username is None:
@@ -59,6 +60,7 @@ def deleteBlibb(username=None, slug=None):
 
 @mod.route('/<username>/<slug>/del/<item_id>', methods=['POST'])
 @crossdomain(origin='*')
+@support_jsonp
 def deleteItem(username=None, slug=None, item_id=None):
     e = Event('web.user.blibb.deleteItem')
     if username is None:
@@ -73,6 +75,7 @@ def deleteItem(username=None, slug=None, item_id=None):
 
 @mod.route('/<username>/<slug>', methods=['POST', 'OPTIONS'])
 @crossdomain(origin='*')
+@support_jsonp
 def addItemtoBlibb(username=None, slug=None):
     e = Event('web.user.blibb.getBlibbBySlug')
     if username is None:
