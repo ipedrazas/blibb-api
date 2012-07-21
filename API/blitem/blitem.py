@@ -141,8 +141,9 @@ class Blitem(object):
             docs = self.get_items_page({'b': ObjectId(blibb_id), 'tg': tag}, {'i': 1, 'tg': 1, 'b': 1})
             result = dict()
             blitems = []
+            attributes = {'tags': True}
             for d in docs:
-                blitems.append(self.flat_object(d))
+                blitems.append(self.flat_object(d, attributes))
 
             result['count'] = len(blitems)
             result['items'] = blitems
