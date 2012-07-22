@@ -94,13 +94,13 @@ def addItemtoBlibb(username=None, slug=None):
     if Blibb.can_write(user, app_token, blibb_id):
         e.addLog({'b': blibb_id})
         labels = Blibb.get_label_from_template(blibb_id)
-        bitems = utils.get_items_from_request(labels, request)
+        bitems = Blitem.get_items_from_request(labels, request)
         blitem_id = Blitem.insert(blibb_id, user, bitems, tags)
 
         if utils.is_valid_id(blitem_id):
             cond = {'s': slug, 'u': username}
             Blibb.inc_num_item(cond)
-            utils.postProcess(blitem_id, bitems)
+            Blitem.postProcess(blitem_id, bitems)
             res = {'id': blitem_id}
             e.save()
             return jsonify(res)
