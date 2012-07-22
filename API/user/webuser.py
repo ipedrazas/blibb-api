@@ -88,7 +88,7 @@ def addItemtoBlibb(username=None, slug=None):
     e.addLog({'s': slug})
 
     tags = request.form['tags'] if 'tags' in request.form else ''
-    user = utils.getKey(key)
+    user = utils.get_key(key)
     blibb_id = Blibb.get_id_by_slug(username, slug)
 
     if Blibb.can_write(user, app_token, blibb_id):
