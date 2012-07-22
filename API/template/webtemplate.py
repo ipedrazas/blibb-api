@@ -76,8 +76,7 @@ def publishTemplate():
     owner = template['owner']
     if owner == user:
         r = ControlTemplate.publish_default(template_id)
-        t = ControlTemplate.publish_table(template_id)
-        if(r and t):
+        if(r):
             res = {'result': 'ok'}
         else:
             res = {'error': 'Publishing failed'}
