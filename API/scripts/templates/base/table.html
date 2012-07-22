@@ -1,0 +1,32 @@
+<link rel="stylesheet" href="/css/bootstrap.css">
+<div class="container">
+        <div class="row" style="margin-top: 50px;">
+            
+            <div class="page-header">
+                <h1 data-blibb-name="{{name}}">{{name}} <small data-blibb-name="{{desc}}">{{desc}}</small></h1>
+            </div>
+            <div>
+                <p data-blibb-date="{{created}}">{{created}}</p>
+                <p data-blibb-author="{{owner}}">{{owner}}</p>
+            </div>            
+        </div>
+        <div class="row">
+            <h2>Table Style</h2>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <!-- one th per field in the formbuilder -->
+                        <blibb:entry value="labels"/>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                {{#ENTRIES}}
+                <!-- Entry -->
+                            <blibb:entry/>
+                {{/ENTRIES}}
+                </tbody>
+            </table>
+        </div>
+</div>
+<script type="text/javascript" src="/js/libs/jquery-1.7.1.min.js"></script>

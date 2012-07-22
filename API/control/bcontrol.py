@@ -25,6 +25,8 @@ class Control(object):
             buf['id'] = str(doc['_id'])
         if 'n' in doc:
             buf['name'] = doc['n']
+        if 's' in doc:
+            buf['slug'] = doc['s']
         if 'c' in doc:
             buf['date'] = str(doc['c'])
         if 'u' in doc:

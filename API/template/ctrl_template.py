@@ -129,30 +129,55 @@ class ControlTemplate(object):
         return templates
 
     @classmethod
-    def publish(self, view_name, template_id):
+    def publish_default(cls, template_id):
         html_read = ''
         html_write = ''
+        table_head = ''
+        row = '<tr>'
+        html_table = utils.read_file('/scripts/templates/base/table.html')
         if utils.is_valid_id(template_id):
-            template = self.get_by_id(template_id)
+            template = cls.get_by_id(template_id)
             # get controls
             controls = template.get('controls')
             if controls:
                 for control in controls:
-                    c = self.flaf_control(control)
-                    html = self.get_html(c)
+                    c = cls.flaf_control(control)
+                    html = cls.get_html(c)
                     html_read += html.get('read', '')
                     html_write += html.get('write', '')
+                    table_head += '<th>' + c['name'] + '</th>'
+                    row += '<td>{{' + c['slug'] + '}}</td>'
 
+                html_table = html_table.replace('<blibb:entry value="labels"/>', table_head)
+                html_table = html_table.replace('<blibb:entry/>', row)
                 res = dict()
                 data = dict()
                 data['entry'] = html_read
                 res['ri'] = html_read
-                res['rb'] = self.get_blibb_template_wrapper(data)
+                res['rb'] = cls.get_blibb_template_wrapper(data)
                 res['wb'] = html_write
+                box = {'name': 'default', 'view': res}
+                cls.publish(box, template_id)
+                table_dict = dict()
+                table_dict['ri'] = '<td>{{' + c['slug'] + '}}</td>'
+                table_dict['rb'] = html_table
+                table = {'name': 'table', 'view': table_dict}
+                return cls.publish(table, template_id)
 
-                objects.update({'_id': ObjectId(template_id)}, {"$push": {'v.' + view_name: res}, '$set': {'q': 'active'}}, True)
-                return True
         return False
+
+    @classmethod
+    def publish(cls, object, template_id):
+        '''view is a dict that contains:
+            name: name of the view
+            view: dict that contains
+                ri: read item, html to render the item when accessing as RO
+                rb: read blibb, html to render the whole blibb when accessing as RO
+                wb: write blibbb, html to create/edit new items
+        '''
+        current_app.logger.info(str(object))
+        objects.update({'_id': ObjectId(template_id)}, {"$push": {'v.' + object.get('name'): object.get('view')}, '$set': {'q': 'active'}}, True)
+        return True
 
     @classmethod
     def get_blibb_template_wrapper(self, data):

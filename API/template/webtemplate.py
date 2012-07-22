@@ -70,16 +70,14 @@ def add_controls():
 def publishTemplate():
     e = Event('web.publishTemplate')
     template_id = request.form['template_id']
-    view = request.form['view']
     key = request.form['login_key']
     user = utils.get_user_name(key)
-    current_app.logger.info(template_id)
     template = ControlTemplate.get_by_id(template_id)
-    current_app.logger.info(template)
     owner = template['owner']
     if owner == user:
-        r = ControlTemplate.publish(view, template_id)
-        if(r):
+        r = ControlTemplate.publish_default(template_id)
+        t = ControlTemplate.publish_table(template_id)
+        if(r and t):
             res = {'result': 'ok'}
         else:
             res = {'error': 'Publishing failed'}
