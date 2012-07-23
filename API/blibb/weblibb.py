@@ -16,6 +16,14 @@ from API.decorators import support_jsonp
 mod = Blueprint('blibb', __name__, url_prefix='/blibb')
 
 
+@mod.route('/favicon.ico')
+@mod.route('/robots.txt')
+@mod.route('/index.html')
+@mod.route('/scripts/<path:any>')
+def handle(any=None):
+    abort(404)
+
+
 @mod.route('/meta/webhooks/<bid>', methods=['GET'])
 def getWebhooks(bid=None):
     if utils.is_valid_id(bid):
