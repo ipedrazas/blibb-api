@@ -1,3 +1,5 @@
+
+
 from flask import Blueprint, request, abort, current_app, jsonify
 from werkzeug import secure_filename
 from werkzeug.wrappers import Response
@@ -182,7 +184,7 @@ def loader_excel():
     if file and utils.allowed_file(file.filename):
         try:
             filename = secure_filename(file.filename)
-            excel_file = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            excel_file = os.path.join(current_app.config.get('UPLOAD_FOLDER'), filename)
             file.save(excel_file)
             if utils.is_valid_id(bid):
                 fields = Blibb.get_fields(bid)
@@ -199,9 +201,9 @@ def loader_excel():
                     res['error'] = 'create new blibb from file'
 
                 res['error'] = 'Object Id is not valid'
-        except Exception, e:
-            current_app.logger.error(e)
-            res['error'] = 'Error processing spreadsheet'
+        # except Exception, e:
+            # current_app.logger.error(e)
+            # res['error'] = 'Error processing spreadsheet'
 
         finally:
             if os.path.isfile(filename):

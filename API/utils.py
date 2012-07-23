@@ -5,7 +5,7 @@ from os.path import join, abspath, dirname
 from bson.objectid import ObjectId
 import zmq
 import redis
-from flask import  current_app
+from flask import current_app
 from unicodedata import normalize
 import re
 from bson import errors
@@ -14,7 +14,8 @@ import datetime
 
 
 def allowed_file(filename):
-    allowed_extensions = current_app.config['ALLOWED_EXTENSIONS']
+    allowed_extensions = current_app.config.get('ALLOWED_EXTENSIONS')
+    # allowed_extensions = set(['txt', 'pdf', 'jpg', 'jpeg', 'gif', 'png', 'xls'])
     return '.' in filename and \
         filename.rsplit('.', 1)[1] in allowed_extensions
 
