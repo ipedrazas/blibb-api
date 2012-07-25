@@ -36,7 +36,7 @@ def handle(any=None):
 #####################
 
 
-@mod.route('/<username>/<slug>/action/delete', methods=['POST'])
+@mod.route('/<username>/<slug>', methods=['DELETE'])
 @crossdomain(origin='*')
 @support_jsonp
 def deleteBlibb(username=None, slug=None):
