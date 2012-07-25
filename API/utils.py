@@ -29,7 +29,7 @@ def getTitle(url):
         return ''
 
 
-def sendUrl(obj_id, url):
+def send_url(obj_id, url):
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
     socket.connect("tcp://localhost:5555")
@@ -54,7 +54,7 @@ def get_redis():
     return redis.StrictRedis(host='127.0.0.1', port=6379, db=0)
 
 
-def queueTwitterResolution(obj_id, twiter_screen_name):
+def queue_twitter_resolution(obj_id, twiter_screen_name):
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
     socket.connect("tcp://localhost:5556")

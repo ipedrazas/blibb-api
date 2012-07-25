@@ -11,7 +11,7 @@ from API.user.buser import User
 from API.blibb.blibb import Blibb
 from API.blitem.blitem import Blitem
 from API.event.event import Event
-import API.utils as utils
+from API.utils import is_valid_id, get_key
 from bson.objectid import ObjectId
 from flask import Blueprint, request, abort, current_app, jsonify, make_response
 from API.decorators import crossdomain
@@ -88,7 +88,7 @@ def addItemtoBlibb(username=None, slug=None):
     e.addLog({'s': slug})
 
     tags = request.form['tags'] if 'tags' in request.form else ''
-    user = utils.get_key(key)
+    user = get_key(key)
     blibb_id = Blibb.get_id_by_slug(username, slug)
 
     if Blibb.can_write(user, app_token, blibb_id):
@@ -97,7 +97,7 @@ def addItemtoBlibb(username=None, slug=None):
         bitems = Blitem.get_items_from_request(labels, request)
         blitem_id = Blitem.insert(blibb_id, user, bitems, tags)
 
-        if utils.is_valid_id(blitem_id):
+        if is_valid_id(blitem_id):
             cond = {'s': slug, 'u': username}
             Blibb.inc_num_item(cond)
             Blitem.postProcess(blitem_id, bitems)
@@ -175,7 +175,7 @@ def setImageUser():
     image_id = request.form['image_id']
     if user_id is None:
         abort(404)
-    if utils.is_valid_id(user_id):
+    if is_valid_id(user_id):
         User.add_picture({'_id': ObjectId(user_id)}, image_id)
     e.save()
     return 'ok'
@@ -245,21 +245,13 @@ def get_items_by_tag(username=None, slug=None, tag=None):
 @support_jsonp
 def get_item_by_id(username=None, slug=None, id=None):
     e = Event('web.user.blibb.get_item_by_id')
-    if username is None:
-        abort(404)
-    if slug is None:
-        abort(404)
-    if id is None:
+    if username is None or  slug is None or id is None:
         abort(404)
 
     blibb_id = Blibb.get_id_by_slug(username, slug)
-    if utils.is_valid_id(id):
-        if utils.is_valid_id(blibb_id):
+    if is_valid_id(id) and is_valid_id(blibb_id):
             items = Blitem.get_item({'_id': ObjectId(id), 'b': ObjectId(blibb_id)})
             e.save()
-            return  jsonify(items)
-        else:
-            abort(404)
+            return  jsonify(Blitem.flat_object(items, {}))
     else:
         return jsonify(Message.get('id_not_valid'))
-

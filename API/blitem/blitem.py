@@ -17,7 +17,7 @@ from API.comment.comment import Comment
 from API.contenttypes.song import Song
 
 from API.error import Message
-import API.utils as utils
+from API.utils import is_valid_id
 import re
 
 
@@ -34,7 +34,7 @@ class Blitem(object):
     @classmethod
     def insert(self, blibb_id, user, items, tags=None):
         tag_list = []
-        if utils.is_valid_id(blibb_id):
+        if is_valid_id(blibb_id):
             bid = ObjectId(blibb_id)
             b = Blibb.get_object({'_id': bid}, {'s': 1})
             bs = b['s']
@@ -68,7 +68,7 @@ class Blitem(object):
         return doc
 
     def getById(self, obj_id):
-        if utils.is_valid_id(obj_id):
+        if is_valid_id(obj_id):
             return self.getItem({'_id': ObjectId(obj_id)})
         return Message.get('id_not_valid')
 
@@ -120,7 +120,7 @@ class Blitem(object):
 
     @classmethod
     def get_all_items(self, blibb_id, page, attributes={}, flat=True):
-        if utils.is_valid_id(blibb_id):
+        if is_valid_id(blibb_id):
             docs = self.get_items_page({'b': ObjectId(blibb_id)}, {'i': 1, 'tg': 1, 'b': 1}, page)
             result = dict()
             blitems = []
@@ -137,7 +137,7 @@ class Blitem(object):
         return Message.get('id_not_valid')
 
     def getItemsByTag(self, blibb_id, tag):
-        if utils.is_valid_id(blibb_id):
+        if is_valid_id(blibb_id):
             docs = self.get_items_page({'b': ObjectId(blibb_id), 'tg': tag}, {'i': 1, 'tg': 1, 'b': 1})
             result = dict()
             blitems = []
@@ -188,7 +188,7 @@ class Blitem(object):
 
     @classmethod
     def bulk_insert(self, blibb_id, user, items, tags=None):
-        if utils.is_valid_id(blibb_id):
+        if is_valid_id(blibb_id):
             bid = ObjectId(blibb_id)
             b = Blibb.get_object({'_id': bid}, {'s': 1, 'u': 1, 't.i.n': 1, 't.i.s': 1})
             blibb_slug = b.get('s')
@@ -247,6 +247,6 @@ class Blitem(object):
             # print blitem
             typex = blitem['t']
             if ControlType.is_url(typex):
-                utils.sendUrl(obj_id, blitem['v'])
+                send_url(obj_id, blitem['v'])
             if ControlType.is_twitter(typex):
-                utils.queueTwitterResolution(obj_id, blitem['v'])
+                queue_twitter_resolution(obj_id, blitem['v'])
