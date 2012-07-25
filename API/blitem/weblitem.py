@@ -50,7 +50,7 @@ def newItem():
             if blitem_id:
                 cond = {'_id': ObjectId(bid)}
                 Blibb.inc_num_item(cond)
-            Blitem.postProcess(blitem_id, bitems)
+            Blitem.post_process(blitem_id, bitems)
             e.save()
             return blitem_id
         else:

@@ -17,7 +17,7 @@ from API.comment.comment import Comment
 from API.contenttypes.song import Song
 
 from API.error import Message
-from API.utils import is_valid_id
+from API.utils import is_valid_id, send_url, queue_twitter_resolution
 import re
 
 
@@ -242,7 +242,7 @@ class Blitem(object):
         return bitems
 
     @classmethod
-    def postProcess(self, obj_id, items):
+    def post_process(self, obj_id, items):
         for blitem in items:
             # print blitem
             typex = blitem['t']

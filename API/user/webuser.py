@@ -41,9 +41,7 @@ def handle(any=None):
 @support_jsonp
 def deleteBlibb(username=None, slug=None):
     e = Event('web.user.blibb.deleteItem')
-    if username is None:
-        abort(404)
-    if slug is None:
+    if username is None or slug is None:
         abort(404)
     b = Blibb()
     dres = b.getBySlug(username, slug)
@@ -58,16 +56,12 @@ def deleteBlibb(username=None, slug=None):
     e.save()
 
 
-@mod.route('/<username>/<slug>/del/<item_id>', methods=['POST'])
+@mod.route('/<username>/<slug>/<item_id>', methods=['DELETE'])
 @crossdomain(origin='*')
 @support_jsonp
 def deleteItem(username=None, slug=None, item_id=None):
     e = Event('web.user.blibb.deleteItem')
-    if username is None:
-        abort(404)
-    if slug is None:
-        abort(404)
-    if item_id is None:
+    if username is None or slug is None or item_id is None:
         abort(404)
 
     e.save()
@@ -78,9 +72,7 @@ def deleteItem(username=None, slug=None, item_id=None):
 @support_jsonp
 def addItemtoBlibb(username=None, slug=None):
     e = Event('web.user.blibb.getBlibbBySlug')
-    if username is None:
-        abort(404)
-    if slug is None:
+    if username is None or slug is None:
         abort(404)
     app_token = request.form['app_token'] if 'app_token' in request.form else ''
     key = request.form['login_key'] if 'login_key' in request.form else ''
@@ -100,7 +92,7 @@ def addItemtoBlibb(username=None, slug=None):
         if is_valid_id(blitem_id):
             cond = {'s': slug, 'u': username}
             Blibb.inc_num_item(cond)
-            Blitem.postProcess(blitem_id, bitems)
+            Blitem.post_process(blitem_id, bitems)
             res = {'id': blitem_id}
             e.save()
             return jsonify(res)
