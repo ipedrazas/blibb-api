@@ -24,6 +24,11 @@ def handle(any=None):
     abort(404)
 
 
+#
+#   /blibb [POST, DELETE]
+#
+
+
 @mod.route('', methods=['POST'])
 def newBlibb():
     e = Event('web.blibb.newBlibb')
@@ -135,6 +140,17 @@ def getGroupBlibbByUser(username=None):
     res = b.getByGroupUser(username)
     e.save()
     return res
+
+
+@mod.route('/fork', methods=['POST'])
+def fork():
+    e = Event('web.blibb.fork')
+    key = request.form['login_key']
+    user = get_user_name(key)
+    target_id = request.form['b']
+    Blibb.fork(target_id, user)
+    e.save()
+    return json.dumps('ok')
 
 
 #####################

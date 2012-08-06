@@ -15,7 +15,7 @@ from API.template.ctrl_template import ControlTemplate
 from API.om.acl import ACL
 from API.error import Message
 
-import API.utils as utils
+from API.utils import is_valid_id, date_to_str
 
 conn = Connection()
 db = conn['blibb']
@@ -25,21 +25,39 @@ objects = db['blibbs']
 class Blibb(object):
 
     @classmethod
-    def insert(self, user, name, slug, desc, template_id, image, read_access, write_access):
+    def to_dict(self, obj):
+        if obj is not None:
+            for key, value in obj.items():
+                if isinstance(value, ObjectId):
+                    obj[self.attr.get(key)] = str(value)
+                elif isinstance(value, datetime.datetime):
+                    obj[self.attr.get(key)] = value.strftime("%d/%m/%y")
+                elif isinstance(value, (dict)):
+                    obj[self.attr.get(key)] = self.to_dict(value)
+                else:
+                    obj[self.attr.get(key)] = value
+                del obj[key]
+        return obj
 
-        if utils.is_valid_id(template_id):
+    @classmethod
+    def save(self, object):
+        objects.save(object)
+
+    @classmethod
+    def insert(self, user, name, slug, desc, template_id, image, read_access, write_access):
+        if is_valid_id(template_id):
             template = ControlTemplate.get_object({'_id': ObjectId(template_id)})
             now = datetime.utcnow()
             acl = dict()
             acl['read'] = read_access
             acl['write'] = write_access
-            doc = {"n": name, "s": slug, "d": desc, "u": user, "c": now,  "t": template, "img": image, 'acl': acl}
+            doc = {"n": name, "s": slug, "d": desc, "u": user, "c": now,  "t": template, "img": image, 'a': acl}
 
             newId = objects.insert(doc)
             return str(newId)
 
     def get_template(self, obj_id):
-        if utils.is_valid_id(obj_id):
+        if is_valid_id(obj_id):
             template = self._get_object({'_id': ObjectId(obj_id)}, {'t': 1})
             return jsonify(self.flat_object(template))
         else:
@@ -55,7 +73,7 @@ class Blibb(object):
 
     @classmethod
     def get_label_from_template(self, obj_id):
-        if utils.is_valid_id(obj_id):
+        if is_valid_id(obj_id):
             result = self.get_object({'_id': ObjectId(obj_id)}, {'t.i.n': 1, 't.i.s': 1})
             if result is not None:
                 return self.get_labels(result['t'])
@@ -66,7 +84,7 @@ class Blibb(object):
 
     @classmethod
     def get_template_view(self, obj_id):
-        if utils.is_valid_id(obj_id):
+        if is_valid_id(obj_id):
             fields = {'t.v': 1, 'n': 1, 'd': 1, 'c': 1, 'u': 1, 'tg': 1, 's': 1, 'img': 1, 'ni': 1, 'st': 1}
             res = self.get_object({'_id': ObjectId(obj_id)}, fields)
             if '_id' in res:
@@ -84,7 +102,7 @@ class Blibb(object):
             if 'd' in doc:
                 buf['description'] = doc['d']
             if 'c' in doc:
-                buf['date'] = utils.date_to_str(doc['c'])
+                buf['date'] = date_to_str(doc['c'])
             if 'u' in doc:
                 buf['owner'] = doc['u']
             if 's' in doc:
@@ -113,7 +131,7 @@ class Blibb(object):
     @classmethod
     def get_by_id_params(self, obj_id, params):
         p = dict()
-        if utils.is_valid_id(obj_id):
+        if is_valid_id(obj_id):
             listparams = params.split(",")
             for param in listparams:
                 p[param] = 1
@@ -167,7 +185,7 @@ class Blibb(object):
 
     @classmethod
     def get_fields(self, obj_id):
-        if utils.is_valid_id(obj_id):
+        if is_valid_id(obj_id):
             doc = self.get_object({'_id': ObjectId(obj_id)}, {'t.i': 1})
             template = doc.get('t').get('i')
             fields = []
@@ -178,7 +196,7 @@ class Blibb(object):
 
     @classmethod
     def getWebhooks(self, obj_id):
-        if utils.is_valid_id(obj_id):
+        if is_valid_id(obj_id):
             doc = self.get_object({u'_id': ObjectId(obj_id)}, {'wh': 1})
             whs = doc.get('wh', [])
             # return template
@@ -199,17 +217,17 @@ class Blibb(object):
 
     @classmethod
     def add_tag(self, obj_id, tag):
-        if utils.is_valid_id(obj_id):
+        if is_valid_id(obj_id):
             objects.update({'_id': ObjectId(obj_id)}, {"$addToSet": {'tg': tag.lower()}}, False)
 
     @classmethod
     def add_user_to_group(self, user, obj_id):
-        if utils.is_valid_id(obj_id):
+        if is_valid_id(obj_id):
             objects.update({'_id': ObjectId(obj_id)}, {"$addToSet": {'g': user}}, False)
 
     @classmethod
     def add_webhook(self, object_id, webhook):
-        if utils.is_valid_id(object_id):
+        if is_valid_id(object_id):
             self.objects.update({'_id': ObjectId(object_id)}, {'$pull': {'wh': {'a': webhook['a']}}})
             self.objects.update({'_id': ObjectId(object_id)}, {'$addToSet': {'wh': webhook}})
         else:
@@ -240,7 +258,7 @@ class Blibb(object):
             Last, it checks if WORLD has writing capabilities
         """
 
-        if utils.is_valid_id(blibb_id):
+        if is_valid_id(blibb_id):
             blibb = self.get_object({'_id': ObjectId(blibb_id)}, {'acl': 1, 'u': 1, 'g': 1, 'at': 1})
             atoken = blibb.get('at', 0)
             owner = blibb['u']
@@ -267,8 +285,28 @@ class Blibb(object):
 
     @classmethod
     def add_picture(self, filter, picture_id):
-        if utils.is_valid_id(picture_id):
+        if is_valid_id(picture_id):
             image = Picture.dump_image(picture_id)
             objects.update(filter, {"$set": {'img': image}})
             return picture_id
         return Message.get('id_not_valid')
+
+    @classmethod
+    def fork(self, object_id, username):
+        if is_valid_id(object_id):
+            doc = objects.find_one({'_id': ObjectId(object_id)})
+            if doc:
+                del doc['_id']
+                fork = {}
+                fork['fa'] = doc['u']
+                fork['fd'] = doc['c']
+                doc['f'] = fork
+                doc['d'] = 'forked from %s/%s' % (doc['u'], doc['s'])
+                doc['u'] = username
+                doc['c'] = datetime.now()
+
+                doc['st'] = {}
+
+                objects.update({'_id': ObjectId(object_id)}, {"$inc": {'st.f': 1}})
+
+                return objects.insert(doc)
