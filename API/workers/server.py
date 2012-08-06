@@ -18,43 +18,44 @@ from API.control.bcontrol import BControl
 
 import logging
 
-print "URL Worker running"
+print "URL Worker running at port 5555"
 
 logger = logging.getLogger('URL Worker')
 hdlr = logging.FileHandler(dirname(__file__) + 'urlWorker.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 hdlr.setFormatter(formatter)
-logger.addHandler(hdlr) 
+logger.addHandler(hdlr)
 logger.setLevel(logging.DEBUG)
 
 context = zmq.Context()
 socket = context.socket(zmq.REP)
 socket.bind("tcp://*:5555")
 
-def processUrl(message):
-	strs = message.split('##')
-	url = strs[1]
-	title = utils.getTitle(url)
-	blitem = Blitem()
-	blitem.load(strs[0])
-	blitem.populate()
-	bkmrk = Bookmark()
-	bk_id = bkmrk.findByUrl(url)
-	if bk_id is None:
-		bk_id = bkmrk.insert(blitem.blibb, blitem.owner, url, title, blitem.tags)
-		bkmrk.load(bk_id)
-	else:
-		bkmrk.add(blitem.blibb,blitem.owner,blitem.tags)
 
-	items = blitem.items
-	for item in items:
-		if BControl.isURL(item['t']):
-			bk = bkmrk.dumpBookmark()
-			item['v'] = bk
-	
-	blitem.items = items
-	blitem.save()
-	return bk_id
+def processUrl(message):
+    strs = message.split('##')
+    url = strs[1]
+    title = utils.getTitle(url)
+    blitem = Blitem()
+    blitem.load(strs[0])
+    blitem.populate()
+    bkmrk = Bookmark()
+    bk_id = bkmrk.findByUrl(url)
+    if bk_id is None:
+        bk_id = bkmrk.insert(blitem.blibb, blitem.owner, url, title, blitem.tags)
+        bkmrk.load(bk_id)
+    else:
+        bkmrk.add(blitem.blibb, blitem.owner, blitem.tags)
+
+    items = blitem.items
+    for item in items:
+        if BControl.isURL(item['t']):
+            bk = bkmrk.dumpBookmark()
+            item['v'] = bk
+
+    blitem.items = items
+    blitem.save()
+    return bk_id
 
 
 while True:
@@ -63,9 +64,5 @@ while True:
     print "Received request: ", message
     print processUrl(message)
     #  Do some 'work'
-    time.sleep (1)        #   Do some 'work'
+    time.sleep(1)  # Do some 'work'
     socket.send('ok')
-
-
-
-

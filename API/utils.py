@@ -55,6 +55,7 @@ def get_redis():
 
 
 def queue_twitter_resolution(obj_id, twiter_screen_name):
+    print 'Queuing to twitter worker ' + str(obj_id)
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
     socket.connect("tcp://localhost:5556")

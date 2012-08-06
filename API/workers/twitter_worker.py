@@ -74,10 +74,9 @@ def processTwitterData(users, attributes):
 def updateTwitterItem(user_list, namesBag):
     for user in user_list:
         name = user.get('screen_name')
-        logger.debug('Updating ' + str(user) + ' with ' + name)
         u_id = getObjectId(name, namesBag)
         if u_id is not None:
-            print 'Update Item ' + str(u_id) + ' with ' + str(user)
+            logger.debug('Update Item ' + str(u_id) + ' with ' + str(user))
             blitem = Blitem.get_item({'_id': ObjectId(u_id)})
             items = blitem['i']
             for item in items:
@@ -92,6 +91,8 @@ def getObjectId(name, namesBag):
         if name.lower() == e.get('name').lower():
             return e.get('id')
 
+
+print "Twitter Worker running at port 5556"
 
 logger = logging.getLogger('twitter_worker')
 logger.setLevel(logging.DEBUG)

@@ -15,8 +15,11 @@ class ControlType(object):
 
     @classmethod
     def get_type(self, typex):
-        res = "0x%0.2x" % typex
-        return res[2:]
+        try:
+            res = "0x%0.2x" % typex
+            return res[2:]
+        except Exception:
+            return typex
 
     @classmethod
     def is_multitext(self, typex):
@@ -45,3 +48,19 @@ class ControlType(object):
     @classmethod
     def is_list(self, typex):
         return typex == self.get_type(self.LIST)
+
+    @staticmethod
+    def autoP(text):
+        res = ''
+        buf = ''
+        for line in text.split('\n'):
+            line = line.strip()
+            #if len(line) > 1:
+            buf += line + '<br>'
+
+        for line in buf.split('<br><br>'):
+            line = line.strip()
+            #if len(line) > 1:
+            res += '<p>' + line + '</p>'
+
+        return res.replace('<br>', '\n').replace('<p></p>', '').replace('</p><p>', '</p>\n<p>')

@@ -259,19 +259,19 @@ class Blibb(object):
         """
 
         if is_valid_id(blibb_id):
-            blibb = self.get_object({'_id': ObjectId(blibb_id)}, {'acl': 1, 'u': 1, 'g': 1, 'at': 1})
+            blibb = self.get_object({'_id': ObjectId(blibb_id)}, {'a': 1, 'u': 1, 'g': 1, 'at': 1})
             atoken = blibb.get('at', 0)
             owner = blibb['u']
-            acl = blibb['acl']
+            acl = blibb.get('a', {})
             if atoken == app_token:
                 return self.is_valid_token(atoken)
             if user == owner:
                 return True
-            if acl.get('write') == 5:
+            if acl.get('write', 0) == 5:
                 group = blibb['g']
                 if user in group:
                     return True
-            if acl.get('write') == 11:
+            if acl.get('write', 0) == 11:
                 return True
         # logging.warning('say')
         return False

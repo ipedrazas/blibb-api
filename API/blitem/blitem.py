@@ -12,7 +12,6 @@ from pymongo import Connection
 
 from API.control.control_type import ControlType
 from API.blibb.blibb import Blibb
-from API.control.bcontrol import BControl
 from API.comment.comment import Comment
 from API.contenttypes.song import Song
 
@@ -77,7 +76,6 @@ class Blitem(object):
         blitem = dict()
         fields = []
         elements = []
-        current_app.logger.info(str(attributes))
         if doc is not None:
             blitem_id = str(doc.get('_id', ''))
             blitem['id'] = blitem_id
@@ -159,19 +157,19 @@ class Blitem(object):
         blitem = {}
         blitem['t'] = typex
         blitem['s'] = slug
-        if BControl.isMultitext(typex):
-            value = BControl.autoP(value)
-        elif BControl.isMp3(typex):
+        if ControlType.is_multitext(typex):
+            value = ControlType.autoP(value)
+        elif ControlType.isMp3(typex):
             song = Song()
             song.load(value)
             value = song.dumpSong()
-        elif BControl.isImage(typex):
+        elif ControlType.is_image(typex):
             value = ObjectId(value)
-        elif BControl.isDate(typex):
+        elif ControlType.is_date(typex):
             # TODO: convert dates to MongoDates
             # and back
             value = value
-        elif BControl.isTwitter(typex):
+        elif ControlType.is_twitter(typex):
             value = re.sub('[!@#$]', '', value)
 
         blitem['v'] = value
@@ -213,19 +211,15 @@ class Blitem(object):
         blitem = {}
         blitem['t'] = typex
         blitem['s'] = slug
-        if BControl.isMultitext(typex):
-            value = BControl.autoP(value)
-        # elif BControl.isMp3(typex):
-        #     song = Song()
-        #     song.load(value)
-        #     value = song.dumpSong()
-        elif BControl.isImage(typex):
+        if ControlType.is_multitext(typex):
+            value = ControlType.autoP(value)
+        elif ControlType.is_image(typex):
             value = ObjectId(value)
-        elif BControl.isDate(typex):
+        elif ControlType.is_date(typex):
             # TODO: convert dates to MongoDates
             # and back
             value = value
-        elif BControl.isTwitter(typex):
+        elif ControlType.is_twitter(typex):
             value = re.sub('[!@#$]', '', value)
 
         blitem['v'] = value
@@ -243,10 +237,11 @@ class Blitem(object):
 
     @classmethod
     def post_process(self, obj_id, items):
+
         for blitem in items:
             # print blitem
             typex = blitem['t']
             if ControlType.is_url(typex):
                 send_url(obj_id, blitem['v'])
-            if ControlType.is_twitter(typex):
+            elif ControlType.is_twitter(typex):
                 queue_twitter_resolution(obj_id, blitem['v'])
