@@ -10,7 +10,7 @@ from pymongo import Connection
 
 conn = Connection()
 db = conn['blibb']
-objects = db['blibbs']
+objects = db['management']
 
 
 class Manager(object):

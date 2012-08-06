@@ -25,17 +25,18 @@ class User(object):
         return redis.StrictRedis(host='127.0.0.1', port=6379, db=0)
 
     @classmethod
-    def create(self, name, email, password, code):
-        now = datetime.utcnow()
-        salt = hashlib.sha1(email + str(datetime.utcnow())).hexdigest()
-        pub_salt = hashlib.sha1(email + str(datetime.utcnow())).hexdigest()
-        reset_password = hashlib.sha1(email + str(datetime.utcnow())).hexdigest()
-        password = hashlib.sha1(password + salt).hexdigest()
-        user_id = objects.insert(
-                {"n": name, "e": email, "p": password,
-                "s": salt, "ps": pub_salt, "c": now,
-                "a": True, 'l': now, 'rc': code, 'rp': reset_password})
-        return str(user_id)
+    def create(cls, name, email, password, code):
+        if cls.is_available(name, email):
+            now = datetime.utcnow()
+            salt = hashlib.sha1(email + str(datetime.utcnow())).hexdigest()
+            pub_salt = hashlib.sha1(email + str(datetime.utcnow())).hexdigest()
+            reset_password = hashlib.sha1(email + str(datetime.utcnow())).hexdigest()
+            password = hashlib.sha1(password + salt).hexdigest()
+            user_id = objects.insert(
+                    {"n": name, "e": email, "p": password,
+                    "s": salt, "ps": pub_salt, "c": now,
+                    "a": True, 'l': now, 'rc': code, 'rp': reset_password})
+            return str(user_id)
 
     @classmethod
     def authenticate(self, user, password):
@@ -62,7 +63,7 @@ class User(object):
         return userkey
 
     @classmethod
-    def get_object(self, filter, fields):
+    def get_object(self, filter, fields={}):
         return objects.find_one(filter, fields)
 
     @classmethod
@@ -106,3 +107,10 @@ class User(object):
                     buf['status'] = doc['a']
 
         return buf
+
+    @classmethod
+    def is_available(cls, username, email):
+        doc = cls.get_object({'$or': [{'n': username}, {'e': email}]})
+        if doc is None:
+            return True
+        return False
