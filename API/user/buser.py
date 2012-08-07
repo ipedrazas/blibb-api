@@ -37,6 +37,8 @@ class User(object):
                     "s": salt, "ps": pub_salt, "c": now,
                     "a": True, 'l': now, 'rc': code, 'rp': reset_password})
             return str(user_id)
+        else:
+            return None
 
     @classmethod
     def authenticate(self, user, password):

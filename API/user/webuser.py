@@ -196,15 +196,19 @@ def newUser():
     pwd = request.form['pwd']
     code = request.form['code']
     email = request.form['email']
-
     m = Manager()
+    res = dict()
     if m.validateCode(code):
         u_id = User.create(user, email, pwd, code)
-        e.save()
-        return jsonify({'id': u_id})
+        if u_id:
+            res = {'id': u_id}
+        else:
+            res = {'error': 'Username/email is already in use'}
     else:
         e.save()
-        return jsonify({'error': 'Code is not valid'})
+        res = {'error': 'Code is not valid'}
+    e.save()
+    return jsonify(res)
 
 
 @mod.route('/<username>/<slug>/tag/<tag>', methods=['GET'])
