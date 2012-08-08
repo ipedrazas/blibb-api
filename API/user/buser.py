@@ -48,6 +48,8 @@ class User(object):
             print shPwd.hexdigest()
             print stUser['p']
             if stUser['p'] == shPwd.hexdigest():
+                stUser['la'] = datetime.utcnow()
+                objects.save(stUser)
                 user = self.flat_object(stUser)
                 key = self.setKey(user)
                 user['key'] = key
