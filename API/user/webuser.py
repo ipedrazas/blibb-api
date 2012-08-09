@@ -118,7 +118,9 @@ def addItemtoBlibb(username=None, slug=None):
     user = get_key(key)
     blibb_id = Blibb.get_id_by_slug(username, slug)
 
-    if Blibb.can_write(user, app_token, blibb_id):
+    if not Blibb.can_write(user, app_token, blibb_id):
+        abort(401)
+    else:
         labels = Blibb.get_label_from_template(blibb_id)
         bitems = Blitem.get_items_from_request(labels, request)
         blitem_id = Blitem.insert(blibb_id, user, bitems, tags)
@@ -129,8 +131,6 @@ def addItemtoBlibb(username=None, slug=None):
             Blitem.post_process(blitem_id, bitems)
             res = {'id': blitem_id}
             return jsonify(res)
-    else:
-        abort(401)
 
 
 @mod.route('/<username>/<slug>', methods=['GET'])
@@ -218,18 +218,13 @@ def newUser():
 @mod.route('/<username>/<slug>/tag/<tag>', methods=['GET'])
 @support_jsonp
 def get_items_by_tag(username=None, slug=None, tag=None):
-    if username is None:
-        abort(404)
-    if slug is None:
-        abort(404)
-    if tag is None:
+    if username is None or slug is None or tag is None:
         abort(404)
 
     # ip = request.remote_addr
     blibb_id = Blibb.get_id_by_slug(username, slug)
     cond = {'s': slug, 'u': username}
     Blibb.increase_view(cond, 'vt')
-
     # return blibb_id
     b = Blitem()
     items = b.getItemsByTag(blibb_id, tag)
