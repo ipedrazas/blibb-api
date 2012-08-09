@@ -13,6 +13,7 @@ import hashlib
 import redis
 import json
 
+
 conn = Connection()
 db = conn['blibb']
 objects = db['users']
@@ -45,8 +46,6 @@ class User(object):
         stUser = objects.find_one({'$or': [{'e': user.strip()}, {'n':user.strip()}]})
         if stUser is not None:
             shPwd = hashlib.sha1(password + stUser['s'])
-            print shPwd.hexdigest()
-            print stUser['p']
             if stUser['p'] == shPwd.hexdigest():
                 stUser['la'] = datetime.utcnow()
                 objects.save(stUser)

@@ -20,6 +20,20 @@ from API.user.blibb2rss import blibb2rss
 
 from API.error import Message
 
+from blinker import signal
+
+
+def do_login(user):
+    print 'signal:' + str(user)
+    e = Event('signal.login')
+    e.addLog(user)
+    e.save()
+
+
+is_login = signal('event')
+is_login.connect(do_login)
+
+
 mod = Blueprint('user', __name__, url_prefix='')
 
 
@@ -181,6 +195,7 @@ def doLogin():
     pwd = request.form['p']
     user = User.authenticate(user, pwd)
     if user:
+        is_login.send(user)
         e.save()
         return jsonify(user)
     else:
