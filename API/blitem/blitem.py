@@ -24,6 +24,17 @@ conn = Connection()
 db = conn['blibb']
 objects = db['blitems']
 
+from blinker import signal
+
+
+def do_post_process(item):
+    print 'signal:' + str(item)
+    current_app.logger.info(str(item))
+
+
+post_process = signal('item-post-process')
+post_process.connect(do_post_process)
+
 
 class Blitem(object):
 
@@ -48,6 +59,7 @@ class Blitem(object):
             now = datetime.utcnow()
             doc = {"b": bid, "u": user, "bs": bs, "c": now, "i": items, 'tg': tag_list}
             newId = objects.insert(doc)
+            post_process.send(doc)
             return str(newId)
         else:
             return Message.get('id_not_valid')
