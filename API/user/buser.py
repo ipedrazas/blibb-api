@@ -56,6 +56,16 @@ class User(object):
         return False
 
     @classmethod
+    def get_user(cls, key):
+        r = cls.get_redis()
+        return r.get(key)
+
+    @classmethod
+    def logout(self, key):
+        r = self.get_redis()
+        return r.delete(key)
+
+    @classmethod
     def setKey(self, user):
         r = self.get_redis()
         userkey = hashlib.sha1(user['username'] + user['id'] + str(datetime.utcnow())).hexdigest()
