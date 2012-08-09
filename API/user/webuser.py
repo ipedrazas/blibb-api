@@ -13,7 +13,7 @@ from API.blitem.blitem import Blitem
 from API.event.event import Event
 from API.utils import is_valid_id, get_key
 from bson.objectid import ObjectId
-from flask import Blueprint, request, abort, current_app, jsonify, make_response
+from flask import Blueprint, request, abort, current_app, jsonify, make_response, g
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
 from API.user.blibb2rss import blibb2rss
@@ -44,6 +44,15 @@ mod = Blueprint('user', __name__, url_prefix='')
 def handle(any=None):
     abort(404)
 
+
+@mod.before_request
+def before_request():
+    g.e = Event(request.path)
+
+
+@mod.teardown_request
+def teardown_request(exception):
+    g.e.save()
 
 #####################
 ###### USERS  #######

@@ -1,7 +1,7 @@
 
 
 import json
-from flask import Blueprint, request, abort, jsonify
+from flask import Blueprint, request, abort, jsonify, g
 from API.blibb.blibb import Blibb
 from API.event.event import Event
 from API.contenttypes.picture import Picture
@@ -24,6 +24,15 @@ def handle(any=None):
     abort(404)
 
 
+@mod.before_request
+def before_request():
+    g.e = Event(request.path)
+
+
+@mod.teardown_request
+def teardown_request(exception):
+    g.e.save()
+
 #
 #   /blibb [POST, DELETE]
 #
@@ -31,7 +40,6 @@ def handle(any=None):
 
 @mod.route('', methods=['POST'])
 def newBlibb():
-    e = Event('web.blibb.newBlibb')
     name = request.form['bname']
     desc = request.form['bdesc']
     template = request.form['btemplate']
@@ -57,26 +65,21 @@ def newBlibb():
         res = {'id': new_id}
     else:
         res = {'error': 'Blibb with that slug already exists'}
-
-    e.save()
     return jsonify(res)
 
 
 @mod.route('/<blibb_id>/<login_key>', methods=['DELETE'])
 def deleteBlibb(blibb_id=None, login_key=None):
-    e = Event('web.blibb.deleteBlibb')
     user = get_user_name(login_key)
     if is_valid_id(blibb_id):
         filter = {'_id': ObjectId(blibb_id), 'u': user}
         Blibb.remove(filter)
-    e.save()
     return jsonify({'ret': 1})
 
 
 @mod.route('/<blibb_id>/p/<params>', methods=['GET'])
 @crossdomain(origin='*')
 def getBlibb(blibb_id=None, params=None):
-    e = Event('web.blibb.getBlibb')
     if blibb_id is None:
         abort(404)
 
@@ -85,7 +88,6 @@ def getBlibb(blibb_id=None, params=None):
     else:
         r = Blibb.get_by_id_params(blibb_id, params)
 
-    e.save()
     if r != 'null':
         return jsonify(r)
     else:
@@ -95,10 +97,8 @@ def getBlibb(blibb_id=None, params=None):
 @mod.route('/<blibb_id>/template', methods=['GET'])
 @crossdomain(origin='*')
 def getBlibbTemplate(blibb_id=None):
-    e = Event('web.blibb.getBlibbTemplate')
     b = Blibb()
     r = b.get_template(blibb_id)
-    e.save()
     if r != 'null':
         return r
     else:
@@ -107,10 +107,8 @@ def getBlibbTemplate(blibb_id=None):
 
 @mod.route('/<blibb_id>/view', methods=['GET'])
 def getBlibbView(blibb_id=None, view_name='null'):
-    e = Event('web.blibb.getBlibbView')
     if is_valid_id(blibb_id):
         r = Blibb.get_template_view(blibb_id)
-        e.save()
         if r != 'null':
             return jsonify(r)
         else:
@@ -122,34 +120,28 @@ def getBlibbView(blibb_id=None, view_name='null'):
 @mod.route('/<username>', methods=['GET'])
 @support_jsonp
 def getBlibbByUser(username=None):
-    e = Event('web.blibb.getBlibbByUser')
     b = Blibb()
     if username is None:
         abort(404)
     res = b.get_by_user(username)
-    e.save()
     return jsonify(res)
 
 
 @mod.route('/<username>/group', methods=['GET'])
 def getGroupBlibbByUser(username=None):
-    e = Event('web.blibb.getGroupBlibbByUser')
     b = Blibb()
     if username is None:
         abort(404)
     res = b.getByGroupUser(username)
-    e.save()
     return res
 
 
 @mod.route('/fork', methods=['POST'])
 def fork():
-    e = Event('web.blibb.fork')
     key = request.form['login_key']
     user = get_user_name(key)
     target_id = request.form['b']
     Blibb.fork(target_id, user)
-    e.save()
     return json.dumps('ok')
 
 
@@ -159,7 +151,6 @@ def fork():
 
 @mod.route('/tag', methods=['POST'])
 def newTag():
-    e = Event('web.blibb.newTag')
     target_id = None
     target = None
     key = request.form['k']
@@ -169,28 +160,24 @@ def newTag():
         tag = request.form['t']
         target.addTag(target_id, tag)
 
-    e.save()
     return json.dumps('ok')
 
 
 @mod.route('/action/image', methods=['POST'])
 @crossdomain(origin='*')
 def updateImage():
-    e = Event('web.blibb.updateImage')
     object_id = request.form['object_id']
     image_id = request.form['image_id']
     if object_id is None:
         abort(404)
     if is_valid_id(image_id) and is_valid_id(object_id):
         Blibb.add_picture({'_id': ObjectId(object_id)}, image_id)
-    e.save()
     return 'ok'
 
 
 @mod.route('/actions/webhook', methods=['POST'])
 @crossdomain(origin='*')
 def add_webhook():
-    e = Event('web.blibb.add_webhook')
     key = request.form['login_key']
     bid = request.form['blibb_id']
     callback = request.form['callback']
@@ -207,14 +194,12 @@ def add_webhook():
             abort(401)
     else:
         res['error'] = 'Object Id is not valid'
-    e.save()
     return jsonify(res)
 
 
 @mod.route('/actions/group', methods=['POST'])
 @crossdomain(origin='*')
 def add_user_to_group():
-    e = Event('web.blibb.add_user_to_group')
     key = request.form['login_key']
     bid = request.form['blibb_id']
     username = request.form['username']
@@ -232,7 +217,6 @@ def add_user_to_group():
             res['error'] = 'User not found'
     else:
         res['error'] = 'Object Id is not valid'
-    e.save()
     return jsonify(res)
 
 
