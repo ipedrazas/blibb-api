@@ -146,7 +146,7 @@ class ControlTemplate(object):
                     html_read += html.get('read', '')
                     html_write += html.get('write', '')
                     table_head += '<th>' + c['name'] + '</th>'
-                    row += '<td>{{' + c['slug'] + '}}</td>'
+                    row += '<td>{{{' + c['slug'] + '}}}</td>'
 
                 html_table = html_table.replace('<blibb:entry value="labels"/>', table_head)
                 html_table = html_table.replace('<blibb:entry/>', row)
