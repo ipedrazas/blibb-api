@@ -76,6 +76,10 @@ class Blitem(object):
     @classmethod
     def get_item(self, filter, fields={}):
         doc = objects.find_one(filter)
+        doc['_id'] = str(doc['_id'])
+        doc['b'] = str(doc['b'])
+        date = doc['c']
+        doc['c'] = date.strftime("%d/%m/%y")
         return doc
 
     def getById(self, obj_id):
@@ -84,7 +88,7 @@ class Blitem(object):
         return Message.get('id_not_valid')
 
     @classmethod
-    def flat_object(self, doc, attributes):
+    def flat_object(self, doc, attributes={}):
         blitem = dict()
         fields = []
         elements = []
@@ -101,7 +105,7 @@ class Blitem(object):
                     field = t + '-' + s
                     if field not in fields:
                         fields.append(field)
-                    blitem[r['s']] = r['v']
+                    blitem[r['s']] = r['cv'] if 'cv' in r else r['v']
                 blitem['fields'] = fields
                 if attributes.get('elements', False):
                     blitem['elements'] = elements
@@ -113,7 +117,7 @@ class Blitem(object):
 
     @classmethod
     def get_flat(self, obj_id):
-        doc = objects.find_one({'_id': ObjectId(obj_id)})
+        doc = self.get_item({'_id': ObjectId(obj_id)})
         return self.flat_object(doc)
 
     @classmethod

@@ -82,7 +82,7 @@ def updateTwitterItem(user_list, namesBag):
             for item in items:
                 type = item['t']
                 if ControlType.is_twitter(type):
-                    item['v'] = user
+                    item['cv'] = user
             Blitem.save(blitem)
 
 
