@@ -59,6 +59,32 @@ def newItem():
     return jsonify(Message.get('id_not_valid'))
 
 
+@mod.route('', methods=['PUT'])
+@crossdomain(origin='*')
+def updateItem():
+    bid = request.form['blibb_id']
+    key = request.form['login_key']
+    tags = request.form['tags']
+    item_id = request.form['item_id']
+    app_token = request.form['app_token']
+
+    user = utils.get_user_name(key)
+    current_app.logger.info('labels: ' + str(user))
+    if utils.is_valid_id(bid):
+        b = Blibb.get_object({'_id': ObjectId(bid)}, {'u': 1, 't.i.n': 1, 't.i.s': 1})
+        if Blibb.can_write(user, app_token, bid):
+            labels = Blibb.get_labels(b.get('t'))
+            current_app.logger.info('labels: ' + str(labels))
+            bitems = Blitem.get_items_from_request(labels, request)
+            current_app.logger.info('items from request: ' + str(bitems))
+            blitem_id = Blitem.update(item_id, bid, user, bitems, tags)
+            Blitem.post_process(blitem_id, bitems)
+            return blitem_id
+        else:
+            abort(401)
+    return jsonify(Message.get('id_not_valid'))
+
+
 @mod.route('/fields/<blibb_id>', methods=['GET'])
 @support_jsonp
 def getBlitemFields(blibb_id=None):

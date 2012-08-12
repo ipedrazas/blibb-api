@@ -77,12 +77,13 @@ def updateTwitterItem(user_list, namesBag):
         u_id = getObjectId(name, namesBag)
         if u_id is not None:
             logger.debug('Update Item ' + str(u_id) + ' with ' + str(user))
-            blitem = Blitem.get_item({'_id': ObjectId(u_id)})
+            blitem = Blitem.get({'_id': ObjectId(u_id)})
             items = blitem['i']
             for item in items:
                 type = item['t']
                 if ControlType.is_twitter(type):
                     item['cv'] = user
+            logger.debug(str(blitem))
             Blitem.save(blitem)
 
 

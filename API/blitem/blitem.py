@@ -18,18 +18,24 @@ from API.contenttypes.song import Song
 from API.error import Message
 from API.utils import is_valid_id, send_url, queue_twitter_resolution
 import re
-
+from blinker import signal
 
 conn = Connection()
 db = conn['blibb']
 objects = db['blitems']
 
-from blinker import signal
-
 
 def do_post_process(item):
     print 'signal:' + str(item)
     current_app.logger.info(str(item))
+    object_id = str(item['_id'])
+    items = item['i']
+    for element in items:
+        typex = element['t']
+        if ControlType.is_url(typex):
+            send_url(object_id, element['v'])
+        elif ControlType.is_twitter(typex):
+            queue_twitter_resolution(object_id, element['v'])
 
 
 post_process = signal('item-post-process')
@@ -64,18 +70,41 @@ class Blitem(object):
         else:
             return Message.get('id_not_valid')
 
-    def update(self, attr, value):
-        self.objects.update(
-                {u"_id": ObjectId(self.id)}, {attr: value}
-            )
+    @classmethod
+    def update(self, item_id, blibb_id, user, items, tags=None):
+        tag_list = []
+        if is_valid_id(blibb_id) and is_valid_id(item_id):
+            # bid = ObjectId(blibb_id)
+            # b = Blibb.get_object({'_id': bid}, {'s': 1})
+            # bs = b['s']
+            if tags is not None:
+                if ',' in tags:
+                    tag_list = list(set(tags.lower().split(',')))
+                else:
+                    tag_list = list(set(tags.lower().split()))
+                for t in tag_list:
+                    Blibb.add_tag(blibb_id, t)
+
+            # now = datetime.utcnow()
+            doc = {"_id": item_id, "b": blibb_id, "i": items}
+            objects.update({"_id": ObjectId(item_id)}, {'$set': {"i": items}})
+            post_process.send(doc)
+            return item_id
+        else:
+            return Message.get('id_not_valid')
 
     @classmethod
     def save(self, item):
         objects.save(item)
 
     @classmethod
-    def get_item(self, filter, fields={}):
+    def get(self, filter, fields={}):
         doc = objects.find_one(filter)
+        return doc
+
+    @classmethod
+    def get_item(self, filter, fields={}):
+        doc = self.get(filter)
         doc['_id'] = str(doc['_id'])
         doc['b'] = str(doc['b'])
         date = doc['c']
