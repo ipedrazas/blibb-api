@@ -44,9 +44,6 @@ post_process.connect(do_post_process)
 
 class Blitem(object):
 
-    def __init__(self):
-        pass
-
     @classmethod
     def insert(self, blibb_id, user, items, tags=None):
         tag_list = []
@@ -290,3 +287,32 @@ class Blitem(object):
                 send_url(obj_id, blitem['v'])
             elif ControlType.is_twitter(typex):
                 queue_twitter_resolution(obj_id, blitem['v'])
+
+    @classmethod
+    def can_write(cls, user, blitem_id):
+        if is_valid_id(blitem_id):
+            doc = cls.get({'_id': ObjectId(blitem_id)})
+            blibb_id = str(doc['b'])
+            return Blibb.can_write()(user, '', blibb_id)
+        return False
+
+    @classmethod
+    def vote_up(cls, item_id, user):
+        return cls.vote(item_id, user, 1, 'm.v.u')
+
+    @classmethod
+    def vote_down(cls, item_id, user):
+        return cls.vote(item_id, user, -1, 'm.v.d')
+
+    @classmethod
+    def vote(cls, item_id, user, vote, att):
+        if is_valid_id(item_id):
+            current_app.logger.info(item_id + ' ' + user + ' ' + str(vote) + ' ' + att)
+            elem = db['votes'].find_one({'i': ObjectId(item_id), 'u': user})
+            if elem is None:
+                objects.update({"_id": ObjectId(item_id)}, {"$inc": {att: vote}})
+                db['votes'].insert({'u': user, 'i': ObjectId(item_id), 'v': vote})
+                return {'vote': 'ok'}
+            else:
+                return {'error': 'User has already voted'}
+        return {'error': 'Object not valid'}

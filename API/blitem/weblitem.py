@@ -107,6 +107,18 @@ def getBlitem(blitem_id=None):
     abort(404)
 
 
+@mod.route('/<blitem_id>', methods=['DELETE'])
+@support_jsonp
+def deleteBlitem(blitem_id=None):
+    key = request.form['login_key']
+    user = utils.get_user_name(key)
+    if utils.is_valid_id(blitem_id):
+        if Blitem.can_write(user, blitem_id):
+            Blitem.remove(blitem_id)
+
+    abort(404)
+
+
 @mod.route('/tag', methods=['POST'])
 @crossdomain(origin='*')
 def newTag():
@@ -143,3 +155,23 @@ def getItemsByBlibbAndView(blibb_id=None, view='Default'):
         return r
     else:
         abort(404)
+
+
+@mod.route('/up', methods=['POST'])
+@support_jsonp
+def voteUp(blibb_id=None, page=1):
+    item_id = request.form['item_id']
+    key = request.form['login_key']
+    user = utils.get_user_name(key)
+    r = Blitem.vote_up(item_id, user)
+    return jsonify(r)
+
+
+@mod.route('/down', methods=['POST'])
+@support_jsonp
+def voteDown(blibb_id=None, page=1):
+    item_id = request.form['item_id']
+    key = request.form['login_key']
+    user = utils.get_user_name(key)
+    r = Blitem.vote_down(item_id, user)
+    return jsonify(r)

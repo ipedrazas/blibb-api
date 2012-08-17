@@ -51,6 +51,7 @@ class ControlTemplate(object):
                     item['tx'] = control['type']
                     item['o'] = int(control['order'])
                     item['s'] = slugify(control['name'])
+                    item['m'] = True if control['multi'] == 'true' else False
                     if 'items' in control:
                         item['i'] = control.get('items')
                     items.append(item)
