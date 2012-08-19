@@ -107,14 +107,14 @@ def getBlitem(blitem_id=None):
     abort(404)
 
 
-@mod.route('/<blitem_id>', methods=['DELETE'])
+@mod.route('/<blitem_id>/<login_key>', methods=['DELETE'])
 @support_jsonp
-def deleteBlitem(blitem_id=None):
-    key = request.form['login_key']
-    user = utils.get_user_name(key)
+@crossdomain(origin='*')
+def deleteBlitem(blitem_id=None, login_key=None):
+    user = utils.get_user_name(login_key)
     if utils.is_valid_id(blitem_id):
         if Blitem.can_write(user, blitem_id):
-            Blitem.remove(blitem_id)
+            Blitem.remove({'_id': ObjectId(blitem_id)})
 
     abort(404)
 

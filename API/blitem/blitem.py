@@ -45,6 +45,11 @@ post_process.connect(do_post_process)
 class Blitem(object):
 
     @classmethod
+    def remove(self, filter):
+        if filter is not None:
+            objects.update(filter, {'$set': {'del': True}})
+
+    @classmethod
     def insert(self, blibb_id, user, items, tags=None):
         tag_list = []
         if is_valid_id(blibb_id):
@@ -253,6 +258,7 @@ class Blitem(object):
         blitem = {}
         blitem['t'] = typex
         blitem['s'] = slug
+
         if ControlType.is_multitext(typex):
             value = ControlType.autoP(value)
         elif ControlType.is_image(typex):
@@ -279,7 +285,6 @@ class Blitem(object):
 
     @classmethod
     def post_process(self, obj_id, items):
-
         for blitem in items:
             # print blitem
             typex = blitem['t']
@@ -293,7 +298,8 @@ class Blitem(object):
         if is_valid_id(blitem_id):
             doc = cls.get({'_id': ObjectId(blitem_id)})
             blibb_id = str(doc['b'])
-            return Blibb.can_write()(user, '', blibb_id)
+            current_app.logger.info('can_write' + user + ' ' + blibb_id)
+            return Blibb.can_write(user, '', blibb_id)
         return False
 
     @classmethod

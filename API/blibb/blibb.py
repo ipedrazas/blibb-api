@@ -115,8 +115,8 @@ class Blibb(object):
                 nw = {'num_writes': stats.get('nw', 0)}
                 ni = {'num_items': stats.get('ni', 0)}
                 buf['stats'] = [nv, nw, ni]
-            if 'acl' in doc:
-                buf['access'] = {'read': ACL.get_access(doc.get('acl').get('read')), 'write': ACL.get_access(doc.get('acl').get('write'))}
+            if 'a' in doc:
+                buf['access'] = {'read': ACL.get_access(doc.get('a').get('read')), 'write': ACL.get_access(doc.get('a').get('write'))}
             if 'img' in doc:
                 img = doc['img']
                 if 'id' in img:

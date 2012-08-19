@@ -11,7 +11,7 @@ from bson.objectid import ObjectId
 from pymongo import Connection
 from API.helpers import slugify
 from API.control.bcontrol import Control
-import API.utils as utils
+from API.utils import is_valid_id, read_file, parse_text
 import json
 import pystache
 
@@ -39,12 +39,12 @@ class ControlTemplate(object):
     def add_controls(self, template_id, controls, user):
         items = []
         current_app.logger.info("add_controls " + str(controls))
-        if utils.is_valid_id(template_id):
+        if is_valid_id(template_id):
             controls = json.loads(controls)
             for control in controls:
                 item = {}
                 cid = control.get('cid', '')
-                if utils.is_valid_id(cid):
+                if is_valid_id(cid):
                     item['c'] = ObjectId(cid)
                     item['n'] = control['name']
                     item['h'] = control['help']
@@ -114,7 +114,7 @@ class ControlTemplate(object):
 
     @classmethod
     def get_by_id(self, template_id):
-        if utils.is_valid_id(template_id):
+        if is_valid_id(template_id):
             doc = self.get_object({'_id': ObjectId(template_id)})
             return self.flat_object(doc)
         else:
@@ -135,8 +135,8 @@ class ControlTemplate(object):
         html_write = ''
         table_head = ''
         row = '<tr>'
-        html_table = utils.read_file('/scripts/templates/base/table.html')
-        if utils.is_valid_id(template_id):
+        html_table = read_file('/scripts/templates/base/table.html')
+        if is_valid_id(template_id):
             template = cls.get_by_id(template_id)
             # get controls
             controls = template.get('controls')
@@ -154,17 +154,16 @@ class ControlTemplate(object):
                 res = dict()
                 data = dict()
                 data['entry'] = html_read
-                res['ri'] = html_read
-                res['rb'] = cls.get_blibb_template_wrapper(data)
-                res['wb'] = html_write
+                res['ri'] = parse_text(html_read)
+                res['rb'] = parse_text(cls.get_blibb_template_wrapper(data))
+                res['wb'] = parse_text(html_write)
                 box = {'name': 'default', 'view': res}
                 cls.publish(box, template_id)
                 table_dict = dict()
-                table_dict['ri'] = '<td>{{' + c['slug'] + '}}</td>'
-                table_dict['rb'] = html_table
+                table_dict['ri'] = parse_text('<td>{{' + c['slug'] + '}}</td>')
+                table_dict['rb'] = parse_text(html_table)
                 table = {'name': 'table', 'view': table_dict}
                 return cls.publish(table, template_id)
-
         return False
 
     @classmethod
@@ -182,7 +181,7 @@ class ControlTemplate(object):
 
     @classmethod
     def get_blibb_template_wrapper(self, data):
-        html = utils.read_file('/scripts/templates/base/base.html')
+        html = read_file('/scripts/templates/base/base.html')
         return html.replace('<blibb:entry/>', data['entry'])
 
     @classmethod

@@ -13,6 +13,10 @@ import json
 import datetime
 
 
+def parse_text(text):
+    return " ".join(text.split())
+
+
 def allowed_file(filename):
     allowed_extensions = current_app.config.get('ALLOWED_EXTENSIONS')
     # allowed_extensions = set(['txt', 'pdf', 'jpg', 'jpeg', 'gif', 'png', 'xls'])
