@@ -134,6 +134,7 @@ def addItemtoBlibb(username=None, slug=None):
 
 
 @mod.route('/<username>/<slug>', methods=['GET'])
+@crossdomain(origin='*')
 @support_jsonp
 def get_blibb_by_slug(username=None, slug=None):
     attributes = {'tags': True}

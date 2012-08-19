@@ -159,7 +159,7 @@ class Blitem(object):
         return docs
 
     @classmethod
-    def get_all_items(self, blibb_id, page, attributes={}, flat=True):
+    def get_all_items(self, blibb_id, page, attributes={'tags': True, 'comments': True}, flat=True):
         if is_valid_id(blibb_id):
             docs = self.get_items_page({'b': ObjectId(blibb_id)}, {'i': 1, 'tg': 1, 'b': 1}, page)
             result = dict()
@@ -316,3 +316,8 @@ class Blitem(object):
             else:
                 return {'error': 'User has already voted'}
         return {'error': 'Object not valid'}
+
+    @classmethod
+    def increase_comment_counter(cls, item_id):
+        if is_valid_id(item_id):
+            objects.update({"_id": ObjectId(item_id)}, {"$inc": {'nc': 1}})
