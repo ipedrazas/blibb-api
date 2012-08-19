@@ -1,22 +1,26 @@
 <link rel="stylesheet" href="/css/bootstrap.css">
 <div class="container">
         <div class="row" style="margin-top: 50px;">
-            
+
             <div class="page-header">
                 <h1 data-blibb-name="{{name}}">{{name}} <small data-blibb-name="{{desc}}">{{desc}}</small></h1>
             </div>
             <div>
                 <p data-blibb-date="{{created}}">{{created}}</p>
                 <p data-blibb-author="{{owner}}">{{owner}}</p>
-            </div>            
+            </div>
         </div>
         <div class="row">
             {{#ENTRIES}}
             <!-- Entry -->
+                <div class=\"entryBox\">
                     <div class="span3 well">
                         <blibb:entry/>
                     </div>
+                    <blibb:tags/>
+                    <blibb:comments/>
+                </div>
             {{/ENTRIES}}
-        </div>
+        </div><!-- end Row -->
 </div>
 <script type="text/javascript" src="/js/libs/jquery-1.7.1.min.js"></script>

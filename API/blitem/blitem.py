@@ -144,7 +144,7 @@ class Blitem(object):
     @classmethod
     def get_flat(self, obj_id):
         doc = self.get_item({'_id': ObjectId(obj_id)})
-        return self.flat_object(doc)
+        return self.flat_object(doc, {'tags': True, 'comments': True})
 
     @classmethod
     def get_comments(self, obj_id):
