@@ -8,7 +8,7 @@ from API.blibb.blibb import Blibb
 from API.event.event import Event
 
 
-import API.utils as utils
+from API.utils import get_user_name, is_valid_id
 from bson.objectid import ObjectId
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
@@ -39,9 +39,9 @@ def newItem():
     tags = request.form['tags']
     app_token = request.form['app_token']
 
-    user = utils.get_user_name(key)
+    user = get_user_name(key)
     current_app.logger.info('labels: ' + str(user))
-    if utils.is_valid_id(bid):
+    if is_valid_id(bid):
         b = Blibb.get_object({'_id': ObjectId(bid)}, {'u': 1, 't.i.n': 1, 't.i.s': 1})
         if Blibb.can_write(user, app_token, bid):
             labels = Blibb.get_labels(b.get('t'))
@@ -68,9 +68,9 @@ def updateItem():
     item_id = request.form['item_id']
     app_token = request.form['app_token']
 
-    user = utils.get_user_name(key)
+    user = get_user_name(key)
     current_app.logger.info('labels: ' + str(user))
-    if utils.is_valid_id(bid):
+    if is_valid_id(bid):
         b = Blibb.get_object({'_id': ObjectId(bid)}, {'u': 1, 't.i.n': 1, 't.i.s': 1})
         if Blibb.can_write(user, app_token, bid):
             labels = Blibb.get_labels(b.get('t'))
@@ -88,7 +88,7 @@ def updateItem():
 @mod.route('/fields/<blibb_id>', methods=['GET'])
 @support_jsonp
 def getBlitemFields(blibb_id=None):
-    if utils.is_valid_id(blibb_id):
+    if is_valid_id(blibb_id):
         b = Blibb.get_object({'_id': ObjectId(blibb_id)}, {'u': 1, 't.i.n': 1, 't.i.s': 1})
         res = Blibb.getLabels(b.get('t'))
     else:
@@ -111,10 +111,11 @@ def getBlitem(blitem_id=None):
 @support_jsonp
 @crossdomain(origin='*')
 def deleteBlitem(blitem_id=None, login_key=None):
-    user = utils.get_user_name(login_key)
-    if utils.is_valid_id(blitem_id):
+    user = get_user_name(login_key)
+    if is_valid_id(blitem_id):
         if Blitem.can_write(user, blitem_id):
             Blitem.remove({'_id': ObjectId(blitem_id)})
+            return jsonify({'response': 'deleted'})
 
     abort(404)
 
@@ -124,7 +125,7 @@ def deleteBlitem(blitem_id=None, login_key=None):
 def newTag():
     target_id = None
     key = request.form['k']
-    user = utils.get_user_name(key)
+    user = get_user_name(key)
     target_id = request.form['i']
 
     if Blitem.isOwner(target_id, user):
@@ -162,7 +163,7 @@ def getItemsByBlibbAndView(blibb_id=None, view='Default'):
 def voteUp(blibb_id=None, page=1):
     item_id = request.form['item_id']
     key = request.form['login_key']
-    user = utils.get_user_name(key)
+    user = get_user_name(key)
     r = Blitem.vote_up(item_id, user)
     return jsonify(r)
 
@@ -172,6 +173,6 @@ def voteUp(blibb_id=None, page=1):
 def voteDown(blibb_id=None, page=1):
     item_id = request.form['item_id']
     key = request.form['login_key']
-    user = utils.get_user_name(key)
+    user = get_user_name(key)
     r = Blitem.vote_down(item_id, user)
     return jsonify(r)

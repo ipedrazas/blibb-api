@@ -47,7 +47,7 @@ class Blitem(object):
     @classmethod
     def remove(self, filter):
         if filter is not None:
-            objects.update(filter, {'$set': {'del': True}})
+            objects.update(filter, {'$set': {'st': 'del'}})
 
     @classmethod
     def insert(self, blibb_id, user, items, tags=None):
@@ -65,7 +65,7 @@ class Blitem(object):
                     Blibb.add_tag(blibb_id, t)
 
             now = datetime.utcnow()
-            doc = {"b": bid, "u": user, "bs": bs, "c": now, "i": items, 'tg': tag_list}
+            doc = {"b": bid, "u": user, "bs": bs, "c": now, "i": items, 'tg': tag_list, 'st': 'active'}
             newId = objects.insert(doc)
             post_process.send(doc)
             return str(newId)
