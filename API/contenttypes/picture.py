@@ -4,7 +4,6 @@
 #
 #
 
-
 from datetime import datetime
 from API.base import BaseObject
 import json
@@ -12,9 +11,6 @@ from bson import json_util
 from pymongo import Connection
 from bson.objectid import ObjectId
 
-from tempfile import NamedTemporaryFile
-from shutil import copyfileobj
-from os import remove
 
 conn = Connection()
 db = conn['blibb']
@@ -61,6 +57,19 @@ class Picture(BaseObject):
             return
         pict = self.objects.find_one({'_id': ObjectId(pict_id)})
         return json.dumps(pict, default=json_util.default)
+
+    @classmethod
+    def create(cls, owner, items={}, blibb_id=None):
+        now = datetime.utcnow()
+        doc = {"u": owner, "c": now, "i": items}
+        if blibb_id:
+            doc["b"] = blibb_id
+        newId = objects.insert(doc)
+        return str(newId)
+
+    @classmethod
+    def add_url(cls, picture_id, url):
+        objects.update({'_id': ObjectId(picture_id)}, {'$set': {'l': url}})
 
     @classmethod
     def dump_image(self, picture_id=None):

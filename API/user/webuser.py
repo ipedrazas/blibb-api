@@ -187,13 +187,12 @@ def getUserByName(user_name=None):
 @mod.route('/user/image', methods=['POST'])
 @crossdomain(origin='*')
 def setImageUser():
-    user_id = request.form['object_id']
-    image_id = request.form['image_id']
-    if user_id is None:
-        abort(404)
+    user_id = request.form['user_id']
+    image_url = request.form['image_url']
     if is_valid_id(user_id):
-        User.add_picture({'_id': ObjectId(user_id)}, image_id)
-    return 'ok'
+        User.add_picture({'_id': ObjectId(user_id)}, image_url)
+        return jsonify({'response': 'ok'})
+    return abort(404)
 
 
 @mod.route('/user', methods=['POST'])

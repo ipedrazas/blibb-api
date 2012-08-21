@@ -14,14 +14,24 @@ class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
     ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'jpg', 'jpeg', 'gif', 'png', 'xls'])
+    IMAGE_EXTENSIONS = set(['jpg', 'jpeg', 'gif', 'png'])
+    ATTACHMENT_EXTENSIONS = set(['doc', 'xls', 'pdf', 'txt', 'zip'])
     UPLOAD_FOLDER = '/home/ivan/workspace/blibb-api/API/test/'
+    STATIC_URL = 'http://static.blibb.net/'
+    EXPIRE = 3600
+    NUM_URL = 3
 
 
 class TestConfig(Config):
     DEBUG = False
     TESTING = True
     ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'jpg', 'jpeg', 'gif', 'png', 'xls'])
+    IMAGE_EXTENSIONS = set(['jpg', 'jpeg', 'gif', 'png'])
+    ATTACHMENT_EXTENSIONS = set(['doc', 'xls', 'pdf', 'txt', 'zip'])
     UPLOAD_FOLDER = '/home/ivan/workspace/blibb-api/API/test/'
+    STATIC_URL = 'http://static.blibb.it/'
+    EXPIRE = 3600
+    NUM_URL = 3
 
 
 class DevelopmentConfig(Config):
@@ -29,4 +39,9 @@ class DevelopmentConfig(Config):
     DEBUG = True
     TESTING = True
     ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'jpg', 'jpeg', 'gif', 'png', 'xls'])
+    IMAGE_EXTENSIONS = set(['jpg', 'jpeg', 'gif', 'png'])
+    ATTACHMENT_EXTENSIONS = set(['doc', 'xls', 'pdf', 'txt', 'zip'])
     UPLOAD_FOLDER = '/home/ivan/workspace/blibb-api/API/test/'
+    STATIC_URL = 'http://static.blibb.it/'
+    EXPIRE = 3600
+    NUM_URL = 3

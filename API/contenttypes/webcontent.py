@@ -12,12 +12,15 @@ from API.contenttypes.song import Song
 from API.contenttypes.bookmark import Bookmark
 from API.contenttypes.picture import Picture
 from API.event.event import Event
-
-import API.utils as utils
+from bson.objectid import ObjectId
+from API.utils import get_user_name, allowed_file, is_valid_id, is_image, is_attachment
 import API.loader.excel as loader
 
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
+
+from boto import connect_s3
+from boto.s3.key import Key
 
 mod = Blueprint('content', __name__, url_prefix='')
 
@@ -27,13 +30,40 @@ mod = Blueprint('content', __name__, url_prefix='')
 
 
 @mod.route('/image/upload', methods=['POST', 'OPTIONS'])
+@crossdomain(origin='*')
 def upload():
+    login_key = request.form['login_key']
+    user = get_user_name(login_key)
+    bid = None
+    if 'blibb_id' in request.form:
+        bid = request.form['blibb_id']
+    blibb_id = None
+    if bid and is_valid_id(bid):
+        blibb_id = ObjectId(bid)
     file = request.files['file']
-    if file and utils.allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-        return jsonify({'upload': 'ok'})
+    if file:
+        object_id = None
+        if is_image(file.filename):
+            object_id = Picture.create(user, {}, blibb_id)
+        elif is_attachment(file.filename):
+            object_id = Picture.create(user, {}, blibb_id)
 
+        filename = secure_filename(object_id + '-' + file.filename)
+        c = connect_s3()
+        bucket = c.create_bucket('static.blibb.it')
+        k = Key(bucket)
+        k.key = user + '/' + filename
+        k.set_metadata('owner', user)
+        k.content_type = file.content_type
+        k.set_contents_from_string(file.read())
+        k.make_public()
+        url = current_app.config.get('STATIC_URL') + k.key
+        if is_image(file.filename):
+            Picture.add_url(object_id, url)
+        elif is_attachment(file.filename):
+            object_id = Picture.add_url(file.filename)
+
+        return jsonify({'upload': url})
     return jsonify({'upload': 'error'})
 
 
@@ -55,7 +85,7 @@ def set_picture_data():
 def get_picture_data(picture_id=None):
     e = Event('getImage.get_picture_data')
     r = None
-    if utils.is_valid_id(picture_id):
+    if is_valid_id(picture_id):
         r = Picture.dump_image(picture_id)
     e.save()
     if r is not None:
@@ -70,7 +100,7 @@ def newPicture():
     pict = Picture()
     blibb = request.form['b']
     key = request.form['k']
-    user = utils.get_user_name(key)
+    user = get_user_name(key)
     items = dict()
     r = pict.insert(blibb, user, items)
     e.save()
@@ -85,7 +115,7 @@ def newPicture():
 def getImage(pict_id=None, size=160):
     e = Event('web.content.getImage')
     r = None
-    if utils.is_valid_id(pict_id):
+    if is_valid_id(pict_id):
         try:
             img = Picture.dump_image(pict_id)
             g = file(Picture.get_image_by_size(img, size))
@@ -134,7 +164,7 @@ def newSong():
     song = Song()
     blibb = request.form['b']
     key = request.form['k']
-    user = utils.get_user_name(key)
+    user = get_user_name(key)
     items = dict()
     r = song.insert(blibb, user, items)
     e.save()
@@ -156,7 +186,7 @@ def newBookmark(song_id=None):
     b = request.form['b']
     bn = request.form['bn']
     k = request.form['k']
-    user = utils.get_user_name(k)
+    user = get_user_name(k)
     url = request.form['url']
     tags = []
     if 'tags' in request.form:
@@ -178,15 +208,15 @@ def loader_excel():
     event = Event('web.content.loader_excel')
     key = request.form['login_key']
     bid = request.form['blibb_id']
-    user = utils.get_user_name(key)
+    user = get_user_name(key)
     res = dict()
     file = request.files['file']
-    if file and utils.allowed_file(file.filename):
+    if file and allowed_file(file.filename):
         try:
             filename = secure_filename(file.filename)
             excel_file = os.path.join(current_app.config.get('UPLOAD_FOLDER'), filename)
             file.save(excel_file)
-            if utils.is_valid_id(bid):
+            if is_valid_id(bid):
                 fields = Blibb.get_fields(bid)
                 excel_data = loader.excel_to_dict(excel_file, fields)
                 current_app.logger.debug(excel_data)

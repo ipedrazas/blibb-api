@@ -1,10 +1,10 @@
 
 
-from flask import Blueprint, request, current_app, jsonify
+from flask import Blueprint, request, current_app, jsonify, abort, g
 from API.comment.comment import Comment
 from API.event.event import Event
 from API.blitem.blitem import Blitem
-import API.utils as utils
+from API.utils import get_user_name, is_valid_id
 
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
@@ -13,24 +13,29 @@ from API.decorators import support_jsonp
 mod = Blueprint('comment', __name__, url_prefix='/comment')
 
 
-@mod.route('/hi')
-def hello_world():
-    return "Hello World, this is comment'"
+@mod.before_request
+def before_request():
+    g.e = Event(request.path)
+
+
+@mod.teardown_request
+def teardown_request(exception):
+    g.e.save()
 
 
 #####################
 ##### COMMENTS  #####
 #####################
 
+
 @mod.route('', methods=['POST'])
 @crossdomain(origin='*')
 def newComment():
-    e = Event('web.newComment')
     comment = Comment()
     key = request.form['login_key']
     target_id = request.form['item_id']
     text = request.form['comment']
-    user = utils.get_user_name(key)
+    user = get_user_name(key)
     if user is not None:
         pObject = Blitem()
         c_id = comment.insert(target_id, user, text)
@@ -42,16 +47,14 @@ def newComment():
         ###     assoc. blibb object
         #####
 
-    e.save()
     return jsonify({'error': 'user not found'})
 
 
 @mod.route('/<parent_id>', methods=['GET'])
 @support_jsonp
 def getComments(parent_id=None):
-    e = Event('web.getComments')
-    comment = Comment()
-    cs = comment.getCommentsById(parent_id)
-    e.save()
-
-    return jsonify({'comments': cs})
+    if is_valid_id(parent_id):
+        comment = Comment()
+        cs = comment.getCommentsById(parent_id)
+        return jsonify({'comments': cs})
+    abort(404)

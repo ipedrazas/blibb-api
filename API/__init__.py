@@ -18,13 +18,6 @@ else:
     app.config.from_object('API.config.ProductionConfig')
     app.logger.info("Config: Production")
 
-# Logging
-import logging
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s', datefmt='%Y%m%d-%H:%M%p',
-)
-
 
 @app.errorhandler(404)
 def not_found(error):

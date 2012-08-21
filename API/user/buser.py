@@ -5,9 +5,8 @@
 #
 
 
-from API.contenttypes.picture import Picture
 from datetime import datetime
-
+from flask import current_app
 from pymongo import Connection
 import hashlib
 import redis
@@ -70,7 +69,7 @@ class User(object):
         r = self.get_redis()
         userkey = hashlib.sha1(user['username'] + user['id'] + str(datetime.utcnow())).hexdigest()
         r.set(userkey, json.dumps(user))
-        expire = 3600
+        expire = current_app.config.get('EXPIRE')
         r.expire(userkey, expire)
 
         return userkey
@@ -85,13 +84,8 @@ class User(object):
         return self.flat_object(doc)
 
     @classmethod
-    def add_picture(self, filter, picture_id):
-        if picture_id is not None:
-            p = Picture()
-            image = p.dump_image(picture_id)
-            objects.update(filter, {"$set": {'i': image}}, True)
-            return picture_id
-        return 'error'
+    def add_picture(self, filter, image):
+        objects.update(filter, {"$set": {'u': image}}, True)
 
     @classmethod
     def is_admin(self, user):
@@ -118,7 +112,8 @@ class User(object):
                     buf['image'] = str(img['id'])
             if 'a' in doc:
                     buf['status'] = doc['a']
-
+            if 'u' in doc:
+                    buf['image_url'] = doc['u']
         return buf
 
     @classmethod

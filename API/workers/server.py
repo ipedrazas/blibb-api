@@ -16,16 +16,9 @@ from API.contenttypes.bookmark import Bookmark
 import API.utils as utils
 from API.control.bcontrol import BControl
 
-import logging
 
 print "URL Worker running at port 5555"
 
-logger = logging.getLogger('URL Worker')
-hdlr = logging.FileHandler(dirname(__file__) + 'urlWorker.log')
-formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-hdlr.setFormatter(formatter)
-logger.addHandler(hdlr)
-logger.setLevel(logging.DEBUG)
 
 context = zmq.Context()
 socket = context.socket(zmq.REP)

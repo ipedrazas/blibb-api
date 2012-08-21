@@ -17,11 +17,18 @@ def parse_text(text):
     return " ".join(text.split())
 
 
-def allowed_file(filename):
-    allowed_extensions = current_app.config.get('ALLOWED_EXTENSIONS')
-    # allowed_extensions = set(['txt', 'pdf', 'jpg', 'jpeg', 'gif', 'png', 'xls'])
-    return '.' in filename and \
-        filename.rsplit('.', 1)[1] in allowed_extensions
+def is_image(filename):
+    allowed_extensions = current_app.config.get('IMAGE_EXTENSIONS')
+    return allowed_file(filename, allowed_extensions)
+
+
+def is_attachment(filename):
+    allowed_extensions = current_app.config.get('ATTACHMENT_EXTENSIONS')
+    return allowed_file(filename, allowed_extensions)
+
+
+def allowed_file(filename, allowed_extensions):
+    return '.' in filename and filename.rsplit('.', 1)[1] in allowed_extensions
 
 
 def getTitle(url):
@@ -49,6 +56,8 @@ def get_key(key):
 def get_user_name(key):
     r = get_redis()
     juser = r.get(key)
+    expire = current_app.config.get('EXPIRE')
+    r.expire(key, expire)
     if juser:
         user = json.loads(juser)
         return user['username']
