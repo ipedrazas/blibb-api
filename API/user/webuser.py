@@ -216,6 +216,7 @@ def newUser():
 
 
 @mod.route('/<username>/<slug>/tag/<tag>', methods=['GET'])
+@crossdomain(origin='*')
 @support_jsonp
 def get_items_by_tag(username=None, slug=None, tag=None):
     if username is None or slug is None or tag is None:
@@ -232,6 +233,7 @@ def get_items_by_tag(username=None, slug=None, tag=None):
 
 
 @mod.route('/<username>/<slug>/<id>', methods=['GET'])
+@crossdomain(origin='*')
 @support_jsonp
 def get_item_by_id(username=None, slug=None, id=None):
     if username is None or  slug is None or id is None:
