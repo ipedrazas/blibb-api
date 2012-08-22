@@ -31,15 +31,13 @@ def teardown_request(exception):
 @mod.route('', methods=['POST'])
 @crossdomain(origin='*')
 def newComment():
-    comment = Comment()
     key = request.form['login_key']
     target_id = request.form['item_id']
     text = request.form['comment']
     user = get_user_name(key)
     if user is not None:
-        pObject = Blitem()
-        c_id = comment.insert(target_id, user, text)
-        pObject.increase_comment_counter(target_id)
+        c_id = Comment.insert(target_id, user, text)
+        Blitem.increase_comment_counter(target_id)
         return jsonify({'item': target_id, 'user': user, 'text': text, 'comment_id': c_id})
 
         #####
@@ -52,9 +50,9 @@ def newComment():
 
 @mod.route('/<parent_id>', methods=['GET'])
 @support_jsonp
+@crossdomain(origin='*')
 def getComments(parent_id=None):
     if is_valid_id(parent_id):
-        comment = Comment()
-        cs = comment.getCommentsById(parent_id)
+        cs = Comment.get_comments_by_id(parent_id)
         return jsonify({'comments': cs})
     abort(404)

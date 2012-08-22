@@ -87,6 +87,7 @@ def updateItem():
 
 @mod.route('/fields/<blibb_id>', methods=['GET'])
 @support_jsonp
+@crossdomain(origin='*')
 def getBlitemFields(blibb_id=None):
     if is_valid_id(blibb_id):
         b = Blibb.get_object({'_id': ObjectId(blibb_id)}, {'u': 1, 't.i.n': 1, 't.i.s': 1})
@@ -98,6 +99,7 @@ def getBlitemFields(blibb_id=None):
 
 @mod.route('/<blitem_id>', methods=['GET'])
 @support_jsonp
+@crossdomain(origin='*')
 def getBlitem(blitem_id=None):
     flat = request.args.get('flat')
     if flat:
@@ -109,6 +111,7 @@ def getBlitem(blitem_id=None):
 
 @mod.route('/<blitem_id>/<login_key>', methods=['DELETE'])
 @support_jsonp
+@crossdomain(origin='*')
 @crossdomain(origin='*')
 def deleteBlitem(blitem_id=None, login_key=None):
     user = get_user_name(login_key)
@@ -136,6 +139,7 @@ def newTag():
 
 @mod.route('/<blibb_id>/items', methods=['GET'])
 @support_jsonp
+@crossdomain(origin='*')
 def getAllItemsFlat(blibb_id=None, page=1):
     r = Blitem.get_all_items(blibb_id, page)
     if r != 'null':
@@ -146,6 +150,7 @@ def getAllItemsFlat(blibb_id=None, page=1):
 
 @mod.route('/<blibb_id>/v/<view>', methods=['GET'])
 @support_jsonp
+@crossdomain(origin='*')
 def getItemsByBlibbAndView(blibb_id=None, view='Default'):
     # This method returns all the blitems
     # by blibb and rendered with the view
@@ -160,6 +165,7 @@ def getItemsByBlibbAndView(blibb_id=None, view='Default'):
 
 @mod.route('/up', methods=['POST'])
 @support_jsonp
+@crossdomain(origin='*')
 def voteUp(blibb_id=None, page=1):
     item_id = request.form['item_id']
     key = request.form['login_key']
@@ -170,6 +176,7 @@ def voteUp(blibb_id=None, page=1):
 
 @mod.route('/down', methods=['POST'])
 @support_jsonp
+@crossdomain(origin='*')
 def voteDown(blibb_id=None, page=1):
     item_id = request.form['item_id']
     key = request.form['login_key']

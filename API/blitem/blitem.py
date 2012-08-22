@@ -153,9 +153,7 @@ class Blitem(object):
 
     @classmethod
     def get_comments(self, obj_id):
-        c = Comment()
-        cs = c.getCommentsById(obj_id)
-        return cs
+        return Comment.get_comments_by_id(obj_id)
 
     @classmethod
     def get_items_page(self, filter, fields, page=1):

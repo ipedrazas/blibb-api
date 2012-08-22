@@ -11,6 +11,7 @@ from API.user.buser import User
 from API.blibb.blibb import Blibb
 from API.blitem.blitem import Blitem
 from API.event.event import Event
+from API.comment.comment import Comment
 from API.utils import is_valid_id, get_key
 from bson.objectid import ObjectId
 from flask import Blueprint, request, abort, current_app, jsonify, make_response, g
@@ -60,6 +61,7 @@ def teardown_request(exception):
 
 
 @mod.route('/user/<login_key>', methods=['GET'])
+@crossdomain(origin='*')
 def getUser(login_key=None):
     return User.get_user(login_key)
 
@@ -145,6 +147,7 @@ def get_blibb_by_slug(username=None, slug=None):
 
 @mod.route('/<username>/<slug>.xml', methods=['GET'])
 @support_jsonp
+@crossdomain(origin='*')
 def get_as_rss(username=None, slug=None):
     if username is None or slug is None:
         return None
@@ -177,6 +180,7 @@ def get_by_slug(username=None, slug=None, url=None, attributes={}, flat=True):
 
 @mod.route('/user/name/<user_name>', methods=['GET'])
 @support_jsonp
+@crossdomain(origin='*')
 def getUserByName(user_name=None):
     if user_name is None:
         abort(404)
@@ -245,3 +249,14 @@ def get_item_by_id(username=None, slug=None, id=None):
             return  jsonify(Blitem.flat_object(items, {}))
     else:
         return jsonify(Message.get('id_not_valid'))
+
+
+@mod.route('/<username>/<slug>/comment/<item_id>', methods=['GET'])
+@support_jsonp
+@crossdomain(origin='*')
+def getComments(username=None, slug=None, item_id=None):
+    if is_valid_id(item_id):
+        cs = Comment.get_comments_by_id(item_id)
+        return jsonify({'comments': cs})
+    abort(404)
+

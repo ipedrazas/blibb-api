@@ -1,71 +1,49 @@
-# 
 #
-#	event.py
+#
+#   event.py
 #
 #
 
 
 from datetime import datetime
 from pymongo import Connection
-from API.base import BaseObject
 from bson.objectid import ObjectId
+from API.utils import is_valid_id
 
-import API.utils as utils
-
-class Comment(BaseObject):
-
-	def __init__(self):
-		super(Comment,self).__init__('blibb','comments')
-		self.__owner = None
-		self.__created = None
-		self.__parent = None
-		self.__text = None
-		self.__parentClass = None
-		
-	def insert(self, parent, owner, text):
-		now = datetime.utcnow()
-		if utils.is_valid_id(parent):
-			doc = {"p" : ObjectId(parent), "u": owner, "c": now, "t": text}
-			newId = self.objects.insert(doc)
-			return str(newId)
-
-	def insertJson(self,jsonData):
-		now = datetime.utcnow()
-		data = json.loads(jsonData)
-		newId = self.objects.insert(data)
-		sId = dict()
-		sId['id'] = str(newId)
-		return sId
-
-	def getCommentsById(self, obj_id):
-		if utils.is_valid_id(obj_id):
-			docs = self.objects.find({ 'p': ObjectId(obj_id)}).sort("c", -1)
-			ddocs = []
-			for d in docs:
-				ddocs.append(self.flatObject(d))
-			return ddocs
-		else:
-			return {'error': 'Object Id is not valid'}
+conn = Connection()
+db = conn['blibb']
+objects = db['comments']
 
 
-	def flatObject(self, comment):		
-		doc = dict()
-		doc['id'] = str(comment['_id'])
-		doc['parent'] = str(comment['p'])
-		doc['user'] = comment['u']
-		doc['comment'] = comment['t']
-		dd = str(comment['c'])
-		pos = dd.index('.')
-		doc['date'] = dd[:pos]
+class Comment(object):
 
-		return doc
+    @classmethod
+    def insert(cls, parent, owner, text):
+        now = datetime.utcnow()
+        if is_valid_id(parent):
+            doc = {"p": ObjectId(parent), "u": owner, "c": now, "t": text}
+            newId = objects.insert(doc)
+            return str(newId)
 
+    @classmethod
+    def get_comments_by_id(cls, obj_id):
+        if is_valid_id(obj_id):
+            docs = objects.find({'p': ObjectId(obj_id)}).sort("c", -1)
+            ddocs = []
+            for d in docs:
+                ddocs.append(cls.flatObject(d))
+            return ddocs
+        else:
+            return {'error': 'Object Id is not valid'}
 
-
-	def getCommentFlat(self, obj_id):
-		if utils.is_valid_id(obj_id):
-			doc = self.objects.find_one({ '_id': ObjectId(obj_id)	})			
-			return self.flatObject(doc)
-
-	
-	
+    @classmethod
+    def flatObject(self, comment):
+        doc = dict()
+        doc['id'] = str(comment['_id'])
+        doc['parent'] = str(comment['p'])
+        doc['user'] = comment['u']
+        doc['comment'] = comment['t']
+        dd = str(comment['c'])
+        pos = dd.index('.')
+        doc['date'] = dd[:pos]
+        return doc

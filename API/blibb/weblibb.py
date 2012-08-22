@@ -39,6 +39,7 @@ def teardown_request(exception):
 
 
 @mod.route('', methods=['POST'])
+@crossdomain(origin='*')
 def newBlibb():
     name = request.form['bname']
     desc = request.form['bdesc']
@@ -69,6 +70,7 @@ def newBlibb():
 
 
 @mod.route('/<blibb_id>/<login_key>', methods=['DELETE'])
+@crossdomain(origin='*')
 def deleteBlibb(blibb_id=None, login_key=None):
     user = get_user_name(login_key)
     if is_valid_id(blibb_id):
@@ -106,6 +108,7 @@ def getBlibbTemplate(blibb_id=None):
 
 
 @mod.route('/<blibb_id>/view', methods=['GET'])
+@crossdomain(origin='*')
 def getBlibbView(blibb_id=None, view_name='null'):
     if is_valid_id(blibb_id):
         r = Blibb.get_template_view(blibb_id)
@@ -118,6 +121,7 @@ def getBlibbView(blibb_id=None, view_name='null'):
 
 
 @mod.route('/<username>', methods=['GET'])
+@crossdomain(origin='*')
 @support_jsonp
 def getBlibbByUser(username=None):
     b = Blibb()
@@ -128,6 +132,7 @@ def getBlibbByUser(username=None):
 
 
 @mod.route('/<username>/group', methods=['GET'])
+@crossdomain(origin='*')
 def getGroupBlibbByUser(username=None):
     b = Blibb()
     if username is None:
@@ -137,6 +142,7 @@ def getGroupBlibbByUser(username=None):
 
 
 @mod.route('/fork', methods=['POST'])
+@crossdomain(origin='*')
 def fork():
     key = request.form['login_key']
     user = get_user_name(key)
@@ -150,6 +156,7 @@ def fork():
 #####################
 
 @mod.route('/tag', methods=['POST'])
+@crossdomain(origin='*')
 def newTag():
     target_id = None
     target = None
@@ -221,6 +228,7 @@ def add_user_to_group():
 
 
 @mod.route('/meta/webhooks/<bid>', methods=['GET'])
+@crossdomain(origin='*')
 def getWebhooks(bid=None):
     if is_valid_id(bid):
         b = Blibb()
@@ -231,6 +239,7 @@ def getWebhooks(bid=None):
 
 
 @mod.route('/meta/fields/<bid>', methods=['GET'])
+@crossdomain(origin='*')
 def getBlibbFields(bid=None):
     if bid is not None:
         fields = Blibb.get_fields(bid)
