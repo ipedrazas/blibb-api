@@ -107,9 +107,9 @@ class User(object):
                     buf['email'] = doc['e']
             if 'r' in doc:
                     buf['role'] = doc['r']
-            if 'i' in doc:
-                    img = doc['i']
-                    buf['image'] = str(img['id'])
+            # if 'i' in doc:
+            #         img = doc['i']
+            #         buf['image'] = str(img['id'])
             if 'a' in doc:
                     buf['status'] = doc['a']
             if 'u' in doc:

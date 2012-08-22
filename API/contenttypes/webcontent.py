@@ -50,14 +50,15 @@ def upload():
 
         filename = secure_filename(object_id + '-' + file.filename)
         c = connect_s3()
-        bucket = c.create_bucket('static.blibb.it')
+        bucket_name = current_app.config.get('BUCKET')
+        bucket = c.create_bucket(bucket_name)
         k = Key(bucket)
         k.key = user + '/' + filename
         k.set_metadata('owner', user)
         k.content_type = file.content_type
         k.set_contents_from_string(file.read())
         k.make_public()
-        url = current_app.config.get('STATIC_URL') + k.key
+        url = 'http://%s/%s' % (bucket_name, k.key)
         if is_image(file.filename):
             Picture.add_url(object_id, url)
         elif is_attachment(file.filename):

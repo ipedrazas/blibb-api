@@ -63,13 +63,15 @@ def teardown_request(exception):
 @mod.route('/user/<login_key>', methods=['GET'])
 @crossdomain(origin='*')
 def getUser(login_key=None):
-    return User.get_user(login_key)
+    return jsonify({'user': User.get_user(login_key)})
 
 
 @mod.route('/logout', methods=['POST'])
 @crossdomain(origin='*')
 def doLogout():
     login_key = request.form['login_key']
+    r = User.get_redis()
+    r.delete(login_key)
     return jsonify({'res': User.logout(login_key)})
 
 

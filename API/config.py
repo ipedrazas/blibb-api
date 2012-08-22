@@ -18,6 +18,7 @@ class ProductionConfig(Config):
     ATTACHMENT_EXTENSIONS = set(['doc', 'xls', 'pdf', 'txt', 'zip'])
     UPLOAD_FOLDER = '/home/ivan/workspace/blibb-api/API/test/'
     STATIC_URL = 'http://static.blibb.net/'
+    BUCKET = 'static.blibb.net'
     EXPIRE = 3600
     NUM_URL = 3
 
@@ -30,6 +31,7 @@ class TestConfig(Config):
     ATTACHMENT_EXTENSIONS = set(['doc', 'xls', 'pdf', 'txt', 'zip'])
     UPLOAD_FOLDER = '/home/ivan/workspace/blibb-api/API/test/'
     STATIC_URL = 'http://static.blibb.it/'
+    BUCKET = 'static.blibb.it'
     EXPIRE = 3600
     NUM_URL = 3
 
@@ -43,5 +45,6 @@ class DevelopmentConfig(Config):
     ATTACHMENT_EXTENSIONS = set(['doc', 'xls', 'pdf', 'txt', 'zip'])
     UPLOAD_FOLDER = '/home/ivan/workspace/blibb-api/API/test/'
     STATIC_URL = 'http://static.blibb.it/'
+    BUCKET = 'static.blibb.it'
     EXPIRE = 3600
     NUM_URL = 3
