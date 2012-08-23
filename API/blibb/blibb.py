@@ -5,7 +5,7 @@
 #
 
 
-from flask import jsonify, current_app
+from flask import jsonify
 from datetime import datetime
 
 from bson.objectid import ObjectId
@@ -15,9 +15,10 @@ from API.template.ctrl_template import ControlTemplate
 from API.om.acl import ACL
 from API.error import Message
 
-from API.utils import is_valid_id, date_to_str
+from API.utils import is_valid_id, date_to_str, get_config_value
 
-conn = Connection(current_app.config.get('MONGO_URL'))
+
+conn = Connection(get_config_value('MONGO_URL'))
 db = conn['blibb']
 objects = db['blibbs']
 

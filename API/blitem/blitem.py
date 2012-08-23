@@ -16,11 +16,12 @@ from API.comment.comment import Comment
 from API.contenttypes.song import Song
 
 from API.error import Message
-from API.utils import is_valid_id, send_url, queue_twitter_resolution
+from API.utils import is_valid_id, send_url, queue_twitter_resolution, get_config_value
 import re
 from blinker import signal
 
-conn = Connection(current_app.config.get('MONGO_URL'))
+
+conn = Connection(get_config_value('MONGO_URL'))
 db = conn['blibb']
 objects = db['blitems']
 

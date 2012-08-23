@@ -1,4 +1,4 @@
-# 
+#
 #
 #   template.py
 #
@@ -42,7 +42,7 @@ class Template(BaseObject):
 
     def dump(self):
         return self.__doc
-        
+
     def populate(self):
         if self.__doc is not None:
             self.name = self.__doc.get('n')
@@ -55,7 +55,7 @@ class Template(BaseObject):
     def getTemplateControls(self, obj_id):
         controls = self.objects.find_one({ '_id': ObjectId(obj_id)},{'i':1})
         ctrls = controls.get('i')
-        return sorted(ctrls, key=itemgetter('o')) 
+        return sorted(ctrls, key=itemgetter('o'))
 
     def getHtmlWrapper(self):
         res = '''
@@ -70,10 +70,10 @@ class Template(BaseObject):
 
     def getCssWrapper(self):
         res = '''
-        .{{slug}}Name{ font-size: 28px;background-color: black;color: white;font-weight: bolder;padding: 15px 35px;} 
-        .{{slug}}Desc{ font-size:20px;padding: 15px 50px 20px 50px;background-color: gray;color: white;} 
-        .{{slug}}Date{ display: none} 
-        .{{slug}}Author{ display:none} 
+        .{{slug}}Name{ font-size: 28px;background-color: black;color: white;font-weight: bolder;padding: 15px 35px;}
+        .{{slug}}Desc{ font-size:20px;padding: 15px 50px 20px 50px;background-color: gray;color: white;}
+        .{{slug}}Date{ display: none}
+        .{{slug}}Author{ display:none}
         .entryItems{ margin-top: 20px;}
             '''
         return res.replace('{{slug}}', self.slugify(self.name))
@@ -174,5 +174,5 @@ class Template(BaseObject):
         for param in listparams:
             p[param] = 1
 
-        result = self.objects.find({'q': status}, p)     
+        result = self.objects.find({'q': status}, p)
         return self.resultSetToJson(result)

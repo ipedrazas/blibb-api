@@ -7,7 +7,7 @@
 
 from datetime import datetime
 from pymongo import Connection
-from flask import current_app
+from API.utils import get_config_value
 
 
 class Event(object):
@@ -15,7 +15,7 @@ class Event(object):
     def __init__(self, eventName=None):
         self._db = 'logging'
         self._collection = 'events'
-        self._conn = Connection(current_app.config.get('MONGO_URL'))
+        self._conn = Connection(get_config_value('MONGO_URL'))
         self._db = self._conn[self._db]
         self._objects = self._db[self._collection]
         self._log = []

@@ -8,10 +8,10 @@
 from datetime import datetime
 from pymongo import Connection
 from bson.objectid import ObjectId
-from API.utils import is_valid_id
-from flask import current_app
+from API.utils import is_valid_id, get_config_value
 
-conn = Connection(current_app.config.get('MONGO_URL'))
+
+conn = Connection(get_config_value('MONGO_URL'))
 db = conn['blibb']
 objects = db['comments']
 

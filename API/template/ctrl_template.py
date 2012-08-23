@@ -11,11 +11,12 @@ from bson.objectid import ObjectId
 from pymongo import Connection
 from API.helpers import slugify
 from API.control.bcontrol import Control
-from API.utils import is_valid_id, read_file, parse_text
+from API.utils import is_valid_id, read_file, parse_text, get_config_value
 import json
 import pystache
 
-conn = Connection(current_app.config.get('MONGO_URL'))
+
+conn = Connection(get_config_value('MONGO_URL'))
 db = conn['blibb']
 objects = db['templates']
 

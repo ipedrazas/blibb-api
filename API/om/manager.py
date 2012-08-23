@@ -7,10 +7,11 @@
 
 from datetime import datetime
 from pymongo import Connection
-from flask import current_app
+
+from API.utils import get_config_value
 
 
-conn = Connection(current_app.config.get('MONGO_URL'))
+conn = Connection(get_config_value('MONGO_URL'))
 db = conn['blibb']
 objects = db['management']
 

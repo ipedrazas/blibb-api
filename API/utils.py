@@ -53,6 +53,16 @@ def get_key(key):
     return r.get(key)
 
 
+def get_user(key):
+    r = get_redis()
+    juser = r.get(key)
+    expire = current_app.config.get('EXPIRE')
+    r.expire(key, expire)
+    if juser:
+        return json.loads(juser)
+    return None
+
+
 def get_user_name(key):
     r = get_redis()
     juser = r.get(key)
@@ -108,3 +118,11 @@ def slugify(text, delim=u''):
 def date_to_str(obj):
     if isinstance(obj, datetime.datetime):
         return obj.strftime('%d-%m-%Y- %H:%M:%S')
+
+
+def get_config_value(key=None):
+    json_data = open('/var/blibb/settings.json')
+    data = json.load(json_data)
+    json_data.close()
+    return data.get(key, '')
+

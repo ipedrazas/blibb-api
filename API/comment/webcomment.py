@@ -1,10 +1,10 @@
 
 
-from flask import Blueprint, request, current_app, jsonify, abort, g
+from flask import Blueprint, request, jsonify, abort, g
 from API.comment.comment import Comment
 from API.event.event import Event
 from API.blitem.blitem import Blitem
-from API.utils import get_user_name, is_valid_id
+from API.utils import get_user, is_valid_id
 
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
@@ -34,8 +34,11 @@ def newComment():
     key = request.form['login_key']
     target_id = request.form['item_id']
     text = request.form['comment']
-    user = get_user_name(key)
+    user = get_user(key)
     if user is not None:
+        del user['status']
+        del user['id']
+        del user['role']
         c_id = Comment.insert(target_id, user, text)
         Blitem.increase_comment_counter(target_id)
         return jsonify({'item': target_id, 'user': user, 'text': text, 'comment_id': c_id})
