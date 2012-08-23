@@ -11,8 +11,6 @@ class Config(object):
 
 
 class ProductionConfig(Config):
-    DEBUG = False
-    TESTING = False
     ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'jpg', 'jpeg', 'gif', 'png', 'xls'])
     IMAGE_EXTENSIONS = set(['jpg', 'jpeg', 'gif', 'png'])
     ATTACHMENT_EXTENSIONS = set(['doc', 'xls', 'pdf', 'txt', 'zip'])
@@ -24,8 +22,6 @@ class ProductionConfig(Config):
 
 
 class TestConfig(Config):
-    DEBUG = False
-    TESTING = True
     ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'jpg', 'jpeg', 'gif', 'png', 'xls'])
     IMAGE_EXTENSIONS = set(['jpg', 'jpeg', 'gif', 'png'])
     ATTACHMENT_EXTENSIONS = set(['doc', 'xls', 'pdf', 'txt', 'zip'])
@@ -37,9 +33,6 @@ class TestConfig(Config):
 
 
 class DevelopmentConfig(Config):
-    '''Use "if app.debug" anywhere in your code, that code will run in development code.'''
-    DEBUG = True
-    TESTING = True
     ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'jpg', 'jpeg', 'gif', 'png', 'xls'])
     IMAGE_EXTENSIONS = set(['jpg', 'jpeg', 'gif', 'png'])
     ATTACHMENT_EXTENSIONS = set(['doc', 'xls', 'pdf', 'txt', 'zip'])

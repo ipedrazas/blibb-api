@@ -3,20 +3,32 @@
 
 from flask import Flask, render_template
 import os
+import logging
 
 app = Flask(__name__)
 
 
+if not app.debug:
+    app.logger.addHandler(logging.StreamHandler())
+    app.logger.setLevel(logging.INFO)
+
+
 # Config
-if os.getenv('DEV') == 'yes':
+if os.path.exists('/var/blibb/dev.pid'):
     app.config.from_object('API.config.DevelopmentConfig')
     app.logger.info("Config: Development")
-elif os.getenv('TEST') == 'yes':
+    lvl = logging.getLevelName(app.logger.getEffectiveLevel())
+    app.logger.info("LogLevel " + lvl)
+elif os.path.exists('/var/blibb/test.pid'):
     app.config.from_object('API.config.TestConfig')
     app.logger.info("Config: Test")
+    lvl = logging.getLevelName(app.logger.getEffectiveLevel())
+    app.logger.info("LogLevel " + lvl)
 else:
     app.config.from_object('API.config.ProductionConfig')
     app.logger.info("Config: Production")
+    lvl = logging.getLevelName(app.logger.getEffectiveLevel())
+    app.logger.info("LogLevel " + lvl)
 
 
 @app.errorhandler(404)
