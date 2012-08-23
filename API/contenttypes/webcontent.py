@@ -8,7 +8,6 @@ import os
 
 from API.blitem.blitem import Blitem
 from API.blibb.blibb import Blibb
-from API.contenttypes.song import Song
 from API.contenttypes.bookmark import Bookmark
 from API.contenttypes.picture import Picture
 from API.event.event import Event
@@ -69,6 +68,7 @@ def upload():
 
 
 @mod.route('/picture/data', methods=['POST'])
+@crossdomain(origin='*')
 def set_picture_data():
     e = Event('getImage.set_picture_data')
     pict = Picture()
@@ -82,6 +82,7 @@ def set_picture_data():
 
 
 @mod.route('/picture/<picture_id>', methods=['GET'])
+@crossdomain(origin='*')
 @support_jsonp
 def get_picture_data(picture_id=None):
     e = Event('getImage.get_picture_data')
@@ -96,6 +97,7 @@ def get_picture_data(picture_id=None):
 
 
 @mod.route('/picture', methods=['POST'])
+@crossdomain(origin='*')
 def newPicture():
     e = Event('getImage.newPicture')
     pict = Picture()
@@ -112,6 +114,7 @@ def newPicture():
 
 
 @mod.route('/picture/<pict_id>/<size>', methods=['GET'])
+@crossdomain(origin='*')
 @support_jsonp
 def getImage(pict_id=None, size=160):
     e = Event('web.content.getImage')
@@ -131,6 +134,7 @@ def getImage(pict_id=None, size=160):
 
 
 @mod.route('/user/pictures/<user_name>', methods=['GET'])
+@crossdomain(origin='*')
 @support_jsonp
 def getImageByUsername(user_name=None):
     e = Event('web.content.getImageByUsername')
@@ -139,38 +143,6 @@ def getImageByUsername(user_name=None):
     e.save()
     if r != 'null':
         return json.dumps(r)
-    else:
-        abort(404)
-
-
-#####################
-#####   SONGS   #####
-#####################
-@mod.route('/song/data', methods=['POST'])
-def setSongData():
-    e = Event('web.setSongData')
-    song = Song()
-    jsonData = request.form['p']
-    r = song.updateJson(jsonData)
-    e.save()
-    if r != 'null':
-        return r
-    else:
-        abort(404)
-
-
-@mod.route('/song', methods=['POST'])
-def newSong():
-    e = Event('web.content.newSong')
-    song = Song()
-    blibb = request.form['b']
-    key = request.form['k']
-    user = get_user_name(key)
-    items = dict()
-    r = song.insert(blibb, user, items)
-    e.save()
-    if r != 'null':
-        return r
     else:
         abort(404)
 
