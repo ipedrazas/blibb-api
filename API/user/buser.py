@@ -102,18 +102,21 @@ class User(object):
         if doc:
             buf['id'] = str(doc['_id'])
             if 'n' in doc:
-                    buf['username'] = doc['n']
+                buf['username'] = doc['n']
             if 'e' in doc:
-                    buf['email'] = doc['e']
+                buf['email'] = doc['e']
             if 'r' in doc:
-                    buf['role'] = doc['r']
+                buf['role'] = doc['r']
             # if 'i' in doc:
             #         img = doc['i']
             #         buf['image'] = str(img['id'])
             if 'a' in doc:
-                    buf['status'] = doc['a']
+                buf['status'] = doc['a']
             if 'u' in doc:
-                    buf['image_url'] = doc['u']
+                buf['image_url'] = doc['u']
+            else:
+                buf['image_url'] = current_app.config.get('STATIC_URL') + 'default.png'
+
         return buf
 
     @classmethod

@@ -18,7 +18,7 @@ from flask import Blueprint, request, abort, current_app, jsonify, make_response
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
 from API.user.blibb2rss import blibb2rss
-
+import json
 from API.error import Message
 
 # from blinker import signal
@@ -60,10 +60,18 @@ def teardown_request(exception):
 #####################
 
 
-@mod.route('/user/<login_key>', methods=['GET'])
+@mod.route('/user/<key>', methods=['GET'])
+@support_jsonp
 @crossdomain(origin='*')
-def getUser(login_key=None):
-    return jsonify({'user': User.get_user(login_key)})
+def getUserByName(key=None):
+    if key is None:
+        abort(404)
+    u = User.get_by_name(key)
+    if u:
+        return jsonify({'user': u})
+    else:
+        user = User.get_user(key)
+        return jsonify({'user': json.loads(user)})
 
 
 @mod.route('/logout', methods=['POST'])
@@ -180,16 +188,6 @@ def get_by_slug(username=None, slug=None, url=None, attributes={}, flat=True):
     return ret
 
 
-@mod.route('/user/name/<user_name>', methods=['GET'])
-@support_jsonp
-@crossdomain(origin='*')
-def getUserByName(user_name=None):
-    if user_name is None:
-        abort(404)
-    u = User.get_by_name(user_name)
-    return jsonify(u)
-
-
 @mod.route('/user/image', methods=['POST'])
 @crossdomain(origin='*')
 def setImageUser():
@@ -227,7 +225,6 @@ def newUser():
 def get_items_by_tag(username=None, slug=None, tag=None):
     if username is None or slug is None or tag is None:
         abort(404)
-
     # ip = request.remote_addr
     blibb_id = Blibb.get_id_by_slug(username, slug)
     cond = {'s': slug, 'u': username}
