@@ -173,7 +173,6 @@ def get_as_rss(username=None, slug=None):
 def get_by_slug(username=None, slug=None, url=None, attributes={}, flat=True):
     if username is None or slug is None:
         return None
-
     page = request.args.get('page', 1)
     # comments = request.args.get('comments', 0)
     blibb = Blibb.get_by_slug(username, slug)

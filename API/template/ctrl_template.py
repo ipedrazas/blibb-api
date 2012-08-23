@@ -15,7 +15,7 @@ from API.utils import is_valid_id, read_file, parse_text
 import json
 import pystache
 
-conn = Connection()
+conn = Connection(current_app.config.get('MONGO_URL'))
 db = conn['blibb']
 objects = db['templates']
 

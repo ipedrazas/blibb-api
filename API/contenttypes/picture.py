@@ -10,9 +10,10 @@ import json
 from bson import json_util
 from pymongo import Connection
 from bson.objectid import ObjectId
+from flask import current_app
 
 
-conn = Connection()
+conn = Connection(current_app.config.get('MONGO_URL'))
 db = conn['blibb']
 objects = db['pictures']
 

@@ -17,7 +17,7 @@ from API.error import Message
 
 from API.utils import is_valid_id, date_to_str
 
-conn = Connection()
+conn = Connection(current_app.config.get('MONGO_URL'))
 db = conn['blibb']
 objects = db['blibbs']
 

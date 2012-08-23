@@ -1,4 +1,4 @@
-# 
+#
 #
 #   blitem.py
 #
@@ -15,7 +15,7 @@ from pymongo import Connection
 from bson.objectid import ObjectId
 from pymongo.errors import InvalidId
 from bson import json_util
-
+from flask import current_app
 import logging
 
 
@@ -54,33 +54,33 @@ class BaseObject(object):
         return self._tags
 
     @id.setter
-    def id(self,value):
+    def id(self, value):
         self._id = value
 
     @url.setter
-    def url(self,value):
+    def url(self, value):
         self._url = url
 
     @owner.setter
-    def owner(self,value):
+    def owner(self, value):
         self._owner = value
 
     @doc.setter
-    def doc(self,value):
+    def doc(self, value):
         self._doc = value
 
     @date.setter
-    def date(self,value):
+    def date(self, value):
         self._created = value
 
     @tags.setter
-    def tags(self,value):
+    def tags(self, value):
         self._tags = value
 
     def __init__(self, db, collection):
         self._db = db
         self._collection = collection
-        self._conn = Connection()
+        self._conn = Connection(current_app.config.get('MONGO_URL'))
         self._db = self._conn[self._db]
         self._objects = self._db[self._collection]
         self._id = None

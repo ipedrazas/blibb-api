@@ -20,7 +20,7 @@ from API.utils import is_valid_id, send_url, queue_twitter_resolution
 import re
 from blinker import signal
 
-conn = Connection()
+conn = Connection(current_app.config.get('MONGO_URL'))
 db = conn['blibb']
 objects = db['blitems']
 

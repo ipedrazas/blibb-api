@@ -13,7 +13,7 @@ import redis
 import json
 
 
-conn = Connection()
+conn = Connection(current_app.config.get('MONGO_URL'))
 db = conn['blibb']
 objects = db['users']
 
