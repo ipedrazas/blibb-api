@@ -10,9 +10,9 @@ from bson.objectid import ObjectId
 from pymongo import Connection
 from API.user.buser import User
 from flask import current_app
-import API.utils as utils
+from API.utils import get_config_value, slugify
 
-conn = Connection()
+conn = Connection(get_config_value('MONGO_URL'))
 db = conn['blibb']
 objects = db['bcontrols']
 
@@ -62,7 +62,7 @@ class Control(object):
         if User.is_admin(owner):
             current_app.logger.info('Is admin')
             now = datetime.utcnow()
-            slug = utils.slugify(name)
+            slug = slugify(name)
             control_id = objects.insert({'n': name, 'c': now, 'u': 'system', 's': slug, 'tx': type})
 
             ui = self.replace_values(ui, str(control_id), name, type, slug)
