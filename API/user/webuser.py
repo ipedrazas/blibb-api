@@ -123,26 +123,31 @@ def deleteItem(username=None, slug=None, item_id=None):
 def addItemtoBlibb(username=None, slug=None):
     if username is None or slug is None:
         abort(404)
-    app_token = request.form['app_token'] if 'app_token' in request.form else ''
-    key = request.form['login_key'] if 'login_key' in request.form else ''
+
+    user = ''
+    app_token = ''
+    if 'login_key' in request.form:
+        key = request.form['login_key']
+        user = get_key(key)
+    else:
+        app_token = request.form['app_token'] if 'app_token' in request.form else ''
 
     tags = request.form['tags'] if 'tags' in request.form else ''
-    user = get_key(key)
-    blibb_id = Blibb.get_id_by_slug(username, slug)
-
-    if not Blibb.can_write(user, app_token, blibb_id):
-        abort(401)
-    else:
+    blibb = Blibb.get_object({'u': username, 's': slug}, {'_id': 1})
+    blibb_id = blibb['_id']
+    current_app.logger.info(str(user) + ' - ' + str(app_token) + ' - ' + str(blibb_id) + ' - ' + username + ' - ' + slug)
+    if Blibb.can_write(user, app_token, blibb_id):
         labels = Blibb.get_label_from_template(blibb_id)
         bitems = Blitem.get_items_from_request(labels, request)
         blitem_id = Blitem.insert(blibb_id, user, bitems, tags)
-
         if is_valid_id(blitem_id):
             cond = {'s': slug, 'u': username}
             Blibb.inc_num_item(cond)
             Blitem.post_process(blitem_id, bitems)
             res = {'id': blitem_id}
             return jsonify(res)
+    else:
+        abort(401)
 
 
 @mod.route('/<username>/<slug>', methods=['GET'])

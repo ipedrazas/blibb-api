@@ -5,7 +5,7 @@
 #
 
 
-from flask import jsonify
+from flask import jsonify, current_app
 from datetime import datetime
 
 from bson.objectid import ObjectId
@@ -196,14 +196,6 @@ class Blibb(object):
         return stats
 
     @classmethod
-    def get_id_by_slug(self, username, slug):
-        r = self.get_object({'u': username, 's': slug}, {'_id': 1})
-        if r is not None:
-            oid = r.get('_id', False)
-            return str(oid)
-        return False
-
-    @classmethod
     def get_fields(self, obj_id):
         if is_valid_id(obj_id):
             doc = self.get_object({'_id': ObjectId(obj_id)}, {'t.i': 1})
@@ -254,7 +246,7 @@ class Blibb(object):
             return Message.get('id_not_valid')
 
     @classmethod
-    def get_object(self, filter, fields):
+    def get_object(self, filter={}, fields={}):
         return objects.find_one(filter, fields)
 
     @classmethod
@@ -280,6 +272,7 @@ class Blibb(object):
 
         if is_valid_id(blibb_id):
             blibb = self.get_object({'_id': ObjectId(blibb_id)}, {'a': 1, 'u': 1, 'g': 1, 'at': 1})
+            current_app.logger.info(str(blibb))
             atoken = blibb.get('at', 0)
             owner = blibb['u']
             acl = blibb.get('a', {})
