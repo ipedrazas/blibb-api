@@ -45,7 +45,7 @@ def newItem():
         b = Blibb.get_object({'_id': ObjectId(bid)}, {'u': 1, 't.i.n': 1, 't.i.s': 1})
         if Blibb.can_write(user, app_token, bid):
             labels = Blibb.get_labels(b.get('t'))
-            current_app.logger.info('labels: ' + str(labels))
+            # current_app.logger.info('labels: ' + str(labels))
             bitems = Blitem.get_items_from_request(labels, request)
             current_app.logger.info('items from request: ' + str(bitems))
             blitem_id = Blitem.insert(bid, user, bitems, tags)

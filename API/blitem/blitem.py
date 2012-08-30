@@ -27,8 +27,8 @@ objects = db['blitems']
 
 
 def do_post_process(item):
-    print 'signal:' + str(item)
-    current_app.logger.info(str(item))
+    # print 'signal:' + str(item)
+    # current_app.logger.info(str(item))
     object_id = str(item['_id'])
     items = item['i']
     for element in items:

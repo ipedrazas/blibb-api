@@ -43,4 +43,4 @@ class DevelopmentConfig(Config):
     BUCKET = 'static.blibb.it'
     EXPIRE = 3600
     NUM_URL = 3
-    MONGO_URL = 'mongodb://localhost:27017'
+    MONGO_URL = 'mongodb://blibbadmin:admin@localhost:27069'

@@ -48,11 +48,15 @@ class Blibb(object):
     def insert(self, user, name, slug, desc, template_id, image, read_access, write_access):
         if is_valid_id(template_id):
             template = ControlTemplate.get_object({'_id': ObjectId(template_id)})
+            items = template['i']
+            fields = []
+            for item in items:
+                fields.append(item['s'])
             now = datetime.utcnow()
             acl = dict()
             acl['read'] = read_access
             acl['write'] = write_access
-            doc = {"n": name, "s": slug, "d": desc, "u": user, "c": now,  "t": template, "img": image, 'a': acl}
+            doc = {"n": name, "s": slug, "d": desc, "u": user, "c": now,  "t": template, "img": image, 'a': acl, 'f': fields, 'st': {'v': 0}}
 
             newId = objects.insert(doc)
             return str(newId)
@@ -92,12 +96,22 @@ class Blibb(object):
                 return self.flat_object(res)
 
     @classmethod
+    def get_fields_from_template(cls, template):
+        fields = []
+        print template
+        items = template['i']
+        for item in items:
+            fields.append({'field': item['s'], 'type': item['tx'], 'order': item['o']})
+
+    @classmethod
     def flat_object(self, doc):
         buf = dict()
         if doc:
             buf['id'] = str(doc['_id'])
             if 't' in doc:
                 buf['template'] = doc['t']
+            if 'f' in doc:
+                buf['fields'] = doc['f']
             if 'n' in doc:
                 buf['name'] = doc['n']
             if 'd' in doc:

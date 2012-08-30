@@ -24,12 +24,6 @@ objects = db['templates']
 class ControlTemplate(object):
 
     @classmethod
-    def addControl(self, cid, tid, name, help, order, view, slug, typex):
-        view = {'c': cid,  'n': name, 'h': help, 's': slug, 'o': order, 'w': view, 'tx': typex}
-        objects.update({'_id': ObjectId(tid)}, {"$push": {'i': view}}, True)
-        return cid
-
-    @classmethod
     def insert(self, name, desc, user, thumbnail, status="draft"):
         now = datetime.utcnow()
         doc = {"n": name, "d": desc, "u": user, "c": now, "s": slugify(name), 't': thumbnail, 'q': status}
@@ -37,29 +31,31 @@ class ControlTemplate(object):
         return str(newId)
 
     @classmethod
-    def add_controls(self, template_id, controls, user):
+    def add_controls(self, template, controls, user):
         items = []
         current_app.logger.info("add_controls " + str(controls))
-        if is_valid_id(template_id):
-            controls = json.loads(controls)
-            for control in controls:
-                item = {}
-                cid = control.get('cid', '')
-                if is_valid_id(cid):
-                    item['c'] = ObjectId(cid)
-                    item['n'] = control['name']
-                    item['h'] = control['help']
-                    item['tx'] = control['type']
-                    item['o'] = int(control['order'])
-                    item['s'] = slugify(control['name'])
-                    item['m'] = True if control['multi'] == 'true' else False
-                    if 'items' in control:
-                        item['i'] = control.get('items')
-                    items.append(item)
-                else:
-                    current_app.logger.info('Control ID' + cid)
-            current_app.logger.info(items)
-            objects.update({'_id': ObjectId(template_id)}, {'$set': {'i': items}})
+        controls = json.loads(controls)
+        for control in controls:
+            item = {}
+            cid = control.get('cid', '')
+            if is_valid_id(cid):
+                item['c'] = ObjectId(cid)
+                item['n'] = control['name']
+                item['h'] = control['help']
+                item['tx'] = control['type']
+                item['o'] = int(control['order'])
+                item['s'] = slugify(control['name'])
+                item['m'] = True if control['multi'] == 'true' else False
+                if 'items' in control:
+                    item['i'] = control.get('items')
+                items.append(item)
+            else:
+                current_app.logger.info('Control ID' + cid)
+        current_app.logger.info(items)
+        now = datetime.utcnow()
+        doc = {"n": template, "u": user, "c": now, "s": slugify(template), 'q': 'draft', 'i': items}
+        newId = objects.insert(doc)
+        return str(newId)
 
     @classmethod
     def get_object(self, filter, fields={}):
@@ -176,7 +172,7 @@ class ControlTemplate(object):
                 rb: read blibb, html to render the whole blibb when accessing as RO
                 wb: write blibbb, html to create/edit new items
         '''
-        current_app.logger.info(str(object))
+        # current_app.logger.info(str(object))
         objects.update({'_id': ObjectId(template_id)}, {"$push": {'v.' + object.get('name'): object.get('view')}, '$set': {'q': 'active'}}, True)
         return True
 
