@@ -35,14 +35,19 @@ class Blibb(object):
         if obj is not None:
             for key, value in obj.items():
                 if isinstance(value, ObjectId):
-                    obj[self.attr.get(key)] = str(value)
-                elif isinstance(value, datetime.datetime):
-                    obj[self.attr.get(key)] = value.strftime("%d/%m/%y")
+                    obj[key] = str(value)
+                elif isinstance(value, datetime):
+                    obj[key] = value.strftime("%d/%m/%y")
                 elif isinstance(value, (dict)):
-                    obj[self.attr.get(key)] = self.to_dict(value)
+                    obj[key] = self.to_dict(value)
+                elif isinstance(value, (list)):
+                    t = []
+                    for elem in value:
+                        t.append(self.to_dict(elem))
+                    obj[key] = t
                 else:
-                    obj[self.attr.get(key)] = value
-                del obj[key]
+                    obj[key] = value
+
         return obj
 
     @classmethod
@@ -68,7 +73,7 @@ class Blibb(object):
 
     def get_template(self, obj_id):
         if is_valid_id(obj_id):
-            template = self._get_object({'_id': ObjectId(obj_id)}, {'t': 1})
+            template = self.get_object({'_id': ObjectId(obj_id)}, {'t': 1})
             return jsonify(self.flat_object(template))
         else:
             return Message.get('id_not_valid')
@@ -145,6 +150,8 @@ class Blibb(object):
                     buf['img'] = img
             if 'tg' in doc:
                 buf['tags'] = doc['tg']
+            if 'at' in doc:
+                buf['app_token'] = doc['at']
 
         return buf
 

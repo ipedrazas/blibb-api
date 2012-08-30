@@ -103,7 +103,8 @@ def getBlibb(blibb_id=None, params=None):
         abort(404)
 
     if params is None:
-        r = Blibb.get_by_id(blibb_id)
+        o = Blibb.get_object(blibb_id)
+        r = Blibb.flat_object(o)
     else:
         r = Blibb.get_by_id_params(blibb_id, params)
 
@@ -261,3 +262,19 @@ def getBlibbFields(bid=None):
     if bid is not None:
         fields = Blibb.get_fields(bid)
         return jsonify({'fields': fields})
+
+
+@mod.route('/object/<bid>', methods=['GET'])
+@crossdomain(origin='*')
+def getObject(bid=None):
+    if bid is not None:
+        params = request.args.get('fields')
+        fields = dict()
+        for p in params.split(','):
+            fields[p] = 1
+        current_app.logger.info(fields)
+        doc = Blibb.get_object({'_id': ObjectId(bid)}, fields)
+        blibb = Blibb.to_dict(doc)
+        #
+        return jsonify(Blibb.flat_object(blibb))
+    abort(404)

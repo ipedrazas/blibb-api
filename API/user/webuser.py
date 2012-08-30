@@ -246,10 +246,11 @@ def get_item_by_id(username=None, slug=None, id=None):
     if username is None or  slug is None or id is None:
         abort(404)
 
-    blibb_id = Blibb.get_id_by_slug(username, slug)
-    if is_valid_id(id) and is_valid_id(blibb_id):
-            items = Blitem.get_item({'_id': ObjectId(id), 'b': ObjectId(blibb_id)})
-            return  jsonify(Blitem.flat_object(items, {}))
+    blibb = Blibb.get_object({'u': username, 's': slug})
+    if blibb and is_valid_id(id):
+        blibb_id = blibb['_id']
+        items = Blitem.get_item({'_id': ObjectId(id), 'b': ObjectId(blibb_id)})
+        return  jsonify(Blitem.flat_object(items, {}))
     else:
         return jsonify(Message.get('id_not_valid'))
 
