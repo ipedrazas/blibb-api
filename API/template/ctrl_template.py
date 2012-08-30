@@ -173,7 +173,7 @@ class ControlTemplate(object):
                 wb: write blibbb, html to create/edit new items
         '''
         # current_app.logger.info(str(object))
-        objects.update({'_id': ObjectId(template_id)}, {"$push": {'v.' + object.get('name'): object.get('view')}, '$set': {'q': 'active'}}, True)
+        objects.update({'_id': ObjectId(template_id)}, {"$set": {'v.' + object.get('name'): object.get('view'), 'q': 'active'}}, True)
         return True
 
     @classmethod

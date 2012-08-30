@@ -26,6 +26,11 @@ objects = db['blibbs']
 class Blibb(object):
 
     @classmethod
+    def update_view(cls, objectid, user, view, html):
+        field = 't.v.%s.rb' % (view)
+        objects.update({'_id': ObjectId(objectid)}, {'$set': {field: html, 'lm': user}})
+
+    @classmethod
     def to_dict(self, obj):
         if obj is not None:
             for key, value in obj.items():

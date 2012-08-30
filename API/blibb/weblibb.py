@@ -1,7 +1,7 @@
 
 
 import json
-from flask import Blueprint, request, abort, jsonify, g
+from flask import Blueprint, request, abort, jsonify, g, current_app
 from API.blibb.blibb import Blibb
 from API.event.event import Event
 from API.contenttypes.picture import Picture
@@ -67,6 +67,23 @@ def newBlibb():
     else:
         res = {'error': 'Blibb with that slug already exists'}
     return jsonify(res)
+
+
+@mod.route('/view', methods=['PUT'])
+@crossdomain(origin='*')
+def updateView():
+    blibb_id = request.form['blibb_id']
+    user = get_user_name(request.form['login_key'])
+    view = request.form['viewName']
+    html = request.form['viewHtml']
+    # current_app.logger.info(user + ' ' + blibb_id + ' ' + view + ' ' + html)
+    if is_valid_id(blibb_id):
+        if Blibb.can_write(user, '', blibb_id):
+            Blibb.update_view(blibb_id, user, view, html)
+            return jsonify({'result': 'View Updated'})
+        else:
+            abort(401)
+    abort(404)
 
 
 @mod.route('/<blibb_id>/<login_key>', methods=['DELETE'])
@@ -194,7 +211,7 @@ def add_webhook():
     res = dict()
     wb = {'a': action, 'u': callback, 'f': fields}
     if is_valid_id(bid):
-        if Blibb.can_write(bid, user):
+        if Blibb.can_write(user, '', bid):
             Blibb.add_webhook(bid, wb)
             res['result'] = 'ok'
         else:
@@ -215,7 +232,7 @@ def add_user_to_group():
     if is_valid_id(bid):
         user_to_add = User.get_by_name(username)
         if user_to_add:
-            if Blibb.can_write(user, bid):
+            if Blibb.can_write(user, '', bid):
                 Blibb.add_user_to_group(username, bid)
                 res['result'] = 'ok'
             else:
