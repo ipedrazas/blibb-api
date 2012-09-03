@@ -28,7 +28,8 @@ class Blibb(object):
     @classmethod
     def update_view(cls, objectid, user, view, html):
         field = 't.v.%s.rb' % (view)
-        objects.update({'_id': ObjectId(objectid)}, {'$set': {field: html, 'lm': user}})
+        objects.update({'_id': ObjectId(objectid)},
+                       {'$set': {field: html, 'lm': user}})
 
     @classmethod
     def to_dict(self, obj):
@@ -55,9 +56,11 @@ class Blibb(object):
         objects.save(object)
 
     @classmethod
-    def insert(self, user, name, slug, desc, template_id, image, read_access, write_access):
+    def insert(self, user, name, slug, desc, template_id, image,
+               read_access, write_access):
         if is_valid_id(template_id):
-            template = ControlTemplate.get_object({'_id': ObjectId(template_id)})
+            template = ControlTemplate.get_object(
+                {'_id': ObjectId(template_id)})
             items = template['i']
             fields = []
             for item in items:
@@ -66,7 +69,9 @@ class Blibb(object):
             acl = dict()
             acl['read'] = read_access
             acl['write'] = write_access
-            doc = {"n": name, "s": slug, "d": desc, "u": user, "c": now,  "t": template, "img": image, 'a': acl, 'f': fields, 'st': {'v': 0}}
+            doc = {"n": name, "s": slug, "d": desc, "u": user, "c": now,
+                    "t": template, "img": image, 'a': acl, 'f': fields,
+                    'st': {'v': 0}}
 
             newId = objects.insert(doc)
             return str(newId)
@@ -89,7 +94,8 @@ class Blibb(object):
     @classmethod
     def get_label_from_template(self, obj_id):
         if is_valid_id(obj_id):
-            result = self.get_object({'_id': ObjectId(obj_id)}, {'t.i.n': 1, 't.i.s': 1})
+            result = self.get_object({'_id': ObjectId(obj_id)},
+                                        {'t.i.n': 1, 't.i.s': 1})
             if result is not None:
                 return self.get_labels(result['t'])
             else:
@@ -100,7 +106,8 @@ class Blibb(object):
     @classmethod
     def get_template_view(self, obj_id):
         if is_valid_id(obj_id):
-            fields = {'t.v': 1, 'n': 1, 'd': 1, 'c': 1, 'u': 1, 'tg': 1, 's': 1, 'img': 1, 'ni': 1, 'st': 1}
+            fields = {'t.v': 1, 'n': 1, 'd': 1, 'c': 1, 'u': 1, 'tg': 1,
+                        's': 1, 'img': 1, 'ni': 1, 'st': 1}
             res = self.get_object({'_id': ObjectId(obj_id)}, fields)
             if '_id' in res:
                 return self.flat_object(res)
@@ -176,11 +183,13 @@ class Blibb(object):
     @classmethod
     def get_blibbs(self, filter, fields, page=1):
         PER_PAGE = 20
-        docs = objects.find(filter, fields).sort("c", -1).skip(PER_PAGE * (page - 1)).limit(PER_PAGE)
+        docs = objects.find(filter, fields).sort("c", -1).skip(
+                PER_PAGE * (page - 1)).limit(PER_PAGE)
         return docs
 
     def get_by_user(self, username, page=1):
-        r = self.get_blibbs({'u': username, 'del': {'$ne': True}}, {'t': 0}, page)
+        r = self.get_blibbs({'u': username, 'del': {'$ne': True}},
+            {'t': 0}, page)
         rs = []
         count = 0
         for result in r:
@@ -242,7 +251,8 @@ class Blibb(object):
     @classmethod
     def add_user_to_group(self, user, obj_id):
         if is_valid_id(obj_id):
-            objects.update({'_id': ObjectId(obj_id)}, {"$addToSet": {'g': user}}, False)
+            objects.update({'_id': ObjectId(obj_id)}, 
+                {"$addToSet": {'g': user}}, False)
 
     @classmethod
     def add_webhook(self, object_id, webhook):

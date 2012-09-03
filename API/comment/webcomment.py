@@ -36,9 +36,12 @@ def newComment():
     text = request.form['comment']
     user = get_user(key)
     if user is not None:
-        del user['status']
-        del user['id']
-        del user['role']
+        if 'status' in user:
+            del user['status']
+        if 'id' in user:
+            del user['id']
+        if 'role' in user:
+            del user['role']
         c_id = Comment.insert(target_id, user, text)
         Blitem.increase_comment_counter(target_id)
         return jsonify({'item': target_id, 'user': user, 'text': text, 'comment_id': c_id})
