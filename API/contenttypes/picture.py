@@ -94,17 +94,31 @@ class Picture(BaseObject):
 
         return image
 
+    @classmethod
+    def flat_image(cls, image):
+        picture = dict()
+        if image:
+            if '_id' in image:
+                picture['id'] = str(image('_id'))
+            if 'l' in image:
+                picture['url'] = image('l')
+            if 'u' in image:
+                picture['owner'] = image('u')
+
+        return picture
+
     def getImagesByUser(self, username):
         filter_dict = {'u': username}
         fields_dict = {'_id': 1}
         pictures = self.getImage(filter_dict, fields_dict)
         return pictures
 
-    def getImages(self, filter_dict, fields_dict):
-        res = self.objects.find(filter_dict, fields_dict)
+    @classmethod
+    def get_images(self, filter_dict, fields_dict):
+        res = objects.find(filter_dict, fields_dict)
         pictures = []
-        for pict_id in res:
-            pictures.append(str(pict_id.get('_id')))
+        for picture in res:
+            pictures.append(self.dump_image())
         return pictures
 
     @classmethod

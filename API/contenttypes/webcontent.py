@@ -137,12 +137,10 @@ def getImage(pict_id=None, size=160):
 @crossdomain(origin='*')
 @support_jsonp
 def getImageByUsername(user_name=None):
-    e = Event('web.content.getImageByUsername')
-    p = Picture()
-    r = p.getImages({'u': user_name}, {'_id': 1, 'b': 1})
-    e.save()
-    if r != 'null':
-        return json.dumps(r)
+    r = Picture.get_images({'u': user_name}, {'_id': 1, 'b': 1})
+    current_app.logger.info(r)
+    if r and len(r) > 0:
+        return jsonify({'images': r})
     else:
         abort(404)
 
