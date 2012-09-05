@@ -9,8 +9,7 @@ from API.user.buser import User
 from API.utils import is_valid_id, get_user_name, get_key
 from bson.objectid import ObjectId
 
-from API.decorators import crossdomain
-from API.decorators import support_jsonp
+from API.decorators import crossdomain, support_jsonp
 
 
 mod = Blueprint('blibb', __name__, url_prefix='/blibb')
