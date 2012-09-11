@@ -54,8 +54,8 @@ def newItem():
             if blitem_id:
                 cond = {'_id': ObjectId(bid)}
                 Blibb.inc_num_item(cond)
-            Blitem.post_process(blitem_id, bitems)
-            return blitem_id
+                Blitem.post_process(blitem_id, bitems)
+                return blitem_id
         else:
             abort(401)
     return jsonify(Message.get('id_not_valid'))

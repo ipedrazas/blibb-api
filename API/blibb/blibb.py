@@ -71,7 +71,7 @@ class Blibb(object):
             acl['write'] = write_access
             doc = {"n": name, "s": slug, "d": desc, "u": user, "c": now,
                     "t": template, "img": image, 'a': acl, 'f': fields,
-                    'st': {'v': 0}}
+                    'at': slug, 'st': {'v': 0}}
 
             newId = objects.insert(doc)
             return str(newId)
