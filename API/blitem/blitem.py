@@ -250,35 +250,36 @@ class Blitem(object):
             return Message.get('id_not_valid')
 
     @classmethod
-    def get_blitem_from_request(self, key, value, labels):
+    def get_blitem_from_request(self, key, value, control):
         value = value.strip()
-        slug = key[3:]
-        typex = key[:2]
         blitem = {}
-        blitem['t'] = typex
-        blitem['s'] = slug
+        blitem['t'] = control['type']
+        blitem['s'] = control['slug']
 
-        if ControlType.is_multitext(typex):
+        if ControlType.is_multitext(control['type']):
             value = ControlType.autoP(value)
-        elif ControlType.is_image(typex):
+        elif ControlType.is_image(control['type']):
             value = ObjectId(value)
-        elif ControlType.is_date(typex):
+        elif ControlType.is_date(control['type']):
             # TODO: convert dates to MongoDates
             # and back
             value = value
-        elif ControlType.is_twitter(typex):
+        elif ControlType.is_twitter(control['type']):
             value = re.sub('[!@#$]', '', value)
 
         blitem['v'] = value
-        blitem['l'] = labels.get(slug)
+        blitem['l'] = control['name']
         return blitem
 
     @classmethod
-    def get_items_from_request(self, labels, request):
+    def get_items_from_request(self, controls, request):
         bitems = []
         for key, value in request.form.iteritems():
-            if '-' in key:
-                elem = self.get_blitem_from_request(key, value, labels)
+            current_app.logger.info(key + ' ' + str(controls.keys()))
+            if key in controls.keys():
+                control = controls.get(key)
+                current_app.logger.info(control)
+                elem = self.get_blitem_from_request(key, value, control)
                 bitems.append(elem)
         return bitems
 

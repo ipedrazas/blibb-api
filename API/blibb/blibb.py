@@ -25,6 +25,7 @@ objects = db['blibbs']
 
 class Blibb(object):
 
+
     @classmethod
     def update_view(cls, objectid, user, view, html):
         field = 't.v.%s.rb' % (view)
@@ -251,7 +252,7 @@ class Blibb(object):
     @classmethod
     def add_user_to_group(self, user, obj_id):
         if is_valid_id(obj_id):
-            objects.update({'_id': ObjectId(obj_id)}, 
+            objects.update({'_id': ObjectId(obj_id)},
                 {"$addToSet": {'g': user}}, False)
 
     @classmethod
@@ -340,3 +341,19 @@ class Blibb(object):
                 objects.update({'_id': ObjectId(object_id)}, {"$inc": {'st.f': 1}})
 
                 return objects.insert(doc)
+
+    @classmethod
+    def get_controls_as_dict(self, template):
+        if 'i' in template:
+            cs = template['i']
+            controls = dict()
+            for control in cs:
+                s = control['s']
+                ctrl = dict()
+                ctrl['type'] = control['tx']
+                ctrl['name'] = control['n']
+                ctrl['slug'] = control['s']
+                controls[s] = ctrl
+            return controls
+        else:
+            return None

@@ -44,6 +44,8 @@ class User(object):
     @classmethod
     def authenticate(self, user, password):
         stUser = objects.find_one({'$or': [{'e': user.strip()}, {'n':user.strip()}]})
+        current_app.logger.info(user)
+
         if stUser is not None:
             shPwd = hashlib.sha1(password + stUser['s'])
             if stUser['p'] == shPwd.hexdigest():
@@ -98,7 +100,7 @@ class User(object):
         return False
 
     @classmethod
-    def flat_object(self, doc):
+    def flat_object(cls, doc):
         buf = dict()
         if doc:
             buf['id'] = str(doc['_id'])

@@ -71,7 +71,10 @@ def getUserByName(key=None):
         return jsonify({'user': u})
     else:
         user = User.get_user(key)
-        return jsonify({'user': json.loads(user)})
+        if user:
+            return jsonify({'user': json.loads(user)})
+        else:
+            abort(404)
 
 
 @mod.route('/logout', methods=['POST'])

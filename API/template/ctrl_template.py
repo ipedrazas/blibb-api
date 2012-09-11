@@ -4,7 +4,7 @@
 #
 #
 
-from flask import current_app
+# from flask import current_app
 
 from datetime import datetime
 from bson.objectid import ObjectId
@@ -33,7 +33,7 @@ class ControlTemplate(object):
     @classmethod
     def add_controls(self, template, controls, user):
         items = []
-        current_app.logger.info("add_controls " + str(controls))
+        # current_app.logger.info("add_controls " + str(controls))
         controls = json.loads(controls)
         for control in controls:
             item = {}
@@ -49,9 +49,9 @@ class ControlTemplate(object):
                 if 'items' in control:
                     item['i'] = control.get('items')
                 items.append(item)
-            else:
-                current_app.logger.info('Control ID' + cid)
-        current_app.logger.info(items)
+            # else:
+                # current_app.logger.info('Control ID' + cid)
+        # current_app.logger.info(items)
         now = datetime.utcnow()
         doc = {"n": template, "u": user, "c": now, "s": slugify(template), 'q': 'draft', 'i': items}
         newId = objects.insert(doc)
@@ -98,7 +98,7 @@ class ControlTemplate(object):
     @classmethod
     def flaf_control(self, control):
         c = {}
-        current_app.logger.info('flat_control: ' + str(control))
+        # current_app.logger.info('flat_control: ' + str(control))
         if control:
             c['control_id'] = str(control['c'])
             c['type'] = control['tx']
@@ -184,8 +184,8 @@ class ControlTemplate(object):
     @classmethod
     def get_html(self, control):
         view = Control.get_view_by_id(control['control_id'])
-        current_app.logger.info('view html: ' + str(view) + ' ' + str(control))
+        # current_app.logger.info('view html: ' + str(view) + ' ' + str(control))
         read = pystache.render('{{=<% %>=}}' + view['read'], control)
         write = pystache.render('{{=<% %>=}}' + view['write'], control)
-        current_app.logger.info('write html: ' + write)
+        # current_app.logger.info('write html: ' + write)
         return {'read': read, 'write': write}

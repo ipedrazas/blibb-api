@@ -4,7 +4,7 @@ from flask import Blueprint, request, abort, jsonify, current_app
 from API.template.template import Template
 from API.template.ctrl_template import ControlTemplate
 import API.utils as utils
-from API.error import Message
+# from API.error import Message
 
 template = Blueprint('template', __name__, url_prefix='/template')
 
@@ -35,7 +35,7 @@ def newTemplate():
     current_app.logger.info(filter)
     template = ControlTemplate.get_object(filter, {'_id': 1})
     if template is None:
-            res = ControlTemplate.insert(name, desc, user, thumb)
+        res = ControlTemplate.insert(name, desc, user, thumb)
     else:
         res = str(template.get('_id', ''))
     return jsonify({'result': res})
