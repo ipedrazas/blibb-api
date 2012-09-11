@@ -230,27 +230,27 @@ def get_items_by_tag(username=None, slug=None, tag=None):
     if username is None or slug is None or tag is None:
         abort(404)
     # ip = request.remote_addr
-    blibb_id = Blibb.get_id_by_slug(username, slug)
+    blibb_id = Blibb.get_by_slug(username, slug)
     cond = {'s': slug, 'u': username}
     Blibb.increase_view(cond, 'vt')
     # return blibb_id
     b = Blitem()
-    items = b.getItemsByTag(blibb_id, tag)
-    return  jsonify(items)
+    items = b.get_items_by_tag(blibb_id['id'], tag)
+    return jsonify(items)
 
 
 @mod.route('/<username>/<slug>/<id>', methods=['GET'])
 @crossdomain(origin='*')
 @support_jsonp
 def get_item_by_id(username=None, slug=None, id=None):
-    if username is None or  slug is None or id is None:
+    if username is None or slug is None or id is None:
         abort(404)
 
     blibb = Blibb.get_object({'u': username, 's': slug})
     if blibb and is_valid_id(id):
         blibb_id = blibb['_id']
         items = Blitem.get_item({'_id': ObjectId(id), 'b': ObjectId(blibb_id)})
-        return  jsonify(Blitem.flat_object(items, {}))
+        return jsonify(Blitem.flat_object(items, {}))
     else:
         return jsonify(Message.get('id_not_valid'))
 

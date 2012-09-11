@@ -180,7 +180,7 @@ class Blitem(object):
             return result
         return Message.get('id_not_valid')
 
-    def getItemsByTag(self, blibb_id, tag):
+    def get_items_by_tag(self, blibb_id, tag):
         if is_valid_id(blibb_id):
             docs = self.get_items_page({'b': ObjectId(blibb_id), 'tg': tag}, {'i': 1, 'tg': 1, 'b': 1})
             result = dict()
