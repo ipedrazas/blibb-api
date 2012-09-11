@@ -1,7 +1,6 @@
 
 from flask import Blueprint, request, abort, jsonify, current_app
 
-from API.template.template import Template
 from API.template.ctrl_template import ControlTemplate
 import API.utils as utils
 # from API.error import Message
@@ -18,7 +17,7 @@ def get_all_templates(login_key=None):
 
 @template.route('/<status>/<params>', methods=['GET'])
 def getTemplates(status=None, params=None):
-    template = Template()
+    template = ControlTemplate()
     res = template.getActiveTemplates(status, params)
     return res
 
@@ -76,29 +75,10 @@ def publishTemplate():
 
 @template.route('/<template_id>', methods=['GET'])
 def getTemplate(template_id=None):
-    t = Template()
-    res = t.getById(template_id)
+    t = ControlTemplate()
+    res = t.get_by_id(template_id)
     if res != 'null':
         return res
     else:
         abort(404)
 
-
-@template.route('/add', methods=['POST'])
-def addControl():
-    c_id = request.form['cid']
-    t_id = request.form['tid']
-    order = request.form['order']
-    title = request.form['title']
-    help = request.form['help']
-    view = request.form['view']
-    slug = request.form['slug']
-    typex = request.form['typex']
-    key = request.form['k']
-    user = utils.get_user_name(key)
-    t = Template()
-    if t.isOwner(t_id, user):
-        res = t.addControl(c_id, t_id, title, help, order, view, slug, typex)
-    else:
-        res = {'error': 'User is not the owner of the Template'}
-    return jsonify(res)
