@@ -142,13 +142,16 @@ def addItemtoBlibb(username=None, slug=None):
     current_app.logger.info(str(user) + ' - ' + str(app_token) + ' - ' + str(blibb_id) + ' - ' + username + ' - ' + slug)
     if Blibb.can_write(user, app_token, blibb_id):
         bitems = Blitem.get_items_from_request(controls, request)
-        blitem_id = Blitem.insert(blibb_id, user, bitems, tags)
-        if is_valid_id(blitem_id):
-            cond = {'s': slug, 'u': username}
-            Blibb.inc_num_item(cond)
-            Blitem.post_process(blitem_id, bitems)
-            res = {'id': blitem_id}
-            return jsonify(res)
+        if len(bitems) > 0:
+            blitem_id = Blitem.insert(blibb_id, user, bitems, tags)
+            if is_valid_id(blitem_id):
+                cond = {'s': slug, 'u': username}
+                Blibb.inc_num_item(cond)
+                Blitem.post_process(blitem_id, bitems)
+                res = {'id': blitem_id}
+                return jsonify(res)
+        else:
+            return jsonify({'error': 'your POST data was not complete'})
     else:
         abort(401)
 
