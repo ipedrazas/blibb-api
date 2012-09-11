@@ -189,3 +189,16 @@ class ControlTemplate(object):
         write = pystache.render('{{=<% %>=}}' + view['write'], control)
         # current_app.logger.info('write html: ' + write)
         return {'read': read, 'write': write}
+
+    @classmethod
+    def get_active_templates(self, status, params):
+        p = dict()
+        listparams = params.split(",")
+        for param in listparams:
+            p[param] = 1
+        docs = objects.find({'q': status}, p)
+        templates = []
+        for doc in docs:
+            templates.append(self.flat_object(doc))
+
+        return templates

@@ -3,6 +3,7 @@ from flask import Blueprint, request, abort, jsonify, current_app
 
 from API.template.ctrl_template import ControlTemplate
 import API.utils as utils
+import json
 # from API.error import Message
 
 template = Blueprint('template', __name__, url_prefix='/template')
@@ -17,9 +18,7 @@ def get_all_templates(login_key=None):
 
 @template.route('/<status>/<params>', methods=['GET'])
 def getTemplates(status=None, params=None):
-    template = ControlTemplate()
-    res = template.getActiveTemplates(status, params)
-    return res
+    return json.dumps(ControlTemplate.get_active_templates(status, params))
 
 
 @template.route('', methods=['POST'])
