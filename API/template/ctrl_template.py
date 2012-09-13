@@ -191,14 +191,9 @@ class ControlTemplate(object):
         return {'read': read, 'write': write}
 
     @classmethod
-    def get_active_templates(self, status, params):
-        p = dict()
-        listparams = params.split(",")
-        for param in listparams:
-            p[param] = 1
-        docs = objects.find({'q': status}, p)
+    def get_active_templates(self, filter, fields):
+        docs = objects.find(filter, fields)
         templates = []
         for doc in docs:
             templates.append(self.flat_object(doc))
-
         return templates

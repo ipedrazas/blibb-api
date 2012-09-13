@@ -4,24 +4,27 @@ from flask import Blueprint, request, abort, jsonify, current_app
 from API.template.ctrl_template import ControlTemplate
 import API.utils as utils
 import json
+from API.decorators import parse_args
 # from API.error import Message
 
-template = Blueprint('template', __name__, url_prefix='/template')
+template = Blueprint('template', __name__, url_prefix='')
 
 
-@template.route('/<login_key>', methods=['GET'])
+@template.route('/template/<login_key>', methods=['GET'])
 def get_all_templates(login_key=None):
     user = utils.get_user_name(login_key)
     templates = ControlTemplate.get_templates_by_user(user)
     return jsonify({'result': templates})
 
 
-@template.route('/<status>/<params>', methods=['GET'])
-def getTemplates(status=None, params=None):
-    return json.dumps(ControlTemplate.get_active_templates(status, params))
+@template.route('/templates', methods=['GET'])
+@parse_args
+def getTemplates(filters, fields, items, page, num):
+    # filter = {'q': status}
+    return json.dumps(ControlTemplate.get_active_templates(filters, fields))
 
 
-@template.route('', methods=['POST'])
+@template.route('/template', methods=['POST'])
 def newTemplate():
     name = request.form['template_name']
     desc = request.form['template_description']
@@ -39,7 +42,7 @@ def newTemplate():
     return jsonify({'result': res})
 
 
-@template.route('/controls', methods=['POST'])
+@template.route('/template/controls', methods=['POST'])
 def add_controls():
     template = request.form['template']
     controls = request.form['controls']
@@ -54,7 +57,7 @@ def add_controls():
     return jsonify({'result': res})
 
 
-@template.route('/pub', methods=['POST'])
+@template.route('/template/pub', methods=['POST'])
 def publishTemplate():
     template_id = request.form['template_id']
     key = request.form['login_key']
@@ -72,7 +75,7 @@ def publishTemplate():
     return jsonify(res)
 
 
-@template.route('/<template_id>', methods=['GET'])
+@template.route('/template/<template_id>', methods=['GET'])
 def getTemplate(template_id=None):
     t = ControlTemplate()
     res = t.get_by_id(template_id)

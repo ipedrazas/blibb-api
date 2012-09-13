@@ -6,6 +6,28 @@ from functools import update_wrapper
 from functools import wraps
 
 
+def parse_args(f):
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        params = request.args.get('fields')
+        page = request.args.get('page', 1)
+        num = request.args.get('num', 20)
+        items = request.args.get('items')
+        raw_filters = request.args.get('filter')
+        fields = dict()
+        filters = dict()
+        if filters:
+            for filt in raw_filters.split(','):
+                entry = filt.split(':')
+                filters[entry[0].strip()] = entry[1].strip()
+        if params:
+            for p in params.split(','):
+                fields[p.strip()] = 1
+        kwargs.update({'page': page, 'num': num, 'items': items, 'fields': fields, 'filters': filters})
+        return f(*args, **kwargs)
+    return decorator
+
+
 def check_tokens(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
