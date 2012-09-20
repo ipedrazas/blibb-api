@@ -12,7 +12,7 @@ def parse_args(f):
         params = request.args.get('fields')
         page = request.args.get('page', 1)
         num = request.args.get('num', 20)
-        items = request.args.get('items')
+        current_app.logger.info("From decorator: " + str(num))
         raw_filters = request.args.get('filter')
         fields = dict()
         filters = dict()
@@ -23,7 +23,7 @@ def parse_args(f):
         if params:
             for p in params.split(','):
                 fields[p.strip()] = 1
-        kwargs.update({'page': page, 'num': num, 'items': items, 'fields': fields, 'filters': filters})
+        kwargs.update({'page': page, 'num': num, 'fields': fields, 'filters': filters})
         return f(*args, **kwargs)
     return decorator
 

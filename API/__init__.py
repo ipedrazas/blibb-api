@@ -44,8 +44,9 @@ from API.control.webcontrol import mod as ControlModule
 from API.template.webtemplate import template as TemplateModule
 from API.user.webuser import mod as UserModule
 from API.comment.webcomment import mod as CommentModule
+from API.oiapp.weboi import oi as OiModule
 
-
+app.register_blueprint(OiModule)
 app.register_blueprint(CommentModule)
 app.register_blueprint(BlibbModule)
 app.register_blueprint(BlitemModule)
