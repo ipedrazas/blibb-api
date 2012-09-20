@@ -45,7 +45,10 @@ from API.template.webtemplate import template as TemplateModule
 from API.user.webuser import mod as UserModule
 from API.comment.webcomment import mod as CommentModule
 from API.oiapp.weboi import oi as OiModule
+from API.oiapp.webuser import oiuser as UserOiModule
 
+
+app.register_blueprint(UserOiModule)
 app.register_blueprint(OiModule)
 app.register_blueprint(CommentModule)
 app.register_blueprint(BlibbModule)
