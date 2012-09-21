@@ -38,7 +38,7 @@ def new_user():
         if 'device' in request.form:
             device_id = request.form['device']
         doc = User.create(email, password, device_id)
-        return jsonify({'oi': User.to_dict(doc)})
+        return jsonify({'user': User.to_dict(doc)})
     else:
         abort(401)
 
@@ -46,5 +46,20 @@ def new_user():
 @oiuser.route('', methods=['GET'])
 @support_jsonp
 @parse_args
-def get_users(filters, fields, items, num, page):
-    return 'Ois'
+def get_users(*args, **kwargs):
+    resultset = []
+    docs = User.get_all(*args, **kwargs)
+    for doc in docs:
+        resultset.append(User.to_safe_dict(doc))
+
+    return jsonify({'resultset': resultset})
+
+
+@oiuser.route('/login', methods=['POST'])
+@crossdomain(origin='*')
+def doLogin():
+    user = request.form['email']
+    pwd = request.form['password']
+    user = User.authenticate(user, pwd)
+    return jsonify(User.to_safe_dict(user)) if user else abort(401)
+

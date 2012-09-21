@@ -92,17 +92,19 @@ class User(Base):
     @classmethod
     def to_safe_dict(cls, obj):
         obj = cls.to_dict(obj)
-        del obj['password']
-        del obj['salt']
+        if 'password' in obj:
+            del obj['password']
+        if 'salt' in obj:
+            del obj['salt']
         return obj
 
     @classmethod
     def authenticate(cls, email, password):
         stUser = cls.get({'email': email.strip()})
         if stUser is not None:
-            shPwd = sha1(password + stUser['s'])
-            if stUser['p'] == shPwd.hexdigest():
-                stUser['la'] = datetime.utcnow()
+            shPwd = sha1(stUser['salt'] + password)
+            if stUser['password'] == shPwd.hexdigest():
+                stUser['last_access'] = datetime.utcnow()
                 cls.objects.save(stUser)
                 user = cls.to_safe_dict(stUser)
                 key = cls.set_key(user)
@@ -111,8 +113,8 @@ class User(Base):
         return False
 
     @classmethod
-    def get_by_name(self, username):
-        doc = self.get_object({'n': username}, {'p': 0, 's': 0})
+    def get_by_name(self, email):
+        doc = self.get_object({'email': email}, {'password': 0, 'salt': 0})
         return self.flat_object(doc)
 
     @classmethod
@@ -128,7 +130,7 @@ class User(Base):
     @classmethod
     def set_key(cls, user):
         r = cls.get_redis()
-        userkey = sha1(user['username'] + user['id'] + str(datetime.utcnow())).hexdigest()
+        userkey = sha1(user['email'] + str(user['_id']) + str(datetime.utcnow())).hexdigest()
         r.set(userkey, json.dumps(user))
         expire = get_config_value('EXPIRE')
         r.expire(userkey, expire)

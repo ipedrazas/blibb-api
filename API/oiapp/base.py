@@ -38,7 +38,7 @@ class Base(object):
 
     @classmethod
     def to_dict(cls, obj):
-        if obj is not None and not isinstance(obj, unicode):
+        if obj is not None and not isinstance(obj, unicode) and not isinstance(obj, str):
             for key, value in obj.items():
                 if isinstance(value, ObjectId):
                     obj[key] = unicode(value)
