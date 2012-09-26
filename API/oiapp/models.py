@@ -138,7 +138,12 @@ class User(Base):
             if stUser['password'] == shPwd.hexdigest():
                 shPwd = sha1(stUser['salt'] + password)
                 stUser['password'] = shPwd.hexdigest()
+                stUser['last_access'] = datetime.utcnow()
                 cls.objects.save(stUser)
+                user = cls.to_safe_dict(stUser)
+                user['key'] = cls.set_key(stUser)
+                return user
+        return False
 
     @classmethod
     def authenticate(cls, email, password):

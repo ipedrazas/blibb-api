@@ -64,7 +64,7 @@ def get_users(*args, **kwargs):
 
 @oiuser.route('/password', methods=['POST'])
 @crossdomain(origin='*')
-def change_password(email):
+def change_password():
     login_key = request.form['login_key']
     email = get_email(login_key)
     pwd = request.form['password']
