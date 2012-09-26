@@ -62,7 +62,7 @@ def get_oi(oiid):
     abort(400)
 
 
-@oi.route('<oiid>/push', methods=['POST'])
+@oi.route('/<oiid>/push', methods=['POST'])
 @crossdomain(origin='*')
 def push_oi(oiid=None):
     login_key = request.form['login_key']
