@@ -76,7 +76,8 @@ class Oi(Base):
         if is_valid_id(oiid):
             doc = cls.get({'_id': ObjectId(oiid)})
             channel = doc['channel']
-            do_push(channel)
+            name = doc['name']
+            do_push(name, channel)
 
 
 class User(Base):
