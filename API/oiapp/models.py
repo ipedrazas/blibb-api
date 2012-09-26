@@ -64,6 +64,8 @@ class Oi(Base):
                     doc['invited'] = performers
                     if user not in doc['senders']:
                         doc['senders'].append(user)
+                    if user not in doc['subscribers']:
+                        doc['subscribers'].append(user)
                     cls.objects.save(doc)
                     return True
         return False
