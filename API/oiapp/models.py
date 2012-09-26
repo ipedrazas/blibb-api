@@ -77,7 +77,8 @@ class Oi(Base):
             doc = cls.get({'_id': ObjectId(oiid)})
             channel = doc['channel']
             name = doc['name']
-            do_push(name, channel)
+            return do_push(name, channel)
+        return False
 
 
 class User(Base):
