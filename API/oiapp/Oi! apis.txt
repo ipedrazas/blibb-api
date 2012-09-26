@@ -1,0 +1,93 @@
+# LOGIN
+
+curl -k -d "email=admin@oioi.me&password=admin" https://api.blibb.net/users/login
+
+
+"key": "6951956082b192b13f95049856b98bad4e0caeb6",
+
+
+# List Users
+# you can pass the fields parameter: a comma separated list of fields, if the field doesn
+
+curl -k https://api.blibb.net/users?fields=email,created_at,roles,devices,password,salt,key,hotdog
+
+curl -k -d "login_key=6951956082b192b13f95049856b98bad4e0caeb6&email=valgreens@oioi.me&password=antonio" https://api.blibb.net/users
+curl -k -d "login_key=6951956082b192b13f95049856b98bad4e0caeb6&email=mr.pez@oioi.me&password=andy" https://api.blibb.net/users
+curl -k -d "login_key=6951956082b192b13f95049856b98bad4e0caeb6&email=ipedrazas@oioi.me&password=ivan" https://api.blibb.net/users
+
+
+
+
+# Change password -> it regenerates the login_key
+curl -k -d "login_key=7d853947b796eb2857ba4d9bce00cfe03553b02f&password=ivan&old_password=antonio" https://api.blibb.net/users/password
+
+
+
+# List of Ois
+curl -k https://api.blibb.net/ois?fields=channel,owner,senders,subscribers,invited,created_at
+
+# New Oi
+curl -k -d "login_key=7d853947b796eb2857ba4d9bce00cfe03553b02f&name=Lunch at EMA&contacts=mr.pez@oioi.me,valgreens@oioi.me" https://api.blibb.net/ois
+
+# We'l get something like this
+# {
+#   "oi": {
+#     "name": "Lunch at EMA",
+#     "invited": [
+#       "valgreens@oioi.me",
+#       "mr.pez@oioi.me"
+#     ],
+#     "senders": [
+#       "ipedrazas@oioi.me"
+#     ],
+#     "subscribers": [
+#       "ipedrazas@oioi.me"
+#     ],
+#     "owner": "ipedrazas@oioi.me",
+#     "_id": "5063257652d4df0f90000000",
+#     "created_at": "26/09/2012 15:55:34 ",
+#     "channel": "ipedrazas@oioi.me-Lunch at EMA-b743b10ac442f3127dd130c4160e9621ad89d80a"
+#   }
+# }
+
+# Subscribe to oi
+# first we log in as valgreens to get the right login_key
+
+# curl -k -d "email=valgreens@oioi.me&password=antonio" https://api.blibb.net/users/login
+
+curl -k -d "login_key=dd50f16d08351b1226486b76d999a71731e22815" https://api.blibb.net/ois/5063257652d4df0f90000000/subscribe
+#if we get the list of Ois again:
+# curl -khttps://api.blibb.net/ois?fields=channel,owner,senders,subscribers,invited,created_at
+#  {
+#       "created_at": "26/09/2012 15:55:34 ",
+#       "senders": [
+#         "ipedrazas@oioi.me",
+#         "valgreens@oioi.me"
+#       ],
+#       "subscribers": [
+#         "ipedrazas@oioi.me",
+#         "valgreens@oioi.me"
+#       ],
+#       "owner": "ipedrazas@oioi.me",
+#       "_id": "5063257652d4df0f90000000",
+#       "invited": [
+#           "mr.pez@oioi.me"
+#       ],
+#       "channel": "ipedrazas@oioi.me-Lunch at EMA-b743b10ac442f3127dd130c4160e9621ad89d80a"
+#     }
+#   ]
+# }
+
+
+# Push Oi
+curl -k -d "login_key=4c827accb09c75c61b3865dde64a88d2f94e41b0" https://api.blibb.net/ois/50632a8652d4df1b53000000/push
+# {
+#   "push": {
+#     "result": true
+#   }
+# }
+
+
+# Get Ois a user is subscribed, is owner or is sender:
+curl -k https://api.blibb.net/ois/ipedrazas@gmail.com?fields=channel,owner,senders,subscribers,invited,created_at
+

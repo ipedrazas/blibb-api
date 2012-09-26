@@ -53,6 +53,18 @@ def get_ois(*args, **kwargs):
     return jsonify({'resultset': resultset})
 
 
+@oi.route('/<email>', methods=['GET'])
+@support_jsonp
+@parse_args
+def get_ois_by_user(email, *args, **kwargs):
+    resultset = []
+    docs = Oi.get_all({'$or': [{'senders': email.strip()}, {'subscribers':email.strip()}, {'subscribers': email.strip()}]}, **kwargs)
+    for doc in docs:
+        resultset.append(Oi.to_dict(doc))
+
+    return jsonify({'resultset': resultset})
+
+
 @oi.route('/<oiid>', methods=['GET'])
 @support_jsonp
 def get_oi(oiid):
