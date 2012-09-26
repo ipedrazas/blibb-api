@@ -4,13 +4,14 @@
 #
 #
 
-
+from flask import current_app
 from datetime import datetime
 
 # from bson.objectid import ObjectId
 from pymongo import Connection
+from bson.objectid import ObjectId
 from API.oiapp.base import Base
-from API.utils import get_config_value
+from API.utils import get_config_value, is_valid_id
 from hashlib import sha1
 import redis
 import json
@@ -26,15 +27,46 @@ class Oi(Base):
     def create(cls, owner, name, contacts):
         oi = dict()
         oi['owner'] = owner
-        oi['created_at'] = datetime.utcnow()
-        oi['channel'] = owner + '-' + name + '-' + str(sha1(name + owner + str(datetime.utcnow())).hexdigest())
+        now = datetime.utcnow()
+        oi['created_at'] = now
+        oi['name'] = name
+        rnd_id = str(sha1(name + owner + str(now)).hexdigest())
         contacts_list = []
         if contacts is not None:
                 if ',' in contacts:
-                    contacts_list = list(set(contacts.lower().split(',')))
+                    contacts_list = list(set(contacts.strip().lower().split(',')))
         oi['invited'] = contacts_list
+        oi['channel'] = '%s-%s-%s' % (owner, name, rnd_id)
+        oi['senders'] = [owner]
+        oi['subscribers'] = [owner]
         oi['_id'] = cls.objects.insert(oi)
         return oi
+
+    @classmethod
+    def can_push(cls, oiid, user):
+        if is_valid_id(oiid):
+            doc = cls.get({'_id': ObjectId(oiid)})
+            performers = doc.get('pushers', None)
+            if user in performers:
+                return True
+        return False
+
+    @classmethod
+    def subscribe(cls, oiid, user):
+        if is_valid_id(oiid):
+            doc = cls.get({'_id': ObjectId(oiid)})
+            performers = doc.get('invited', None)
+
+            for u in performers:
+                current_app.logger.info(doc)
+                if u == user:
+                    performers.remove(user)
+                    doc['invited'] = performers
+                    if user not in doc['senders']:
+                        doc['senders'].append(user)
+                    cls.objects.save(doc)
+                    return True
+        return False
 
 
 class User(Base):
@@ -91,11 +123,11 @@ class User(Base):
 
     @classmethod
     def to_safe_dict(cls, obj):
+        banned = ['password', 'salt', '_id']
         obj = cls.to_dict(obj)
-        if 'password' in obj:
-            del obj['password']
-        if 'salt' in obj:
-            del obj['salt']
+        for b in banned:
+            if b in obj:
+                del obj[b]
         return obj
 
     @classmethod
@@ -132,8 +164,8 @@ class User(Base):
         r = cls.get_redis()
         userkey = sha1(user['email'] + str(user['_id']) + str(datetime.utcnow())).hexdigest()
         r.set(userkey, json.dumps(user))
-        expire = get_config_value('EXPIRE')
-        r.expire(userkey, expire)
+        # expire = get_config_value('EXPIRE')
+        # r.expire(userkey, expire)
         return userkey
 
     @classmethod

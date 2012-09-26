@@ -7,7 +7,7 @@ from API.oiapp.models import User
 from API.event.event import Event
 
 
-from API.utils import get_user_name
+from API.utils import get_email
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
 from API.decorators import parse_args
@@ -30,7 +30,7 @@ def teardown_request(exception):
 @crossdomain(origin='*')
 def new_user():
     login_key = request.form['login_key']
-    owner = get_user_name(login_key)
+    owner = get_email(login_key)
     if owner:
         email = request.form['email']
         password = request.form['password']
@@ -38,9 +38,16 @@ def new_user():
         if 'device' in request.form:
             device_id = request.form['device']
         doc = User.create(email, password, device_id)
-        return jsonify({'user': User.to_dict(doc)})
+        return jsonify({'user': User.to_safe_dict(doc)})
     else:
         abort(401)
+
+
+@oiuser.route('/<email>', methods=['GET'])
+@support_jsonp
+def get_user(email):
+    doc = User.get({'email': email})
+    return jsonify({'user': User.to_safe_dict(doc)})
 
 
 @oiuser.route('', methods=['GET'])
@@ -57,9 +64,16 @@ def get_users(*args, **kwargs):
 
 @oiuser.route('/login', methods=['POST'])
 @crossdomain(origin='*')
-def doLogin():
+def do_login():
     user = request.form['email']
     pwd = request.form['password']
     user = User.authenticate(user, pwd)
     return jsonify(User.to_safe_dict(user)) if user else abort(401)
 
+
+@oiuser.route('/login', methods=['POST'])
+@crossdomain(origin='*')
+def do_logout():
+    login_key = request.form['login_key']
+    user = User.logout(login_key)
+    return jsonify(User.to_safe_dict(user)) if user else abort(401)

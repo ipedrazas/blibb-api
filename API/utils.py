@@ -73,6 +73,14 @@ def get_user_name(key):
         return user['username']
 
 
+def get_email(key):
+    r = get_redis()
+    juser = r.get(key)
+    if juser:
+        user = json.loads(juser)
+        return user['email']
+
+
 def get_redis():
     return redis.StrictRedis(host='127.0.0.1', port=6379, db=0)
 
