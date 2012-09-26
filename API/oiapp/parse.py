@@ -5,11 +5,13 @@
 
 import urllib2
 import json
+from API.utils import get_config_value
+
 
 API_ROOT = 'https://api.parse.com/1/'
 
-APPLICATION_ID = ''
-REST_API_KEY = ''
+APPLICATION_ID = get_config_value('PARSE_APPLICATION_ID')
+REST_API_KEY = get_config_value('PARSE_REST_API_KEY')
 
 PUSH_URL = API_ROOT + 'push'
 

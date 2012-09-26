@@ -15,6 +15,7 @@ from API.utils import get_config_value, is_valid_id
 from hashlib import sha1
 import redis
 import json
+from API.oiapp.parse import do_push
 
 
 class Oi(Base):
@@ -46,7 +47,7 @@ class Oi(Base):
     def can_push(cls, oiid, user):
         if is_valid_id(oiid):
             doc = cls.get({'_id': ObjectId(oiid)})
-            performers = doc.get('pushers', None)
+            performers = doc.get('senders', None)
             if user in performers:
                 return True
         return False
@@ -69,6 +70,13 @@ class Oi(Base):
                     cls.objects.save(doc)
                     return True
         return False
+
+    @classmethod
+    def push(cls, oiid):
+        if is_valid_id(oiid):
+            doc = cls.get({'_id': ObjectId(oiid)})
+            channel = doc['channel']
+            do_push(channel)
 
 
 class User(Base):
