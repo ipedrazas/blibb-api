@@ -161,7 +161,8 @@ class User(Base):
     @classmethod
     def set_key(cls, user):
         r = cls.get_redis()
-        userkey = sha1(user['email'] + str(user['_id']) + str(datetime.utcnow())).hexdigest()
+        current_app.logger.info(user)
+        userkey = sha1(user['email'] + user['last_access'] + str(datetime.utcnow())).hexdigest()
         r.set(userkey, json.dumps(user))
         # expire = get_config_value('EXPIRE')
         # r.expire(userkey, expire)
