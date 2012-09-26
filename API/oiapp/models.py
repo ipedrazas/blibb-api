@@ -139,8 +139,7 @@ class User(Base):
                 stUser['last_access'] = datetime.utcnow()
                 cls.objects.save(stUser)
                 user = cls.to_safe_dict(stUser)
-                key = cls.set_key(user)
-                user['key'] = key
+                user['key'] = cls.set_key(stUser)
                 return user
         return False
 
