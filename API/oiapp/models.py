@@ -131,6 +131,16 @@ class User(Base):
         return obj
 
     @classmethod
+    def change_password(cls, email, password, old_password):
+        stUser = cls.get({'email': email.strip()})
+        if stUser is not None:
+            shPwd = sha1(stUser['salt'] + old_password)
+            if stUser['password'] == shPwd.hexdigest():
+                shPwd = sha1(stUser['salt'] + password)
+                stUser['password'] = shPwd.hexdigest()
+                cls.objects.save(stUser)
+
+    @classmethod
     def authenticate(cls, email, password):
         stUser = cls.get({'email': email.strip()})
         if stUser is not None:

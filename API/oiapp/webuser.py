@@ -62,6 +62,17 @@ def get_users(*args, **kwargs):
     return jsonify({'resultset': resultset})
 
 
+@oiuser.route('/password', methods=['POST'])
+@crossdomain(origin='*')
+def change_password(email):
+    login_key = request.form['login_key']
+    email = get_email(login_key)
+    pwd = request.form['password']
+    old_password = request.form['old_password']
+    user = User.change_password(email, pwd, old_password)
+    return jsonify(User.to_safe_dict(user)) if user else abort(401)
+
+
 @oiuser.route('/login', methods=['POST'])
 @crossdomain(origin='*')
 def do_login():
@@ -71,7 +82,7 @@ def do_login():
     return jsonify(User.to_safe_dict(user)) if user else abort(401)
 
 
-@oiuser.route('/login', methods=['POST'])
+@oiuser.route('/logout', methods=['POST'])
 @crossdomain(origin='*')
 def do_logout():
     login_key = request.form['login_key']
