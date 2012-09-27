@@ -58,11 +58,21 @@ def get_ois(*args, **kwargs):
 @parse_args
 def get_ois_by_user(email, *args, **kwargs):
     resultset = []
-    docs = Oi.get_all({'$or': [{'senders': email.strip()}, {'subscribers':email.strip()}, {'subscribers': email.strip()}]}, **kwargs)
-    for doc in docs:
-        resultset.append(Oi.to_dict(doc))
+    senders = []
+    subscribers = []
+    invited = []
 
-    return jsonify({'resultset': resultset})
+    docs = Oi.get_all({'$or': [{'senders': email.strip()}, {'subscribers':email.strip()}, {'invited': email.strip()}]}, **kwargs)
+    for doc in docs:
+        if email in doc['senders']:
+            senders.append(str(doc['_id']))
+        if email in doc['subscribers']:
+            subscribers.append(str(doc['_id']))
+        if email in doc['invited']:
+            invited.append(str(doc['_id']))
+        resultset.append(Oi.to_dict(doc))
+    data = {'senders': senders, 'subscribers': subscribers, 'invited': invited}
+    return jsonify({'resultset': resultset, 'data': data})
 
 
 @oi.route('/<oiid>', methods=['GET'])
