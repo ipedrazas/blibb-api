@@ -38,7 +38,7 @@ class Oi(Base):
                     contacts_list = list(set(contacts.strip().lower().split(',')))
         oi['invited'] = contacts_list
 
-        oi['channel'] = '%s-%s-%s' % (owner.replace('@', '_'), name, rnd_id)
+        oi['channel'] = '%s-%s-%s' % (owner.replace('@', '-'), name, rnd_id)
         oi['senders'] = [owner]
         oi['subscribers'] = [owner]
         oi['_id'] = cls.objects.insert(oi)
