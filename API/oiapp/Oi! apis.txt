@@ -13,7 +13,7 @@ curl -k https://api.blibb.net/users?fields=email,created_at,roles,devices,passwo
 
 curl -k -d "login_key=6951956082b192b13f95049856b98bad4e0caeb6&email=valgreens@oioi.me&password=antonio" https://api.blibb.net/users
 curl -k -d "login_key=6951956082b192b13f95049856b98bad4e0caeb6&email=mr.pez@oioi.me&password=andy" https://api.blibb.net/users
-curl -k -d "login_key=6951956082b192b13f95049856b98bad4e0caeb6&email=ipedrazas@oioi.me&password=ivan" https://api.blibb.net/users
+curl -k -d "login_key=916a8ebb96eed0e0411762ad437a060bb87b3c19&email=i@i.me&password=i" https://api.blibb.net/users
 
 
 
@@ -91,3 +91,10 @@ curl -k -d "login_key=4c827accb09c75c61b3865dde64a88d2f94e41b0" https://api.blib
 # Get Ois a user is subscribed, is owner or is sender:
 curl -k https://api.blibb.net/ois/ipedrazas@gmail.com?fields=channel,owner,senders,subscribers,invited,created_at
 
+
+
+# LOGIN
+
+curl -d "email=ipedrazas@oioi.me&password=ivan" http://api.blibb.net/users/login
+
+curl -d "login_key=8649e1cb7dcb212dab47625ed5446bc32e944edb&name=Testing Android&contacts=mr.pez@oioi.me,valgreens@oioi.me" http://api.blibb.net/ois

@@ -29,18 +29,13 @@ def teardown_request(exception):
 @oiuser.route('', methods=['POST'])
 @crossdomain(origin='*')
 def new_user():
-    login_key = request.form['login_key']
-    owner = get_email(login_key)
-    if owner:
-        email = request.form['email']
-        password = request.form['password']
-        device_id = ''
-        if 'device' in request.form:
-            device_id = request.form['device']
-        doc = User.create(email, password, device_id)
-        return jsonify({'user': User.to_safe_dict(doc)})
-    else:
-        abort(401)
+    email = request.form['email']
+    password = request.form['password']
+    device_id = ''
+    if 'device' in request.form:
+        device_id = request.form['device']
+    doc = User.create(email, password, device_id)
+    return jsonify({'user': User.to_safe_dict(doc)})
 
 
 @oiuser.route('/<email>', methods=['GET'])
