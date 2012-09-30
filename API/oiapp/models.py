@@ -38,11 +38,18 @@ class Oi(Base):
                     contacts_list = list(set(contacts.strip().lower().split(',')))
         oi['invited'] = contacts_list
 
-        oi['channel'] = '%s-%s-%s' % (owner.replace('@', '-'), name, rnd_id)
+        oi['channel'] = '%s-%s-%s' % (cls.parse_string(owner), cls.parse_string(name), rnd_id)
         oi['senders'] = [owner]
         oi['subscribers'] = [owner]
         oi['_id'] = cls.objects.insert(oi)
         return oi
+
+    @classmethod
+    def parse_string(cls, buffer):
+        buffer = buffer.replace('@', '-')
+        buffer = buffer.replace(' ', '')
+        buffer = buffer.replace('.', '')
+        return buffer
 
     @classmethod
     def can_push(cls, oiid, user):
