@@ -7,7 +7,7 @@ from API.oiapp.models import User
 from API.event.event import Event
 
 
-from API.utils import get_email
+from API.utils import get_email, queue_ducksboard_delta
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
 from API.decorators import parse_args
@@ -35,6 +35,7 @@ def new_user():
     if 'device' in request.form:
         device_id = request.form['device']
     doc = User.create(email, password, device_id)
+    queue_ducksboard_delta('80347')
     return jsonify({'user': User.to_safe_dict(doc)})
 
 
@@ -74,6 +75,7 @@ def do_login():
     user = request.form['email']
     pwd = request.form['password']
     user = User.authenticate(user, pwd)
+    queue_ducksboard_delta('80360')
     return jsonify(User.to_safe_dict(user)) if user else abort(401)
 
 

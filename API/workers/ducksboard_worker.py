@@ -19,7 +19,6 @@ KEY = get_config_value('DUCKSBOARD_KEY')
 
 print "URL Worker running at port 5557"
 
-
 context = zmq.Context()
 socket = context.socket(zmq.REP)
 socket.bind("tcp://*:5557")
