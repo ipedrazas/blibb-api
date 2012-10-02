@@ -7,7 +7,7 @@ from API.oiapp.models import Oi
 from API.event.event import Event
 from bson.objectid import ObjectId
 
-from API.utils import get_email, is_valid_id
+from API.utils import get_email, is_valid_id, queue_ducksboard_delta
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
 from API.decorators import parse_args
@@ -36,6 +36,7 @@ def new_oi():
         name = request.form['name']
         current_app.logger.info(owner)
         doc = Oi.create(owner, name, contacts)
+        queue_ducksboard_delta('80402')
         return jsonify({'oi': Oi.to_dict(doc)})
     else:
         abort(401)
@@ -91,6 +92,10 @@ def push_oi(oiid=None):
     user = get_email(login_key)
     if is_valid_id(oiid):
         if Oi.can_push(oiid, user):
+            # total ois sent
+            queue_ducksboard_delta('80399')
+            # ois by day/week/month
+            queue_ducksboard_delta('80400')
             return jsonify({'push': Oi.push(oiid)})
         else:
             abort(401)
@@ -104,6 +109,7 @@ def subscribe_oi(oiid=None):
     user = get_email(login_key)
     if is_valid_id(oiid):
         if Oi.subscribe(oiid, user):
+            queue_ducksboard_delta('80403')
             return jsonify({'subscribed': oiid})
         else:
             abort(401)
