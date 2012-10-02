@@ -96,5 +96,18 @@ curl -k https://api.blibb.net/ois/ipedrazas@gmail.com?fields=channel,owner,sende
 # LOGIN
 
 curl -d "email=ipedrazas@oioi.me&password=ivan" http://api.blibb.net/users/login
+curl -d "login_key=385d6ae2e06c3a81ecb6620d264b61b33aafecdb&name=Androido Loco&contacts=mr.pez@oioi.me,valgreens@oioi.me,i@oioi.me" http://api.blibb.net/ois
 
-curl -d "login_key=8649e1cb7dcb212dab47625ed5446bc32e944edb&name=Testing Android&contacts=mr.pez@oioi.me,valgreens@oioi.me" http://api.blibb.net/ois
+curl -d "email=i@i.me&password=i" http://api.blibb.net/users/login
+63569c5550b78d0049b283d1dfe0f75879c3b242
+
+curl -k -d "login_key=63569c5550b78d0049b283d1dfe0f75879c3b242" https://api.blibb.net/ois/50697c0b52d4df6099000000/subscribe
+
+
+f6efb4b9f6baa8c868eaf0ebbdcf846bbd1b1221
+curl -d "login_key=f6efb4b9f6baa8c868eaf0ebbdcf846bbd1b1221&name=Check your email&contacts=mr.pez@oioi.me,ipedrazas@oioi.me,i@oioi.me" http://api.blibb.net/ois
+curl -d "login_key=62e038ec7dacba699862c4454e1898009f11f48e&name=Arrived Home Sound and Safe&contacts=ipedrazas@oioi.me,i@oioi.me" http://api.blibb.net/ois
+
+b689b6486288e9975e72ed9fee27ff207254e9e5
+
+curl -k -d "login_key=b689b6486288e9975e72ed9fee27ff207254e9e5" https://api.blibb.net/ois/5069caa352d4df6092000012/subscribe
