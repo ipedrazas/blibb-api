@@ -24,7 +24,7 @@ curl -k -d "login_key=7d853947b796eb2857ba4d9bce00cfe03553b02f&password=ivan&old
 
 
 # List of Ois
-curl -k https://api.blibb.net/ois?fields=channel,owner,senders,subscribers,invited,created_at
+curl -k https://api.blibb.net/ois?fields=channel,owner,senders,subscribers,invited,created_at,name
 
 # New Oi
 curl -k -d "login_key=7d853947b796eb2857ba4d9bce00cfe03553b02f&name=Lunch at EMA&contacts=mr.pez@oioi.me,valgreens@oioi.me" https://api.blibb.net/ois
