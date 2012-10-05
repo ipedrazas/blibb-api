@@ -91,11 +91,9 @@ def push_oi(oiid=None):
     login_key = request.form['login_key']
     user = get_email(login_key)
     if is_valid_id(oiid):
-        if Oi.can_push(oiid, user):
-            # total ois sent
-            queue_ducksboard_delta('80399')
-            # ois by day/week/month
-            queue_ducksboard_delta('81014')
+        oi = Oi.get({'_id': ObjectId(oiid)})
+        if Oi.in_senders(oi, user):
+            Audit.push(user, oi['_id'], '', oi['subscribers'])
             return jsonify({'push': Oi.push(oiid)})
         else:
             abort(401)

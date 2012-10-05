@@ -25,10 +25,10 @@ class Audit(Base):
     objects = db['audits']
 
     @classmethod
-    def push(cls, email, oiid, subscribers):
+    def push(cls, email, oiid, subscribers, device):
         if is_valid_id(oiid):
             now = datetime.utcnow()
-            cls.objects.insert({'t': now, 'o': ObjectId(oiid), 'u': email, 'a': 'p', 'c': subscribers})
+            cls.objects.insert({'t': now, 'o': ObjectId(oiid), 'u': email, 'a': 'p', 'c': subscribers, 'd': device})
 
     @classmethod
     def login(cls, email, device):
@@ -39,7 +39,7 @@ class Audit(Base):
     def new_oi(cls, email, oiid, device):
         if is_valid_id(oiid):
             now = datetime.utcnow()
-            cls.objects.insert({'t': now, 'u': email, 'o': ObjectId(oiid), 'a': 'n', 'd': device})
+            cls.objects.insert({'t': now, 'u': email, 'o': oiid, 'a': 'n', 'd': device})
             queue_ducksboard_delta('81176')
 
     @classmethod
@@ -93,9 +93,14 @@ class Oi(Base):
     def can_push(cls, oiid, user):
         if is_valid_id(oiid):
             doc = cls.get({'_id': ObjectId(oiid)})
-            performers = doc.get('senders', None)
-            if user in performers:
-                return True
+            return cls.in_senders(doc, user)
+        return False
+
+    @classmethod
+    def in_senders(doc, user):
+        performers = doc.get('senders', None)
+        if user in performers:
+            return True
         return False
 
     @classmethod
@@ -118,13 +123,10 @@ class Oi(Base):
         return False
 
     @classmethod
-    def push(cls, oiid):
-        if is_valid_id(oiid):
-            doc = cls.get({'_id': ObjectId(oiid)})
-            channel = doc['channel']
-            name = doc['name']
-            return do_push(name, channel)
-        return False
+    def push(cls, doc):
+        channel = doc['channel']
+        name = doc['name']
+        return do_push(name, channel)
 
 
 class User(Base):
