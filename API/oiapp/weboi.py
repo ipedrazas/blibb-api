@@ -36,7 +36,7 @@ def new_oi():
         name = request.form['name']
         current_app.logger.info(owner)
         doc = Oi.create(owner, name, contacts)
-        queue_ducksboard_delta('80402')
+        queue_ducksboard_delta('81176')
         return jsonify({'oi': Oi.to_dict(doc)})
     else:
         abort(401)
@@ -109,7 +109,7 @@ def subscribe_oi(oiid=None):
     user = get_email(login_key)
     if is_valid_id(oiid):
         if Oi.subscribe(oiid, user):
-            queue_ducksboard_delta('80403')
+            queue_ducksboard_delta('81177')
             return jsonify({'subscribed': oiid})
         else:
             abort(401)
