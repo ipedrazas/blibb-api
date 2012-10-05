@@ -72,10 +72,10 @@ def change_password():
 @oiuser.route('/login', methods=['POST'])
 @crossdomain(origin='*')
 def do_login():
-    user = request.form['email']
+    email = request.form['email']
     pwd = request.form['password']
-    user = User.authenticate(user, pwd)
-    Audit.login(user, '')
+    user = User.authenticate(email, pwd)
+    Audit.login(email, '')
     return jsonify(User.to_safe_dict(user)) if user else abort(401)
 
 
