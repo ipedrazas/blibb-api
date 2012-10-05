@@ -49,6 +49,8 @@ class Oi(Base):
         buffer = buffer.replace('@', '-')
         buffer = buffer.replace(' ', '')
         buffer = buffer.replace('.', '')
+        buffer = buffer.replace(',', '')
+        buffer = buffer.replace('\'', '')
         return buffer
 
     @classmethod
