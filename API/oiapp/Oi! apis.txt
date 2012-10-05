@@ -111,3 +111,18 @@ curl -d "login_key=62e038ec7dacba699862c4454e1898009f11f48e&name=Arrived Home So
 b689b6486288e9975e72ed9fee27ff207254e9e5
 
 curl -k -d "login_key=b689b6486288e9975e72ed9fee27ff207254e9e5" https://api.blibb.net/ois/5069caa352d4df6092000012/subscribe
+9f13871ecfe01da273a0fa0d607a21125c169b9a
+
+curl -d "login_key=9f13871ecfe01da273a0fa0d607a21125c169b9a&name=iPhone App Installed&contacts=mr.pez@oioi.me,valgreens@oioi.me,i@oioi.me" http://api.blibb.net/ois
+
+curl -d "email=ipedrazas@oioi.me&password=ivan" http://api.blibb.net/users/login
+
+curl -d "login_key=2f52b77131aa1f049bb41dff791c7af3b2b65692&name=Test Subscriptions&contacts=mr.pez@oioi.me,valgreens@oioi.me,i@oioi.me" http://api.blibb.net/ois
+
+
+curl -d "login_key=d827fbf9f64602b181e892da22b0c71e38deeb10&name=First Oi&contacts=ndmnorris@gmail.com,i@oioi.me" http://api.blibb.net/ois
+
+curl -d "login_key=d827fbf9f64602b181e892da22b0c71e38deeb10&name=First Oi&contacts=ndmnorris@gmail.com,i@oioi.me" http://api.blibb.net/ois
+
+
+curl -k -d "login_key=d9c36d3c6370bf820b58b4dea2efdbbed10cdeaa" https://api.blibb.net/ois/506e8f8d52d4df429900000c/subscribe

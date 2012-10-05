@@ -95,7 +95,7 @@ def push_oi(oiid=None):
             # total ois sent
             queue_ducksboard_delta('80399')
             # ois by day/week/month
-            queue_ducksboard_delta('80400')
+            queue_ducksboard_delta('81014')
             return jsonify({'push': Oi.push(oiid)})
         else:
             abort(401)
