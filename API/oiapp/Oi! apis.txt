@@ -126,3 +126,9 @@ curl -d "login_key=d827fbf9f64602b181e892da22b0c71e38deeb10&name=First Oi&contac
 
 
 curl -k -d "login_key=d9c36d3c6370bf820b58b4dea2efdbbed10cdeaa" https://api.blibb.net/ois/506e8f8d52d4df429900000c/subscribe
+
+
+curl -v -u av7HZA3bt69Bey58OYEZNDalVmwpisvMxOVMdvVJSMHrQsOl0x:x -d '{"timestamp":1349427636, "delta": 1}'  https://push.ducksboard.com/v/81014
+
+
+https://public.ducksboard.com/tY5avWuPiJDdVgwKoPjt/
