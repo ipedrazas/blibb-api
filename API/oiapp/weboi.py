@@ -3,7 +3,7 @@
 
 
 from flask import Blueprint, request, abort, jsonify, current_app, g
-from API.oiapp.models import Oi
+from API.oiapp.models import Oi, Audit
 from API.event.event import Event
 from bson.objectid import ObjectId
 
@@ -36,7 +36,7 @@ def new_oi():
         name = request.form['name']
         current_app.logger.info(owner)
         doc = Oi.create(owner, name, contacts)
-        queue_ducksboard_delta('81176')
+        Audit.new_oi(owner, doc['_id'], '')
         return jsonify({'oi': Oi.to_dict(doc)})
     else:
         abort(401)

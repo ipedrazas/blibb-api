@@ -11,11 +11,47 @@ from datetime import datetime
 from pymongo import Connection
 from bson.objectid import ObjectId
 from API.oiapp.base import Base
-from API.utils import get_config_value, is_valid_id
+from API.utils import get_config_value, is_valid_id, queue_ducksboard_delta
 from hashlib import sha1
 import redis
 import json
 from API.oiapp.parse import do_push
+
+
+class Audit(Base):
+
+    conn = Connection(get_config_value('MONGO_URL'))
+    db = conn['oime']
+    objects = db['audits']
+
+    @classmethod
+    def push(cls, email, oiid, subscribers):
+        if is_valid_id(oiid):
+            now = datetime.utcnow()
+            cls.objects.insert({'t': now, 'o': ObjectId(oiid), 'u': email, 'a': 'p', 'c': subscribers})
+
+    @classmethod
+    def login(cls, email, device):
+        now = datetime.utcnow()
+        cls.objects.insert({'t': now, 'u': email, 'a': 'l', 'd': device})
+
+    @classmethod
+    def new_oi(cls, email, oiid, device):
+        if is_valid_id(oiid):
+            now = datetime.utcnow()
+            cls.objects.insert({'t': now, 'u': email, 'o': ObjectId(oiid), 'a': 'n', 'd': device})
+            queue_ducksboard_delta('81176')
+
+    @classmethod
+    def subscribe(cls, email, device, oiid):
+        if is_valid_id(oiid):
+            now = datetime.utcnow()
+            cls.objects.insert({'t': now, 'u': email, 'o': ObjectId(oiid), 'a': 's', 'd': device})
+
+    @classmethod
+    def signup(cls, email, device):
+        now = datetime.utcnow()
+        cls.objects.insert({'t': now, 'u': email, 'a': 'sp', 'd': device})
 
 
 class Oi(Base):
