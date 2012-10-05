@@ -32,6 +32,10 @@ def set_delta(endpoint):
     return send({'delta': 1}, endpoint)
 
 
+def set_timestamp_delta(endpoint):
+    return send({"timestamp": time.time(), 'delta': 1}, endpoint)
+
+
 def send(data, endpoint):
     req = requests.post("https://push.ducksboard.com/v/%s/" % endpoint,
                         auth=(KEY, 'ignored'),
@@ -51,6 +55,8 @@ def processMessage(message):
         set_delta(widget)
     elif action == 'v':
         set_value(value, widget)
+    elif action == 'dt':
+        set_timestamp_delta(widget)
 
 
 while True:

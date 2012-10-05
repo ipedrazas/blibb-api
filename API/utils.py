@@ -94,22 +94,27 @@ def queue_twitter_resolution(obj_id, twiter_screen_name):
         socket.send(str(obj_id + '##' + twiter_screen_name))
 
 
-def queue_ducksboard_delta(widget_id):
-    print 'Queuing to ducksboard worker ' + str(widget_id)
-    context = zmq.Context()
-    socket = context.socket(zmq.REQ)
-    socket.connect("tcp://localhost:5557")
+def queue_ducksboard_delta(widget_id, timestamp=False):
     if widget_id is not None:
-        socket.send(str(widget_id + '##1##d'))
+        if timestamp:
+            msg = widget_id + '##1##td'
+        else:
+            msg = widget_id + '##1##d'
+        queue_ducksboard(widget_id, msg)
 
 
 def queue_ducksboard_value(widget_id, value):
+    if widget_id is not None:
+        msg = '%s##%s##v' % (widget_id, value)
+        queue_ducksboard(widget_id, msg)
+
+
+def queue_ducksboard(widget_id, msg):
     print 'Queuing to ducksboard worker ' + str(widget_id)
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
     socket.connect("tcp://localhost:5557")
     if widget_id is not None:
-        msg = '%s##%s##v' % (widget_id, value)
         socket.send(msg)
 
 

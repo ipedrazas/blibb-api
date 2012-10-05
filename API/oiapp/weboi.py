@@ -95,7 +95,7 @@ def push_oi(oiid=None):
             # total ois sent
             queue_ducksboard_delta('80399')
             # ois by day/week/month
-            queue_ducksboard_delta('81014')
+            queue_ducksboard_delta('81014', True)
             return jsonify({'push': Oi.push(oiid)})
         else:
             abort(401)
@@ -109,7 +109,7 @@ def subscribe_oi(oiid=None):
     user = get_email(login_key)
     if is_valid_id(oiid):
         if Oi.subscribe(oiid, user):
-            queue_ducksboard_delta('80403')
+            queue_ducksboard_delta('80403', True)
             return jsonify({'subscribed': oiid})
         else:
             abort(401)
