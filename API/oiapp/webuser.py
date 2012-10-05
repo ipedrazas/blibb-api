@@ -3,7 +3,7 @@
 
 
 from flask import Blueprint, request, abort, jsonify, g
-from API.oiapp.models import User
+from API.oiapp.models import User, Audit
 from API.event.event import Event
 
 
@@ -35,7 +35,7 @@ def new_user():
     if 'device' in request.form:
         device_id = request.form['device']
     doc = User.create(email, password, device_id)
-    queue_ducksboard_delta('80347')
+    Audit.signup(email, '')
     return jsonify({'user': User.to_safe_dict(doc)})
 
 
@@ -75,8 +75,7 @@ def do_login():
     user = request.form['email']
     pwd = request.form['password']
     user = User.authenticate(user, pwd)
-    queue_ducksboard_delta('81166')
-    queue_ducksboard_delta('81209')
+    Audit.login(user, '')
     return jsonify(User.to_safe_dict(user)) if user else abort(401)
 
 

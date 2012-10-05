@@ -107,7 +107,7 @@ def subscribe_oi(oiid=None):
     user = get_email(login_key)
     if is_valid_id(oiid):
         if Oi.subscribe(oiid, user):
-            queue_ducksboard_delta('81177')
+            Audit.subscribe(user, '', oiid)
             return jsonify({'subscribed': oiid})
         else:
             abort(401)

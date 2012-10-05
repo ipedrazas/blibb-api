@@ -28,12 +28,16 @@ class Audit(Base):
     def push(cls, email, oiid, subscribers, device):
         if is_valid_id(oiid):
             now = datetime.utcnow()
-            cls.objects.insert({'t': now, 'o': ObjectId(oiid), 'u': email, 'a': 'p', 'c': subscribers, 'd': device})
+            cls.objects.insert({'t': now, 'o': ObjectId(oiid), 'u': email, 'a': 'p', 's': subscribers, 'd': device})
+            queue_ducksboard_delta('80399')
+            queue_ducksboard_delta('81014')
 
     @classmethod
     def login(cls, email, device):
         now = datetime.utcnow()
         cls.objects.insert({'t': now, 'u': email, 'a': 'l', 'd': device})
+        queue_ducksboard_delta('81166')
+        queue_ducksboard_delta('81209')
 
     @classmethod
     def new_oi(cls, email, oiid, device):
@@ -47,11 +51,13 @@ class Audit(Base):
         if is_valid_id(oiid):
             now = datetime.utcnow()
             cls.objects.insert({'t': now, 'u': email, 'o': ObjectId(oiid), 'a': 's', 'd': device})
+            queue_ducksboard_delta('81177')
 
     @classmethod
     def signup(cls, email, device):
         now = datetime.utcnow()
         cls.objects.insert({'t': now, 'u': email, 'a': 'sp', 'd': device})
+        queue_ducksboard_delta('80347')
 
 
 class Oi(Base):
