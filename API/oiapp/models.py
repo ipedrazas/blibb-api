@@ -97,7 +97,7 @@ class Oi(Base):
         return False
 
     @classmethod
-    def in_senders(doc, user):
+    def in_senders(cls, doc, user):
         performers = doc.get('senders', None)
         if user in performers:
             return True
