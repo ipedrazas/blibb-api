@@ -8,11 +8,13 @@ import time
 import json
 import requests
 import sys
+import datetime
 from os.path import join, abspath, dirname
 
 parentpath = abspath(join(dirname(__file__), '../..'))
 sys.path.append(parentpath)
 
+from API.oiapp.models import User, Oi
 from API.utils import get_config_value
 
 KEY = get_config_value('DUCKSBOARD_KEY')
@@ -46,6 +48,18 @@ def send(data, endpoint):
     return req.content
 
 
+def calculate_averages():
+    total_num_ois = Oi.count()
+    total_users = User.count()
+    total_oi_user = total_num_ois / total_users
+    set_value(total_oi_user, '81210')
+    today = datetime.date.today()
+    num_ois_today = Oi.count({'created_on': {'$gte': today}})
+    users_today = User.count({'created_on': {'$gte': today}})
+    total_today = num_ois_today / users_today
+    set_value(total_today, '81297')
+
+
 def processMessage(message):
     strs = message.split('##')
     widget = strs[0]
@@ -58,12 +72,19 @@ def processMessage(message):
     elif action == 'dt':
         set_timestamp_delta(widget)
 
+averages_timeout = 0
+AVERAGE = 1800
 
 while True:
     #  Wait for next request from client
     message = socket.recv()
     print "Received request: ", message
     print processMessage(message)
+    if(averages_timeout > AVERAGE):
+        calculate_averages()
+        averages_timeout = 0
     #  Do some 'work'
     time.sleep(1)  # Do some 'work'
     socket.send('ok')
+    averages_timeout += 1
+

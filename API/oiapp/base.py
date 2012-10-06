@@ -12,6 +12,10 @@ from bson.objectid import ObjectId
 class Base(object):
 
     @classmethod
+    def count(cls, *args, **kwargs):
+        return cls.objects.find(*args, **kwargs).count()
+
+    @classmethod
     def get_paginated(cls, *args, **kwargs):
         if kwargs is not None:
             num = kwargs.get('num', 20)

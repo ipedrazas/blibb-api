@@ -36,7 +36,6 @@ class Audit(Base):
     def login(cls, email, device):
         now = datetime.utcnow()
         cls.objects.insert({'t': now, 'u': email, 'a': 'l', 'd': device})
-        queue_ducksboard_delta('81166')
         queue_ducksboard_delta('81209')
 
     @classmethod
@@ -51,7 +50,7 @@ class Audit(Base):
         if is_valid_id(oiid):
             now = datetime.utcnow()
             cls.objects.insert({'t': now, 'u': email, 'o': ObjectId(oiid), 'a': 's', 'd': device})
-            queue_ducksboard_delta('81177')
+            queue_ducksboard_delta('81296')
 
     @classmethod
     def signup(cls, email, device):
