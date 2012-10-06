@@ -3,6 +3,7 @@
 #   worker ducksboard
 #
 #
+from __future__ import division
 import zmq
 import time
 import json
@@ -11,7 +12,7 @@ import sys
 import datetime
 import pytz
 from os.path import join, abspath, dirname
-from __future__ import division
+
 
 parentpath = abspath(join(dirname(__file__), '../..'))
 sys.path.append(parentpath)
