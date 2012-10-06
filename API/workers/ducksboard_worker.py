@@ -11,6 +11,7 @@ import sys
 import datetime
 import pytz
 from os.path import join, abspath, dirname
+from __future__ import division
 
 parentpath = abspath(join(dirname(__file__), '../..'))
 sys.path.append(parentpath)
@@ -58,8 +59,8 @@ def calculate_averages():
 
     # ({'created_at':{'$gte': ISODate("2012-10-05T00:00:00.000Z")}}).count()
     num_ois_today = Oi.count({'created_at': {'$gte': today}})
-    users_today = User.count({'created_at': {'$gte': today}})
-    total_today = num_ois_today / users_today
+    # users_today = User.count({'created_at': {'$gte': today}})
+    total_today = num_ois_today / total_users
     set_value(total_today, '81297')
 
 
