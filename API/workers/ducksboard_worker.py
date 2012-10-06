@@ -54,7 +54,7 @@ def calculate_averages():
     total_users = User.count()
     total_oi_user = total_num_ois / total_users
     set_value(total_oi_user, '81210')
-    today = datetime.date.today().replace(tzinfo=pytz.utc)
+    today = datetime.datetime.today().replace(tzinfo=pytz.utc)
 
     # ({'created_at':{'$gte': ISODate("2012-10-05T00:00:00.000Z")}}).count()
     num_ois_today = Oi.count({'created_at': {'$gte': today}})
