@@ -136,3 +136,9 @@ curl -v -u av7HZA3bt69Bey58OYEZNDalVmwpisvMxOVMdvVJSMHrQsOl0x:x -d '{"value": {"
 
 
 curl -d "email=mirza&password=mirza" http://api.blibb.net/users
+
+
+
+curl -k -d "email=admin@oioi.me&password=admin" http://api.blibb.net/users/login
+
+curl -k -d "login_key=bd168b6c417bca0295513677cae2d5805de6fa71&email=ipedrazas@gmail.com&username=ipedrazas&password=i" http://api.blibb.net/users
