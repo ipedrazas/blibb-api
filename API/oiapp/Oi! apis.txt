@@ -1,6 +1,6 @@
 # LOGIN
 
-curl -k -d "email=admin@oioi.me&password=admin" https://api.blibb.net/users/login
+curl -k -d "email=admin@oioi.me&password=admin" http://api.blibb.net/users/login
 
 
 "key": "6951956082b192b13f95049856b98bad4e0caeb6",
@@ -9,25 +9,25 @@ curl -k -d "email=admin@oioi.me&password=admin" https://api.blibb.net/users/logi
 # List Users
 # you can pass the fields parameter: a comma separated list of fields, if the field doesn
 
-curl -k https://api.blibb.net/users?fields=email,created_at,roles,devices,password,salt,key,hotdog
+curl -k http://api.blibb.net/users?fields=email,created_at,roles,devices,password,salt,key,hotdog
 
-curl -k -d "login_key=6951956082b192b13f95049856b98bad4e0caeb6&email=valgreens@oioi.me&password=antonio" https://api.blibb.net/users
-curl -k -d "login_key=6951956082b192b13f95049856b98bad4e0caeb6&email=mr.pez@oioi.me&password=andy" https://api.blibb.net/users
-curl -k -d "login_key=916a8ebb96eed0e0411762ad437a060bb87b3c19&email=i@i.me&password=i" https://api.blibb.net/users
+curl -k -d "login_key=6951956082b192b13f95049856b98bad4e0caeb6&email=valgreens@oioi.me&password=antonio" http://api.blibb.net/users
+curl -k -d "login_key=6951956082b192b13f95049856b98bad4e0caeb6&email=mr.pez@oioi.me&password=andy" http://api.blibb.net/users
+curl -k -d "login_key=916a8ebb96eed0e0411762ad437a060bb87b3c19&email=i@i.me&password=i" http://api.blibb.net/users
 
 
 
 
 # Change password -> it regenerates the login_key
-curl -k -d "login_key=7d853947b796eb2857ba4d9bce00cfe03553b02f&password=ivan&old_password=antonio" https://api.blibb.net/users/password
+curl -k -d "login_key=7d853947b796eb2857ba4d9bce00cfe03553b02f&password=ivan&old_password=antonio" http://api.blibb.net/users/password
 
 
 
 # List of Ois
-curl -k https://api.blibb.net/ois?fields=channel,owner,senders,subscribers,invited,created_at,name
+curl -k http://api.blibb.net/ois?fields=channel,owner,senders,subscribers,invited,created_at,name
 
 # New Oi
-curl -k -d "login_key=7d853947b796eb2857ba4d9bce00cfe03553b02f&name=Lunch at EMA&contacts=mr.pez@oioi.me,valgreens@oioi.me" https://api.blibb.net/ois
+curl -k -d "login_key=7d853947b796eb2857ba4d9bce00cfe03553b02f&name=Lunch at EMA&contacts=mr.pez@oioi.me,valgreens@oioi.me" http://api.blibb.net/ois
 
 # We'l get something like this
 # {
@@ -53,11 +53,11 @@ curl -k -d "login_key=7d853947b796eb2857ba4d9bce00cfe03553b02f&name=Lunch at EMA
 # Subscribe to oi
 # first we log in as valgreens to get the right login_key
 
-# curl -k -d "email=valgreens@oioi.me&password=antonio" https://api.blibb.net/users/login
+# curl -k -d "email=valgreens@oioi.me&password=antonio" http://api.blibb.net/users/login
 
-curl -k -d "login_key=dd50f16d08351b1226486b76d999a71731e22815" https://api.blibb.net/ois/5063257652d4df0f90000000/subscribe
+curl -k -d "login_key=dd50f16d08351b1226486b76d999a71731e22815" http://api.blibb.net/ois/5063257652d4df0f90000000/subscribe
 #if we get the list of Ois again:
-# curl -khttps://api.blibb.net/ois?fields=channel,owner,senders,subscribers,invited,created_at
+# curl -khttp://api.blibb.net/ois?fields=channel,owner,senders,subscribers,invited,created_at
 #  {
 #       "created_at": "26/09/2012 15:55:34 ",
 #       "senders": [
@@ -80,7 +80,7 @@ curl -k -d "login_key=dd50f16d08351b1226486b76d999a71731e22815" https://api.blib
 
 
 # Push Oi
-curl -k -d "login_key=4c827accb09c75c61b3865dde64a88d2f94e41b0" https://api.blibb.net/ois/50632a8652d4df1b53000000/push
+curl -k -d "login_key=4c827accb09c75c61b3865dde64a88d2f94e41b0" http://api.blibb.net/ois/50632a8652d4df1b53000000/push
 # {
 #   "push": {
 #     "result": true
@@ -89,7 +89,7 @@ curl -k -d "login_key=4c827accb09c75c61b3865dde64a88d2f94e41b0" https://api.blib
 
 
 # Get Ois a user is subscribed, is owner or is sender:
-curl -k https://api.blibb.net/ois/ipedrazas@gmail.com?fields=channel,owner,senders,subscribers,invited,created_at
+curl -k http://api.blibb.net/ois/ipedrazas@gmail.com?fields=channel,owner,senders,subscribers,invited,created_at
 
 
 
@@ -101,7 +101,7 @@ curl -d "login_key=385d6ae2e06c3a81ecb6620d264b61b33aafecdb&name=Androido Loco&c
 curl -d "email=i@i.me&password=i" http://api.blibb.net/users/login
 63569c5550b78d0049b283d1dfe0f75879c3b242
 
-curl -k -d "login_key=63569c5550b78d0049b283d1dfe0f75879c3b242" https://api.blibb.net/ois/50697c0b52d4df6099000000/subscribe
+curl -k -d "login_key=63569c5550b78d0049b283d1dfe0f75879c3b242" http://api.blibb.net/ois/50697c0b52d4df6099000000/subscribe
 
 
 f6efb4b9f6baa8c868eaf0ebbdcf846bbd1b1221
@@ -110,7 +110,7 @@ curl -d "login_key=62e038ec7dacba699862c4454e1898009f11f48e&name=Arrived Home So
 
 b689b6486288e9975e72ed9fee27ff207254e9e5
 
-curl -k -d "login_key=b689b6486288e9975e72ed9fee27ff207254e9e5" https://api.blibb.net/ois/5069caa352d4df6092000012/subscribe
+curl -k -d "login_key=b689b6486288e9975e72ed9fee27ff207254e9e5" http://api.blibb.net/ois/5069caa352d4df6092000012/subscribe
 9f13871ecfe01da273a0fa0d607a21125c169b9a
 
 curl -d "login_key=9f13871ecfe01da273a0fa0d607a21125c169b9a&name=iPhone App Installed&contacts=mr.pez@oioi.me,valgreens@oioi.me,i@oioi.me" http://api.blibb.net/ois
@@ -122,17 +122,17 @@ curl -d "login_key=2f52b77131aa1f049bb41dff791c7af3b2b65692&name=Test Subscripti
 curl -d "login_key=b71f3994780c9da7471bcca34cb034f055016f07&name=Deployment Finished&contacts=m.pez@oioi.me,valgreens@oioi.me" http://api.blibb.net/ois
 
 
-curl -k -d "login_key=d9c36d3c6370bf820b58b4dea2efdbbed10cdeaa" https://api.blibb.net/ois/506e8f8d52d4df429900000c/subscribe
+curl -k -d "login_key=d9c36d3c6370bf820b58b4dea2efdbbed10cdeaa" http://api.blibb.net/ois/506e8f8d52d4df429900000c/subscribe
 
 
-curl -v -u av7HZA3bt69Bey58OYEZNDalVmwpisvMxOVMdvVJSMHrQsOl0x:x -d '{"value": 51.25}'  https://push.ducksboard.com/v/81211
-curl -v -u av7HZA3bt69Bey58OYEZNDalVmwpisvMxOVMdvVJSMHrQsOl0x:x -d '{"delta": 1}'  https://push.ducksboard.com/v/81211
+curl -v -u av7HZA3bt69Bey58OYEZNDalVmwpisvMxOVMdvVJSMHrQsOl0x:x -d '{"value": 51.25}'  http://push.ducksboard.com/v/81211
+curl -v -u av7HZA3bt69Bey58OYEZNDalVmwpisvMxOVMdvVJSMHrQsOl0x:x -d '{"delta": 1}'  http://push.ducksboard.com/v/81211
 
-https://public.ducksboard.com/tY5avWuPiJDdVgwKoPjt/
+http://public.ducksboard.com/tY5avWuPiJDdVgwKoPjt/
 
 
 
-curl -v -u av7HZA3bt69Bey58OYEZNDalVmwpisvMxOVMdvVJSMHrQsOl0x:x -d '{"value": {"board": [{"name": "Ipedrazas", "values": [115]},{"name": "Valgreens", "values": [37]},{"name": "Mr. Pez", "values": [2]}]}}'   https://push.ducksboard.com/v/81212
+curl -v -u av7HZA3bt69Bey58OYEZNDalVmwpisvMxOVMdvVJSMHrQsOl0x:x -d '{"value": {"board": [{"name": "Ipedrazas", "values": [115]},{"name": "Valgreens", "values": [37]},{"name": "Mr. Pez", "values": [2]}]}}'   http://push.ducksboard.com/v/81212
 
 
 curl -d "email=mirza&password=mirza" http://api.blibb.net/users
@@ -146,4 +146,4 @@ curl -k -d "username=ipedrazas&email=ipedrazas@gmail.com&username=ipedrazas&pass
 
 curl -k -d "username=ipedrazas&password=i" http://api.blibb.net/users/login
 
-curl -k -d "login_key=b04a081db5c8f5b153a8b23ce053f377617ed9d4&name=Got the Children&contacts=juliet" https://api.blibb.net/ois
+curl -k -d "login_key=b04a081db5c8f5b153a8b23ce053f377617ed9d4&name=Got the Children&contacts=ipedrazas@gmail.com" http://api.blibb.net/ois

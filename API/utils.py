@@ -56,8 +56,6 @@ def get_key(key):
 def get_user(key):
     r = get_redis()
     juser = r.get(key)
-    expire = current_app.config.get('EXPIRE')
-    r.expire(key, expire)
     if juser:
         return json.loads(juser)
     return None
