@@ -140,42 +140,43 @@ class User(Base):
     objects = db['users']
 
     @classmethod
-    def regiser_device(cls, email, device):
-        if email:
-            cls.objects.update({'email': email}, {'$addToSet': {'device': device}})
+    def regiser_device(cls, username, device):
+        if username:
+            cls.objects.update({'username': username}, {'$addToSet': {'device': device}})
             return True
         return False
 
     @classmethod
-    def remove_device(cls, email, device):
-        if email:
-            cls.objects.update({'email': email}, {'$pull': {'device': device}})
+    def remove_device(cls, username, device):
+        if username:
+            cls.objects.update({'username': username}, {'$pull': {'device': device}})
             return True
         return False
 
     @classmethod
-    def grant_role(cls, email, role):
-        if email:
-            cls.objects.update({'email': email}, {'$addToSet': {'role': role}})
+    def grant_role(cls, username, role):
+        if username:
+            cls.objects.update({'username': username}, {'$addToSet': {'role': role}})
             return True
         return False
 
     @classmethod
-    def remove_role(cls, email, role):
-        if email:
-            cls.objects.update({'email': email}, {'$pull': {'role': role}})
+    def remove_role(cls, username, role):
+        if username:
+            cls.objects.update({'username': username}, {'$pull': {'role': role}})
             return True
         return False
 
     @classmethod
-    def create(cls, email, password, device=None):
+    def create(cls, username, password, email, device=None):
         # check if the user is nt registered already
-        u = User.get({'email': email})
+        u = User.get({'username': username})
         if u is None:
             user = dict()
+            user['username'] = username
             user['email'] = email
             user['created_at'] = datetime.utcnow()
-            salt = sha1(email + str(datetime.utcnow())).hexdigest()
+            salt = sha1(username + str(datetime.utcnow())).hexdigest()
             user['salt'] = salt
             user['password'] = sha1(salt + password).hexdigest()
             user['role'] = ['user']
@@ -196,8 +197,8 @@ class User(Base):
         return obj
 
     @classmethod
-    def change_password(cls, email, password, old_password):
-        stUser = cls.get({'email': email.strip()})
+    def change_password(cls, username, password, old_password):
+        stUser = cls.get({'username': username.strip()})
         if stUser is not None:
             shPwd = sha1(stUser['salt'] + old_password)
             if stUser['password'] == shPwd.hexdigest():
@@ -211,8 +212,8 @@ class User(Base):
         return False
 
     @classmethod
-    def authenticate(cls, email, password):
-        stUser = cls.get({'email': email.strip()})
+    def authenticate(cls, username, password):
+        stUser = cls.get({'$or': [{'username': username.strip()}, {'email': username.strip()}]})
         if stUser is not None:
             shPwd = sha1(stUser['salt'] + password)
             if stUser['password'] == shPwd.hexdigest():
@@ -224,8 +225,8 @@ class User(Base):
         return False
 
     @classmethod
-    def get_by_name(self, email):
-        doc = self.get_object({'email': email}, {'password': 0, 'salt': 0})
+    def get_by_name(self, username):
+        doc = self.get_object({'username': username}, {'password': 0, 'salt': 0})
         return self.flat_object(doc)
 
     @classmethod
@@ -241,7 +242,6 @@ class User(Base):
     @classmethod
     def set_key(cls, user):
         r = cls.get_redis()
-        current_app.logger.info(user)
         userkey = sha1(user['email'] + user['last_access'] + str(datetime.utcnow())).hexdigest()
         r.set(userkey, json.dumps(user))
         # expire = get_config_value('EXPIRE')

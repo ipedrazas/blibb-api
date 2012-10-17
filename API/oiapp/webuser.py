@@ -6,8 +6,7 @@ from flask import Blueprint, request, abort, jsonify, g
 from API.oiapp.models import User, Audit
 from API.event.event import Event
 
-
-from API.utils import get_email, queue_ducksboard_delta
+from API.utils import get_user_name
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
 from API.decorators import parse_args
@@ -29,20 +28,21 @@ def teardown_request(exception):
 @oiuser.route('', methods=['POST'])
 @crossdomain(origin='*')
 def new_user():
-    email = request.form['email']
+    username = request.form['username']
     password = request.form['password']
+    email = request.form['email']
     device_id = ''
     if 'device' in request.form:
         device_id = request.form['device']
-    doc = User.create(email, password, device_id)
-    Audit.signup(email, '')
+    doc = User.create(username, password, email, device_id)
+    Audit.signup(username, '')
     return jsonify({'user': User.to_safe_dict(doc)})
 
 
-@oiuser.route('/<email>', methods=['GET'])
+@oiuser.route('/<username>', methods=['GET'])
 @support_jsonp
-def get_user(email):
-    doc = User.get({'email': email})
+def get_user(username):
+    doc = User.get({'username': username})
     return jsonify({'user': User.to_safe_dict(doc)})
 
 
@@ -62,20 +62,20 @@ def get_users(*args, **kwargs):
 @crossdomain(origin='*')
 def change_password():
     login_key = request.form['login_key']
-    email = get_email(login_key)
+    username = get_user_name(login_key)
     pwd = request.form['password']
     old_password = request.form['old_password']
-    user = User.change_password(email, pwd, old_password)
+    user = User.change_password(username, pwd, old_password)
     return jsonify(User.to_safe_dict(user)) if user else abort(401)
 
 
 @oiuser.route('/login', methods=['POST'])
 @crossdomain(origin='*')
 def do_login():
-    email = request.form['email']
+    username = request.form['username']
     pwd = request.form['password']
-    user = User.authenticate(email, pwd)
-    Audit.login(email, '')
+    user = User.authenticate(username, pwd)
+    Audit.login(username, '')
     return jsonify(User.to_safe_dict(user)) if user else abort(401)
 
 

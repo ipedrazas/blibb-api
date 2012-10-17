@@ -125,11 +125,14 @@ curl -d "login_key=b71f3994780c9da7471bcca34cb034f055016f07&name=Deployment Fini
 curl -k -d "login_key=d9c36d3c6370bf820b58b4dea2efdbbed10cdeaa" https://api.blibb.net/ois/506e8f8d52d4df429900000c/subscribe
 
 
-curl -v -u av7HZA3bt69Bey58OYEZNDalVmwpisvMxOVMdvVJSMHrQsOl0x:x -d '{"timestamp":1349427636, "delta": 1}'  https://push.ducksboard.com/v/81176
-
+curl -v -u av7HZA3bt69Bey58OYEZNDalVmwpisvMxOVMdvVJSMHrQsOl0x:x -d '{"value": 51.25}'  https://push.ducksboard.com/v/81211
+curl -v -u av7HZA3bt69Bey58OYEZNDalVmwpisvMxOVMdvVJSMHrQsOl0x:x -d '{"delta": 1}'  https://push.ducksboard.com/v/81211
 
 https://public.ducksboard.com/tY5avWuPiJDdVgwKoPjt/
 
 
 
 curl -v -u av7HZA3bt69Bey58OYEZNDalVmwpisvMxOVMdvVJSMHrQsOl0x:x -d '{"value": {"board": [{"name": "Ipedrazas", "values": [115]},{"name": "Valgreens", "values": [37]},{"name": "Mr. Pez", "values": [2]}]}}'   https://push.ducksboard.com/v/81212
+
+
+curl -d "email=mirza&password=mirza" http://api.blibb.net/users
