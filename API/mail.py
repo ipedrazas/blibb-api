@@ -7,15 +7,14 @@
 import sendgrid
 from API.utils import get_config_value
 import re
-from flask import current_app
 
 
-def send_invitations(owner, contacts):
+def send_invitations(oi):
     txt_mail = 'Invitation to Join Oi!'
-    html_mail = 'Invitation to Join <b>Oi!</b>'
-    subject = owner + " wants to invite you"
+    html_mail = 'Invitation to Join <b><a href="http://oioi.me/%s">Oi!</a></b>' % (str(oi['_id']))
+    subject = oi['owner'] + " wants to invite you to join " + oi['name']
     mail = {'from': "info@oioi.me", 'from_name': 'Oi!', 'subject': subject, 'txt_body': txt_mail, 'html_body': html_mail, 'to_name': ''}
-    for p in contacts:
+    for p in oi['invited']:
         if is_valid_email(p):
             mail['to_address'] = p
             send_invitation_mail(mail)
@@ -31,7 +30,6 @@ def send_invitation_mail(mail):
 
     sendgrid_user = get_config_value('SENDGRID_USER')
     sendgrid_password = get_config_value('SENDGRID_PASSWORD')
-    current_app.logger.info(sendgrid_password + ' ' + sendgrid_password)
     s = sendgrid.Sendgrid(sendgrid_user, sendgrid_password, secure=True)
     message = sendgrid.Message((mail['from'], mail['from_name']), mail['subject'], mail['txt_body'], mail['html_body'])
     message.add_to(mail['to_address'], mail['to_name'])

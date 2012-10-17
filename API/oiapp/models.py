@@ -78,13 +78,15 @@ class Oi(Base):
         if contacts is not None:
                 if ',' in contacts:
                     contacts_list = list(set(contacts.strip().lower().split(',')))
+                else:
+                    contacts_list.append(contacts)
         oi['invited'] = contacts_list
 
         oi['channel'] = '%s-%s-%s' % (cls.parse_string(owner), cls.parse_string(name), rnd_id)
         oi['senders'] = [owner]
         oi['subscribers'] = [owner]
         oi['_id'] = cls.objects.insert(oi)
-        send_invitations(owner, contacts_list)
+        send_invitations(oi)
         return oi
 
     @classmethod
