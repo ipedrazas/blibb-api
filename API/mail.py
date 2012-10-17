@@ -30,6 +30,7 @@ def send_invitation_mail(mail):
 
     sendgrid_user = current_app.config.get('SENDGRID_USER')
     sendgrid_password = current_app.config.get('SENDGRID_PASSWORD')
+    current_app.logger.info(sendgrid_user + ' ' + sendgrid_password)
     s = sendgrid.Sendgrid(sendgrid_user, sendgrid_password, secure=True)
     message = sendgrid.Message((mail['from'], mail['from_name']), mail['subject'], mail['txt_body'], mail['html_body'])
     message.add_to(mail['to_address'], mail['to_name'])
