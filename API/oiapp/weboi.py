@@ -63,13 +63,13 @@ def get_ois_by_user(user, *args, **kwargs):
     subscribers = []
     invited = []
 
-    docs = Oi.get_all({'$or': [{'senders': user.strip()}, {'subscribers':user.strip()}, {'invited': user.strip()}]}, **kwargs)
+    docs = Oi.get_all({'$or': [{'owner': user.strip()}, {'senders': user.strip()}, {'subscribers':user.strip()}, {'invited': user.strip()}]}, **kwargs)
     for doc in docs:
-        if user in doc['senders']:
+        if 'senders' in doc and user in doc['senders']:
             senders.append(str(doc['_id']))
-        if user in doc['subscribers']:
+        if 'subscribers' in doc and user in doc['subscribers']:
             subscribers.append(str(doc['_id']))
-        if user in doc['invited']:
+        if 'invited' in doc and user in doc['invited']:
             invited.append(str(doc['_id']))
         resultset.append(Oi.to_dict(doc))
     data = {'senders': senders, 'subscribers': subscribers, 'invited': invited}
