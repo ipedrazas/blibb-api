@@ -7,7 +7,7 @@ from API.oiapp.models import Oi, Audit
 from API.event.event import Event
 from bson.objectid import ObjectId
 
-from API.utils import get_email, is_valid_id, queue_ducksboard_delta
+from API.utils import get_user, is_valid_id
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
 from API.decorators import parse_args
@@ -30,12 +30,12 @@ def teardown_request(exception):
 @crossdomain(origin='*')
 def new_oi():
     login_key = request.form['login_key']
-    owner = get_email(login_key)
+    owner = get_user(login_key)
     if owner:
         contacts = request.form['contacts']
         name = request.form['name']
         current_app.logger.info(owner)
-        doc = Oi.create(owner, name, contacts)
+        doc = Oi.create(owner['username'], name, contacts)
         Audit.new_oi(owner, doc['_id'], '')
         return jsonify({'oi': Oi.to_dict(doc)})
     else:
@@ -54,22 +54,22 @@ def get_ois(*args, **kwargs):
     return jsonify({'resultset': resultset})
 
 
-@oi.route('/<email>', methods=['GET'])
+@oi.route('/<user>', methods=['GET'])
 @support_jsonp
 @parse_args
-def get_ois_by_user(email, *args, **kwargs):
+def get_ois_by_user(user, *args, **kwargs):
     resultset = []
     senders = []
     subscribers = []
     invited = []
 
-    docs = Oi.get_all({'$or': [{'senders': email.strip()}, {'subscribers':email.strip()}, {'invited': email.strip()}]}, **kwargs)
+    docs = Oi.get_all({'$or': [{'senders': user.strip()}, {'subscribers':user.strip()}, {'invited': user.strip()}]}, **kwargs)
     for doc in docs:
-        if email in doc['senders']:
+        if user in doc['senders']:
             senders.append(str(doc['_id']))
-        if email in doc['subscribers']:
+        if user in doc['subscribers']:
             subscribers.append(str(doc['_id']))
-        if email in doc['invited']:
+        if user in doc['invited']:
             invited.append(str(doc['_id']))
         resultset.append(Oi.to_dict(doc))
     data = {'senders': senders, 'subscribers': subscribers, 'invited': invited}
@@ -89,7 +89,7 @@ def get_oi(oiid):
 @crossdomain(origin='*')
 def push_oi(oiid=None):
     login_key = request.form['login_key']
-    user = get_email(login_key)
+    user = get_user(login_key)
     if is_valid_id(oiid):
         oi = Oi.get({'_id': ObjectId(oiid)})
         if Oi.in_senders(oi, user):
@@ -104,7 +104,7 @@ def push_oi(oiid=None):
 @crossdomain(origin='*')
 def subscribe_oi(oiid=None):
     login_key = request.form['login_key']
-    user = get_email(login_key)
+    user = get_user(login_key)
     if is_valid_id(oiid):
         if Oi.subscribe(oiid, user):
             Audit.subscribe(user, '', oiid)

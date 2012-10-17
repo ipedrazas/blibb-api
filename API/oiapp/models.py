@@ -112,20 +112,28 @@ class Oi(Base):
     def subscribe(cls, oiid, user):
         if is_valid_id(oiid):
             doc = cls.get({'_id': ObjectId(oiid)})
-            performers = doc.get('invited', None)
+            guests = doc.get('invited', None)
 
-            for u in performers:
+            for u in guests:
                 current_app.logger.info(doc)
-                if u == user:
-                    performers.remove(user)
-                    doc['invited'] = performers
+                if u == user['email'] or u == user['username']:
+                    cls.remove_user(guests, user)
+                    doc['invited'] = guests
                     if user not in doc['senders']:
-                        doc['senders'].append(user)
+                        doc['senders'].append(user['username'])
                     if user not in doc['subscribers']:
-                        doc['subscribers'].append(user)
+                        doc['subscribers'].append(user['username'])
                     cls.objects.save(doc)
                     return True
         return False
+
+    @classmethod
+    def remove_user(target_list, user):
+        for u in target_list:
+            if user['email'] in target_list:
+                target_list.remove(user['email'])
+            if user['username'] in target_list:
+                target_list.remove(user['username'])
 
     @classmethod
     def push(cls, doc):

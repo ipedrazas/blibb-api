@@ -139,6 +139,11 @@ curl -d "email=mirza&password=mirza" http://api.blibb.net/users
 
 
 
-curl -k -d "email=admin@oioi.me&password=admin" http://api.blibb.net/users/login
+curl -k -d "username=ipedrazas&password=i" http://api.blibb.net/users/login
 
-curl -k -d "login_key=bd168b6c417bca0295513677cae2d5805de6fa71&email=ipedrazas@gmail.com&username=ipedrazas&password=i" http://api.blibb.net/users
+curl -k -d "username=ipedrazas&email=ipedrazas@gmail.com&username=ipedrazas&password=i" http://api.blibb.net/users
+
+
+curl -k -d "username=ipedrazas&password=i" http://api.blibb.net/users/login
+
+curl -k -d "login_key=b04a081db5c8f5b153a8b23ce053f377617ed9d4&name=Got the Children&contacts=juliet" https://api.blibb.net/ois
