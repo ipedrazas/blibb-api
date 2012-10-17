@@ -9,7 +9,7 @@ from flask import current_app
 import re
 
 
-def send_invites(owner, contacts):
+def send_invitations(owner, contacts):
     txt_mail = 'Invitation to Join Oi!'
     html_mail = 'Invitation to Join <b>Oi!</b>'
     subject = owner + " wants to invite you"
