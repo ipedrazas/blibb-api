@@ -147,3 +147,6 @@ curl -k -d "username=ipedrazas&email=ipedrazas@gmail.com&username=ipedrazas&pass
 curl -k -d "username=ipedrazas&password=i" http://api.blibb.net/users/login
 
 curl -k -d "login_key=b04a081db5c8f5b153a8b23ce053f377617ed9d4&name=Got the Children&contacts=ipedrazas@gmail.com" http://api.blibb.net/ois
+
+
+curl -k -d "login_key=b04a081db5c8f5b153a8b23ce053f377617ed9d4&name=Deploy Finished&contacts=valgreens@oioi.me, mr.pez@oioi.me" http://api.blibb.net/ois
