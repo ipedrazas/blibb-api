@@ -7,6 +7,7 @@
 import sendgrid
 from API.utils import get_config_value
 import re
+from flask import current_app
 
 
 def send_invitations(owner, contacts):
@@ -30,6 +31,7 @@ def send_invitation_mail(mail):
 
     sendgrid_user = get_config_value('SENDGRID_USER')
     sendgrid_password = get_config_value('SENDGRID_PASSWORD')
+    current_app.logger.info(sendgrid_password + ' ' + sendgrid_password)
     s = sendgrid.Sendgrid(sendgrid_user, sendgrid_password, secure=True)
     message = sendgrid.Message((mail['from'], mail['from_name']), mail['subject'], mail['txt_body'], mail['html_body'])
     message.add_to(mail['to_address'], mail['to_name'])
