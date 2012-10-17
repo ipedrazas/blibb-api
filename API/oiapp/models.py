@@ -12,6 +12,7 @@ from pymongo import Connection
 from bson.objectid import ObjectId
 from API.oiapp.base import Base
 from API.utils import get_config_value, is_valid_id, queue_ducksboard_delta
+from API.mail import send_invitations
 from hashlib import sha1
 import redis
 import json
@@ -83,6 +84,7 @@ class Oi(Base):
         oi['senders'] = [owner]
         oi['subscribers'] = [owner]
         oi['_id'] = cls.objects.insert(oi)
+        send_invitations(owner, contacts_list)
         return oi
 
     @classmethod
