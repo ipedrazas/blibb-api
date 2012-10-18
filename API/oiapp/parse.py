@@ -22,6 +22,7 @@ def do_push(name=None, channel=None):
     now = datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S %Z")
     data['data'] = {'alert': name + ' - ' + now}
     data["channels"] = [channel]
+    data["badge"] = 'Increment'
 
     head = dict()
     head['Content-Type'] = "application/json"
