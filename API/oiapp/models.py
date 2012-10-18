@@ -133,7 +133,7 @@ class Oi(Base):
         return False
 
     @classmethod
-    def remove_user(target_list, user):
+    def remove_user(cls, target_list, user):
         for u in target_list:
             if user['email'] in target_list:
                 target_list.remove(user['email'])
