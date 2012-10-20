@@ -67,9 +67,10 @@ class Oi(Base):
     objects = db['ois']
 
     @classmethod
-    def create(cls, owner, name, contacts):
+    def create(cls, owner, name, contacts, tags):
         ## check name
         oi_name = Oi.get({'name': name})
+        tag_list = []
         if oi_name is None:
             oi = dict()
             oi['owner'] = owner
@@ -88,6 +89,13 @@ class Oi(Base):
             oi['channel'] = '%s-%s-%s' % (cls.parse_string(owner), cls.parse_string(name), rnd_id)
             oi['senders'] = [owner]
             oi['subscribers'] = [owner]
+
+            if tags is not None:
+                if ',' in tags:
+                    tag_list = list(set(tags.lower().split(',')))
+                else:
+                    tag_list = list(set(tags.lower().split()))
+            oi['tags'] = tag_list
             oi['_id'] = cls.objects.insert(oi)
             send_invitations(oi)
             return oi
@@ -158,6 +166,11 @@ class User(Base):
     conn = Connection(get_config_value('MONGO_URL'))
     db = conn['oime']
     objects = db['users']
+
+    @classmethod
+    def inc_push(cls, username):
+        if username:
+            cls.objects.update({'username': username}, {"$inc": {'pushes': 1}, '$set': {"last_push": datetime.now()}})
 
     @classmethod
     def regiser_device(cls, username, device):

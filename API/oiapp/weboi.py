@@ -3,7 +3,7 @@
 
 
 from flask import Blueprint, request, abort, jsonify, current_app, g
-from API.oiapp.models import Oi, Audit
+from API.oiapp.models import Oi, Audit, User
 from API.event.event import Event
 from bson.objectid import ObjectId
 
@@ -34,8 +34,10 @@ def new_oi():
     if owner:
         contacts = request.form['contacts']
         name = request.form['name']
+        if 'tags' in request.form:
+            tags = request.form['tags']
         current_app.logger.info(owner)
-        doc = Oi.create(owner['username'], name, contacts)
+        doc = Oi.create(owner['username'], name, contacts, tags)
         Audit.new_oi(owner, doc['_id'], '')
         return jsonify({'oi': Oi.to_dict(doc)})
     else:
@@ -95,7 +97,9 @@ def push_oi(oiid=None):
         if oi:
             if Oi.in_senders(oi, user):
                 push = {'push': Oi.push(oi)}
-                Audit.push(user['username'], oi['_id'], '', oi['subscribers'])
+                username = user['username']
+                User.inc_push(username)
+                Audit.push(username, oi['_id'], '', oi['subscribers'])
                 return jsonify(push)
             else:
                 abort(401)
