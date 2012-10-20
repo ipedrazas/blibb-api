@@ -20,9 +20,8 @@ def do_push(name=None, channel=None):
     data = dict()
 
     now = datetime.now().strftime("%d/%m/%Y %H:%M:%S %Z")
-    data['data'] = {'alert': name + ' - ' + now}
+    data['data'] = {'alert': name + ' - ' + now, 'badge': 'Increment'}
     data["channels"] = [channel]
-    data["badge"] = 'Increment'
 
     head = dict()
     head['Content-Type'] = "application/json"
