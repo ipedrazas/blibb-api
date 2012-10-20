@@ -68,26 +68,32 @@ class Oi(Base):
 
     @classmethod
     def create(cls, owner, name, contacts):
-        oi = dict()
-        oi['owner'] = owner
-        now = datetime.utc()
-        oi['created_at'] = now
-        oi['name'] = name
-        rnd_id = str(sha1(name + owner + str(now)).hexdigest())
-        contacts_list = []
-        if contacts is not None:
-                if ',' in contacts:
-                    contacts_list = list(set(contacts.strip().lower().split(',')))
-                else:
-                    contacts_list.append(contacts)
-        oi['invited'] = contacts_list
+        ## check name
+        oi_name = Oi.get({'name': name})
+        if oi_name is None:
+            oi = dict()
+            oi['owner'] = owner
+            now = datetime.utc()
+            oi['created_at'] = now
+            oi['name'] = name
+            rnd_id = str(sha1(name + owner + str(now)).hexdigest())
+            contacts_list = []
+            if contacts is not None:
+                    if ',' in contacts:
+                        contacts_list = list(set(contacts.strip().lower().split(',')))
+                    else:
+                        contacts_list.append(contacts)
+            oi['invited'] = contacts_list
 
-        oi['channel'] = '%s-%s-%s' % (cls.parse_string(owner), cls.parse_string(name), rnd_id)
-        oi['senders'] = [owner]
-        oi['subscribers'] = [owner]
-        oi['_id'] = cls.objects.insert(oi)
-        send_invitations(oi)
-        return oi
+            oi['channel'] = '%s-%s-%s' % (cls.parse_string(owner), cls.parse_string(name), rnd_id)
+            oi['senders'] = [owner]
+            oi['subscribers'] = [owner]
+            oi['_id'] = cls.objects.insert(oi)
+            send_invitations(oi)
+            return oi
+        else:
+            error = {'error': 'Oi with that name already exists'}
+        return error
 
     @classmethod
     def parse_string(cls, buffer):
@@ -145,6 +151,7 @@ class Oi(Base):
         channel = doc['channel']
         name = doc['name']
         cls.objects.update({'_id': doc['_id']}, {"$inc": {'pushes': 1}})
+        cls.objects.update({'_id': doc['_id']}, {"last_push": datetime.now()})
         return do_push(name, channel)
 
 
