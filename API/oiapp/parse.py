@@ -19,7 +19,7 @@ def do_push(name=None, channel=None):
 
     data = dict()
 
-    now = datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S %Z")
+    now = datetime.now().strftime("%d/%m/%Y %H:%M:%S %Z")
     data['data'] = {'alert': name + ' - ' + now}
     data["channels"] = [channel]
     data["badge"] = 'Increment'

@@ -28,34 +28,34 @@ class Audit(Base):
     @classmethod
     def push(cls, email, oiid, subscribers, device):
         if is_valid_id(oiid):
-            now = datetime.utcnow()
+            now = datetime.now()
             cls.objects.insert({'t': now, 'o': ObjectId(oiid), 'u': email, 'a': 'p', 's': subscribers, 'd': device})
             queue_ducksboard_delta('80399')
             queue_ducksboard_delta('81014')
 
     @classmethod
     def login(cls, email, device):
-        now = datetime.utcnow()
+        now = datetime.utc()
         cls.objects.insert({'t': now, 'u': email, 'a': 'l', 'd': device})
         queue_ducksboard_delta('81209')
 
     @classmethod
     def new_oi(cls, email, oiid, device):
         if is_valid_id(oiid):
-            now = datetime.utcnow()
+            now = datetime.utc()
             cls.objects.insert({'t': now, 'u': email, 'o': oiid, 'a': 'n', 'd': device})
             queue_ducksboard_delta('81176')
 
     @classmethod
     def subscribe(cls, email, device, oiid):
         if is_valid_id(oiid):
-            now = datetime.utcnow()
+            now = datetime.utc()
             cls.objects.insert({'t': now, 'u': email, 'o': ObjectId(oiid), 'a': 's', 'd': device})
             queue_ducksboard_delta('81296')
 
     @classmethod
     def signup(cls, email, device):
-        now = datetime.utcnow()
+        now = datetime.utc()
         cls.objects.insert({'t': now, 'u': email, 'a': 'sp', 'd': device})
         queue_ducksboard_delta('80347')
 
@@ -70,7 +70,7 @@ class Oi(Base):
     def create(cls, owner, name, contacts):
         oi = dict()
         oi['owner'] = owner
-        now = datetime.utcnow()
+        now = datetime.utc()
         oi['created_at'] = now
         oi['name'] = name
         rnd_id = str(sha1(name + owner + str(now)).hexdigest())
@@ -144,6 +144,7 @@ class Oi(Base):
     def push(cls, doc):
         channel = doc['channel']
         name = doc['name']
+        cls.objects.update({'_id': str(doc['_id'])}, {"$inc": {'pushes': 1}, 'last_push': datetime.now()})
         return do_push(name, channel)
 
 
@@ -188,8 +189,8 @@ class User(Base):
             user = dict()
             user['username'] = username
             user['email'] = email
-            user['created_at'] = datetime.utcnow()
-            salt = sha1(username + str(datetime.utcnow())).hexdigest()
+            user['created_at'] = datetime.utc()
+            salt = sha1(username + str(datetime.utc())).hexdigest()
             user['salt'] = salt
             user['password'] = sha1(salt + password).hexdigest()
             user['role'] = ['user']
@@ -217,7 +218,7 @@ class User(Base):
             if stUser['password'] == shPwd.hexdigest():
                 shPwd = sha1(stUser['salt'] + password)
                 stUser['password'] = shPwd.hexdigest()
-                stUser['last_access'] = datetime.utcnow()
+                stUser['last_access'] = datetime.utc()
                 cls.objects.save(stUser)
                 user = cls.to_safe_dict(stUser)
                 user['key'] = cls.set_key(stUser)
@@ -230,7 +231,7 @@ class User(Base):
         if stUser is not None:
             shPwd = sha1(stUser['salt'] + password)
             if stUser['password'] == shPwd.hexdigest():
-                stUser['last_access'] = datetime.utcnow()
+                stUser['last_access'] = datetime.utc()
                 cls.objects.save(stUser)
                 user = cls.to_safe_dict(stUser)
                 user['key'] = cls.set_key(stUser)
@@ -255,7 +256,7 @@ class User(Base):
     @classmethod
     def set_key(cls, user):
         r = cls.get_redis()
-        userkey = sha1(user['email'] + user['last_access'] + str(datetime.utcnow())).hexdigest()
+        userkey = sha1(user['email'] + user['last_access'] + str(datetime.utc())).hexdigest()
         r.set(userkey, json.dumps(user))
         # expire = get_config_value('EXPIRE')
         # r.expire(userkey, expire)
