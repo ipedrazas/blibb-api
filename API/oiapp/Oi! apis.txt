@@ -171,3 +171,7 @@ curl -d "login_key=0a0856300a04baee3f42da74ac9447460058c0fc&name=Test of Tags&co
 5080328152d4df64c6000002
 
 curl -k -d "login_key=0a0856300a04baee3f42da74ac9447460058c0fc" http://api.blibb.net/ois/508332dd52d4df6e78000000/push
+
+508332dd52d4df6e78000000
+
+ http://api.blibb.net/ois/508332dd52d4df6e78000000

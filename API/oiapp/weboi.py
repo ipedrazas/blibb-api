@@ -56,7 +56,7 @@ def get_ois(*args, **kwargs):
     return jsonify({'resultset': resultset})
 
 
-@oi.route('/user/<user>', methods=['GET'])
+@oi.route('/<user>', methods=['GET'])
 @support_jsonp
 @parse_args
 def get_ois_by_user(user, *args, **kwargs):
@@ -78,7 +78,7 @@ def get_ois_by_user(user, *args, **kwargs):
     return jsonify({'resultset': resultset, 'data': data})
 
 
-@oi.route('/<oiid>', methods=['GET'])
+@oi.route('/<oiid>/object', methods=['GET'])
 @support_jsonp
 def get_oi(oiid):
     if is_valid_id(oiid):
