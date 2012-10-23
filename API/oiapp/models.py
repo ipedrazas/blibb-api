@@ -16,6 +16,7 @@ from API.mail import send_invitations
 from hashlib import sha1
 import redis
 import json
+import re
 from API.oiapp.parse import do_push
 
 
@@ -105,12 +106,7 @@ class Oi(Base):
 
     @classmethod
     def parse_string(cls, buffer):
-        buffer = buffer.replace('@', '-')
-        buffer = buffer.replace(' ', '')
-        buffer = buffer.replace('.', '')
-        buffer = buffer.replace(',', '')
-        buffer = buffer.replace('\'', '')
-        return buffer
+        return re.sub('[^0-9a-zA-Z]','',buffer)
 
     @classmethod
     def can_push(cls, oiid, user):
