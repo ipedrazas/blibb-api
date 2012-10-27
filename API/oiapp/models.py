@@ -220,9 +220,10 @@ class User(Base):
     def to_safe_dict(cls, obj):
         banned = ['password', 'salt', '_id']
         obj = cls.to_dict(obj)
-        for b in banned:
-            if b in obj:
-                del obj[b]
+        if obj:
+            for b in banned:
+                if b in obj:
+                    del obj[b]
         return obj
 
     @classmethod
