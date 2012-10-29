@@ -12,7 +12,7 @@ def parse_args(f):
         params = request.args.get('fields')
         page = request.args.get('page', 1)
         num = request.args.get('num', 20)
-        sort = request.args.get('sort', 'c')
+        sort = request.args.get('sort')
         current_app.logger.info("From decorator: " + str(num))
         raw_filters = request.args.get('filter')
         fields = dict()
