@@ -27,7 +27,7 @@ def parse_args(f):
         kwargs.update({'page': page, 'num': num, 'fields': fields, 'filters': filters})
         if 'sort' in request.args:
             sort = request.args.get('sort')
-            kwargs.update({'sort': {sort: -1}})
+            kwargs.update({'sort': [(sort, -1)]})
         return f(*args, **kwargs)
     return decorator
 
