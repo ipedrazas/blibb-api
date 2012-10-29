@@ -19,10 +19,10 @@ class Base(object):
         if kwargs is not None:
             num = kwargs.get('num', 20)
             page = kwargs.get('page', 1)
-            sort_att = (kwargs.get('sort', 'c'), -1)
+
             page = int(page) if page and page > 0 else 1
             num = int(num) if num and int(num) > 0 else 20
-            return cls.objects.find(*args, **kwargs).sort(sort_att).skip(num * (page - 1)).limit(num)
+            return cls.objects.find(*args, **kwargs).skip(num * (page - 1)).limit(num)
         else:
             return cls.objects.find(*args, **kwargs)
 

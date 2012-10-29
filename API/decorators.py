@@ -24,7 +24,7 @@ def parse_args(f):
         if params:
             for p in params.split(','):
                 fields[p.strip()] = 1
-        kwargs.update({'page': page, 'num': num, 'fields': fields, 'filters': filters, 'sort': sort})
+        kwargs.update({'page': page, 'num': num, 'fields': fields, 'filters': filters, 'sort': (sort, -1)})
         return f(*args, **kwargs)
     return decorator
 
