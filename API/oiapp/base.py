@@ -4,7 +4,6 @@
 #
 #
 
-from flask import current_app
 from datetime import datetime
 from bson.objectid import ObjectId
 
@@ -22,9 +21,7 @@ class Base(object):
             page = kwargs.get('page', 1)
             sort = kwargs.get('sort', 'c')
             page = int(page) if page and page > 0 else 1
-            current_app.logger.info("From Base 1: " + str(num))
             num = int(num) if num and int(num) > 0 else 20
-            current_app.logger.info("From Base 2: " + str(num))
             return cls.objects.find(*args, **kwargs).sort(sort, -1).skip(num * (page - 1)).limit(num)
         else:
             return cls.objects.find(*args, **kwargs)
