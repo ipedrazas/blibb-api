@@ -106,7 +106,7 @@ class Oi(Base):
 
     @classmethod
     def parse_string(cls, buffer):
-        return re.sub('[^0-9a-zA-Z]','',buffer)
+        return re.sub('[^0-9a-zA-Z]', '', buffer)
 
     @classmethod
     def can_push(cls, oiid, user):
