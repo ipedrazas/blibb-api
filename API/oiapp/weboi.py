@@ -96,9 +96,7 @@ def push_oi(oiid=None):
         oi = Oi.get({'_id': ObjectId(oiid)})
         if oi:
             if Oi.in_senders(oi, user):
-                push = {'push': Oi.push(oi)}
-                username = user['username']
-                User.inc_push(username)
+                push = {'push': Oi.push(oi, user)}
                 Audit.push(username, oi['_id'], '', oi['subscribers'])
                 return jsonify(push)
             else:
@@ -112,11 +110,35 @@ def push_oi(oiid=None):
 @crossdomain(origin='*')
 def subscribe_oi(oiid=None):
     login_key = request.form['login_key']
+    email = request.form['email']
     user = get_user(login_key)
     if is_valid_id(oiid):
         if Oi.subscribe(oiid, user):
+            if email is not None:
+                User.add_subscrived_email(user, email)
             Audit.subscribe(user, '', oiid)
             return jsonify({'subscribed': oiid})
         else:
             abort(401)
     abort(400)
+
+@oi.route('/user/<user>', methods=['GET'])
+@support_jsonp
+@parse_args
+def get_invitations_by_user(user, *args, **kwargs):
+    resultset = []
+    senders = []
+    subscribers = []
+    invited = []
+
+    docs = Oi.get_all({'invited': {'$in': user['sub_emails']}}, **kwargs)
+    for doc in docs:
+        if 'senders' in doc and user in doc['senders']:
+            senders.append(str(doc['_id']))
+        if 'subscribers' in doc and user in doc['subscribers']:
+            subscribers.append(str(doc['_id']))
+        if 'invited' in doc and user in doc['invited']:
+            invited.append(str(doc['_id']))
+        resultset.append(Oi.to_dict(doc))
+    data = {'senders': senders, 'subscribers': subscribers, 'invited': invited}
+    return jsonify({'resultset': resultset, 'data': data})

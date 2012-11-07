@@ -167,7 +167,7 @@ curl -d "username=andy&email=mr_pez@hotmail.com&password=andy" http://api.blibb.
 0a0856300a04baee3f42da74ac9447460058c0fc
 
 curl -d "login_key=36204c0914e059c008df92ea81abf5b980f2b291" http://api.blibb.net/ois/50870df552d4df75fa00000b/subscribe
-curl -d "login_key=1770db502d58185d2b916846cad813421ca8ae42&name=Annoy everybody&contacts=anvalro@gmail.com,ipedrazas@gmail.com&tags=work" http://api.blibb.net/ois
+curl -d "login_key=0a0856300a04baee3f42da74ac9447460058c0fc&name=R2&contacts=ipedrazas@gmail.com&tags=work" http://api.blibb.net/ois
 
 508332dd52d4df6e78000000
 5080328152d4df64c6000002

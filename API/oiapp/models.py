@@ -151,17 +151,29 @@ class Oi(Base):
                 target_list.remove(user['username'])
 
     @classmethod
-    def push(cls, doc):
+    def push(cls, doc, user):
         channel = doc['channel']
         name = doc['name']
-        cls.objects.update({'_id': doc['_id']}, {"$inc": {'pushes': 1}, '$set': {"last_push": datetime.now()}})
-        return do_push(name, channel)
+        username = user['username']
+        last_push = {"when":  datetime.now(), "who": username}
+        cls.objects.update({'_id': doc['_id']}, {"$inc": {'pushes': 1}, '$set': {"last_push": last_push}})
+        push = do_push(name, channel)
+        User.inc_push(username)
+        return push
 
 
 class User(Base):
     conn = Connection(get_config_value('MONGO_URL'))
     db = conn['oime']
     objects = db['users']
+
+    @classmethod
+    def is_oi_user(cls, email):
+        u = User.get({'sub_email': email})
+        if u is not None:
+            return True
+        return False
+
 
     @classmethod
     def inc_push(cls, username):
@@ -181,6 +193,14 @@ class User(Base):
             cls.objects.update({'username': username}, {'$pull': {'device': device}})
             return True
         return False
+
+    @classmethod
+    def add_subscrived_email(cls, username, email):
+        if username:
+            cls.objects.update({'username': username}, {'$addToSet': {'sub_email': email}})
+            return True
+        return False
+
 
     @classmethod
     def grant_role(cls, username, role):
@@ -204,6 +224,7 @@ class User(Base):
             user = dict()
             user['username'] = username
             user['email'] = email
+            user['sub_email'] = [email]
             user['created_at'] = datetime.now()
             salt = sha1(username + str(datetime.now())).hexdigest()
             user['salt'] = salt
