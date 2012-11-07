@@ -97,7 +97,7 @@ def push_oi(oiid=None):
         if oi:
             if Oi.in_senders(oi, user):
                 push = {'push': Oi.push(oi, user)}
-                Audit.push(username, oi['_id'], '', oi['subscribers'])
+                Audit.push(user['username'], oi['_id'], '', oi['subscribers'])
                 return jsonify(push)
             else:
                 abort(401)
