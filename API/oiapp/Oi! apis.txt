@@ -161,10 +161,18 @@ curl -d "username=andy&email=mr_pez@hotmail.com&password=andy" http://api.blibb.
 
 curl -d "login_key=353d8dd0100f217bd09817db86dcb4196ab13b6d&name=Infra request&contacts=anvalro@gmail.com,ipedrazas@gmail.com" http://api.blibb.net/ois
 
-curl -d "username=andy&email=mr_pez@hotmail.com&password=andy" http://api.blibb.net/users
 
-5080253452d4df5022000004
-0a0856300a04baee3f42da74ac9447460058c0fc
+
+###
+###		New User
+###
+curl -d "username=test&email=test@oioi.me&password=test" http://api.blibb.net/users
+
+
+###
+###		Login
+###
+curl -d "username=test&password=test" http://api.blibb.net/users/login
 
 curl -d "login_key=36204c0914e059c008df92ea81abf5b980f2b291" http://api.blibb.net/ois/50870df552d4df75fa00000b/subscribe
 curl -d "login_key=0a0856300a04baee3f42da74ac9447460058c0fc&name=R2&contacts=ipedrazas@gmail.com&tags=work" http://api.blibb.net/ois
@@ -172,7 +180,11 @@ curl -d "login_key=0a0856300a04baee3f42da74ac9447460058c0fc&name=R2&contacts=ipe
 508332dd52d4df6e78000000
 5080328152d4df64c6000002
 
-curl -k -d "login_key=0a0856300a04baee3f42da74ac9447460058c0fc" http://api.blibb.net/ois/508332dd52d4df6e78000000/push
+
+####
+####		PUSH Deploy Completed
+####
+curl -k -d "login_key=b04a081db5c8f5b153a8b23ce053f377617ed9d4" http://api.blibb.net/ois/5086aaa752d4df5ae9000003/push
 
 508332dd52d4df6e78000000
 

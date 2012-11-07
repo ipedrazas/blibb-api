@@ -68,6 +68,16 @@ class Oi(Base):
     objects = db['ois']
 
     @classmethod
+    def process_invitations(cls, oi):
+        invitations = oi['invited']
+        for p in invitations:
+            if User.is_oi_user(p):
+                invitations.remove(p)
+                oi['subscribers'].append(p)
+        send_invitations(oi)  
+
+
+    @classmethod
     def create(cls, owner, name, contacts, tags):
         ## check name
         oi_name = Oi.get({'name': name})
@@ -98,7 +108,7 @@ class Oi(Base):
                     tag_list = list(set(tags.lower().split()))
             oi['tags'] = tag_list
             oi['_id'] = cls.objects.insert(oi)
-            send_invitations(oi)
+            process_invitations(oi)
             return oi
         else:
             error = {'error': 'Oi with that name already exists'}
