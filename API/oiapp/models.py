@@ -108,7 +108,7 @@ class Oi(Base):
                     tag_list = list(set(tags.lower().split()))
             oi['tags'] = tag_list
             oi['_id'] = cls.objects.insert(oi)
-            process_invitations(oi)
+            cls.process_invitations(oi)
             return oi
         else:
             error = {'error': 'Oi with that name already exists'}
