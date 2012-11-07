@@ -71,9 +71,10 @@ class Oi(Base):
     def process_invitations(cls, oi):
         invitations = oi['invited']
         for p in invitations:
-            if User.is_oi_user(p):
+            u = User.is_oi_user(p)
+            if u:
                 invitations.remove(p)
-                oi['subscribers'].append(p)
+                oi['subscribers'].append(u['username'])
         cls.objects.save(oi)
         send_invitations(oi)  
 
@@ -182,7 +183,7 @@ class User(Base):
     def is_oi_user(cls, email):
         u = User.get({'sub_email': email})
         if u is not None:
-            return True
+            return u
         return False
 
 
