@@ -74,6 +74,7 @@ class Oi(Base):
             if User.is_oi_user(p):
                 invitations.remove(p)
                 oi['subscribers'].append(p)
+        cls.objects.save(oi)
         send_invitations(oi)  
 
 

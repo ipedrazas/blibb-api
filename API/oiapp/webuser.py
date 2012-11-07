@@ -85,3 +85,4 @@ def do_logout():
     login_key = request.form['login_key']
     user = User.logout(login_key)
     return jsonify(User.to_safe_dict(user)) if user else abort(401)
+    
