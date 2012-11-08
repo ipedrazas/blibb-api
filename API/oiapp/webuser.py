@@ -97,8 +97,8 @@ def get_invitations_by_user(username, *args, **kwargs):
     invited = []
     user = User.get_by_name(username)
     current_app.logger.info(user)
-    if user and 'sub_emails' in user:
-        docs = Oi.get_all({'invited': {'$in': user['sub_emails']}}, **kwargs)
+    if user and 'sub_email' in user:
+        docs = Oi.get_all({'invited': {'$in': user['sub_email']}}, **kwargs)
         for doc in docs:
             resultset.append(Oi.to_dict(doc))
         return jsonify({'resultset': resultset})
