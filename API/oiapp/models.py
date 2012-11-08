@@ -291,7 +291,7 @@ class User(Base):
     @classmethod
     def get_by_name(self, username):
         doc = self.get({'username': username}, {'password': 0, 'salt': 0})
-        return self.flat_object(doc)
+        return self.to_safe_dict(doc)
 
     @classmethod
     def get_user(cls, key):
@@ -315,7 +315,7 @@ class User(Base):
         return redis.StrictRedis(host='127.0.0.1', port=6379, db=0)
 
 
-class History(object):
+class History(Base):
     conn = Connection(get_config_value('MONGO_URL'))
     db = conn['oime']
     objects = db['history']
