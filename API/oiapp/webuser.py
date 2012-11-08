@@ -3,7 +3,7 @@
 
 
 from flask import Blueprint, request, abort, jsonify, g
-from API.oiapp.models import User, Audit
+from API.oiapp.models import User, Audit, Oi
 from API.event.event import Event
 
 from API.utils import get_user_name
