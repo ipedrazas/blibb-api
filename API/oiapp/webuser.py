@@ -2,7 +2,7 @@
 #
 
 
-from flask import Blueprint, request, abort, jsonify, g
+from flask import Blueprint, request, abort, jsonify, g, current_app
 from API.oiapp.models import User, Audit, Oi
 from API.event.event import Event
 
@@ -96,7 +96,8 @@ def get_invitations_by_user(username, *args, **kwargs):
     subscribers = []
     invited = []
     user = User.get_by_name(username)
-    if user:
+    current_app.logger.info(user)
+    if user and 'sub_emails' in user:
         docs = Oi.get_all({'invited': {'$in': user['sub_emails']}}, **kwargs)
         for doc in docs:
             resultset.append(Oi.to_dict(doc))
