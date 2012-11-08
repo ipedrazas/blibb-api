@@ -87,7 +87,7 @@ def do_logout():
     return jsonify(User.to_safe_dict(user)) if user else abort(401)
     
 
-@oi.route('/<username>/invitations', methods=['GET'])
+@oiuser.route('/<username>/invitations', methods=['GET'])
 @support_jsonp
 @parse_args
 def get_invitations_by_user(username, *args, **kwargs):
