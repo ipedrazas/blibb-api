@@ -121,9 +121,9 @@ def subscribe_oi(oiid=None):
         else:
             abort(401)
     abort(400)
-    
 
-@oi.route('/invitations/<username>', methods=['GET'])
+
+@oi.route('/user/<username>/invitations', methods=['GET'])
 @support_jsonp
 @parse_args
 def get_invitations_by_user(username, *args, **kwargs):
