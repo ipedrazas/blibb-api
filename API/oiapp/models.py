@@ -290,7 +290,7 @@ class User(Base):
 
     @classmethod
     def get_by_name(self, username):
-        doc = self.get_object({'username': username}, {'password': 0, 'salt': 0})
+        doc = self.get({'username': username}, {'password': 0, 'salt': 0})
         return self.flat_object(doc)
 
     @classmethod
