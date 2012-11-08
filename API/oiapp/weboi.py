@@ -123,18 +123,3 @@ def subscribe_oi(oiid=None):
     abort(400)
 
 
-@oi.route('/user/<username>/invitations', methods=['GET'])
-@support_jsonp
-@parse_args
-def get_invitations_by_user(username, *args, **kwargs):
-    resultset = []
-    senders = []
-    subscribers = []
-    invited = []
-    user = User.get_by_name(username)
-    if user:
-        docs = Oi.get_all({'invited': {'$in': user['sub_emails']}}, **kwargs)
-        for doc in docs:
-            resultset.append(Oi.to_dict(doc))
-        return jsonify({'resultset': resultset})
-    abort(404)
