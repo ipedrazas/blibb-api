@@ -140,27 +140,26 @@ class Oi(Base):
         if is_valid_id(oiid):
             doc = cls.get({'_id': ObjectId(oiid)})
             guests = doc.get('invited', None)
-
-            for u in guests:
-                current_app.logger.info(doc)
-                if u == user['email'] or u == user['username']:
+            username = user['username']
+            for guest in guests:
+                if guest in user['sub_email']:
                     cls.remove_user(guests, user)
                     doc['invited'] = guests
-                    if user not in doc['senders']:
-                        doc['senders'].append(user['username'])
-                    if user not in doc['subscribers']:
-                        doc['subscribers'].append(user['username'])
+                    if username not in doc['senders']:
+                        doc['senders'].append(username)
+                    if username not in doc['subscribers']:
+                        doc['subscribers'].append(username)
                     cls.objects.save(doc)
                     return True
         return False
 
     @classmethod
     def remove_user(cls, target_list, user):
-        for u in target_list:
-            if user['email'] in target_list:
+        sub_emails = user['sub_email']
+        for e in sub_emails:
+            if e in target_list:
                 target_list.remove(user['email'])
-            if user['username'] in target_list:
-                target_list.remove(user['username'])
+           
 
     @classmethod
     def push(cls, doc, user):
