@@ -158,7 +158,7 @@ class Oi(Base):
         sub_emails = user['sub_email']
         for e in sub_emails:
             if e in target_list:
-                target_list.remove(user['email'])
+                target_list.remove(e)
            
 
     @classmethod
