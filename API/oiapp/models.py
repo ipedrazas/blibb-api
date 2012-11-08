@@ -138,7 +138,7 @@ class Oi(Base):
     @classmethod
     def subscribe(cls, oiid, user):
         doc = cls.get({'_id': ObjectId(oiid)})
-        current_app.logger.info(doc)
+        current_app.logger.info("Doc to subscribe" + doc)
         guests = doc.get('invited', None)
         username = user['username']
         for guest in guests:
