@@ -169,7 +169,7 @@ class Oi(Base):
         username = user['username']
         last_push = {"when":  datetime.now(), "who": username}
         cls.objects.update({'_id': doc['_id']}, {"$inc": {'pushes': 1}, '$set': {"push": last_push}})
-        push = do_push(name, channel)
+        push = do_push(name, channel, username)
         User.inc_push(username)
         return push
 
@@ -178,6 +178,7 @@ class User(Base):
     conn = Connection(get_config_value('MONGO_URL'))
     db = conn['oime']
     objects = db['users']
+
 
     @classmethod
     def is_oi_user(cls, email):

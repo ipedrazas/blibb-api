@@ -6,8 +6,6 @@
 import httplib
 import json
 from API.utils import get_config_value
-from datetime import datetime
-
 from flask import current_app
 
 
@@ -15,12 +13,11 @@ APPLICATION_ID = get_config_value('PARSE_APPLICATION_ID')
 REST_API_KEY = get_config_value('PARSE_REST_API_KEY')
 
 
-def do_push(name=None, channel=None):
+def do_push(name=None, channel=None, user=None):
 
     data = dict()
 
-    now = datetime.now().strftime("%d/%m/%Y %H:%M:%S %Z")
-    data['data'] = {'alert': name + ' - ' + now, 'badge': 'Increment'}
+    data['data'] = {'alert': user + ':' + name, 'badge': 'Increment'}
     data["channels"] = [channel]
 
     head = dict()
