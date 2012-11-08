@@ -121,24 +121,20 @@ def subscribe_oi(oiid=None):
         else:
             abort(401)
     abort(400)
+    
 
-@oi.route('/user/<user>', methods=['GET'])
+@oi.route('/invitations/<username>', methods=['GET'])
 @support_jsonp
 @parse_args
-def get_invitations_by_user(user, *args, **kwargs):
+def get_invitations_by_user(username, *args, **kwargs):
     resultset = []
     senders = []
     subscribers = []
     invited = []
-
-    docs = Oi.get_all({'invited': {'$in': user['sub_emails']}}, **kwargs)
-    for doc in docs:
-        if 'senders' in doc and user in doc['senders']:
-            senders.append(str(doc['_id']))
-        if 'subscribers' in doc and user in doc['subscribers']:
-            subscribers.append(str(doc['_id']))
-        if 'invited' in doc and user in doc['invited']:
-            invited.append(str(doc['_id']))
-        resultset.append(Oi.to_dict(doc))
-    data = {'senders': senders, 'subscribers': subscribers, 'invited': invited}
-    return jsonify({'resultset': resultset, 'data': data})
+    user = User.get_by_name(username)
+    if user:
+        docs = Oi.get_all({'invited': {'$in': user['sub_emails']}}, **kwargs)
+        for doc in docs:
+            resultset.append(Oi.to_dict(doc))
+        return jsonify({'resultset': resultset})
+    abort(404)

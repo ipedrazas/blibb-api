@@ -308,10 +308,33 @@ class User(Base):
         r = cls.get_redis()
         userkey = sha1(user['email'] + user['last_access'] + str(datetime.now())).hexdigest()
         r.set(userkey, json.dumps(user))
-        # expire = get_config_value('EXPIRE')
-        # r.expire(userkey, expire)
         return userkey
 
     @classmethod
     def get_redis(self):
         return redis.StrictRedis(host='127.0.0.1', port=6379, db=0)
+
+
+class History(object):
+    conn = Connection(get_config_value('MONGO_URL'))
+    db = conn['oime']
+    objects = db['history']
+
+    @classmethod
+    def create(cls, name, channel, username):
+        ## check name
+        oi = Oi.get({'name': name})
+        if oi is None:
+            hist = dict()
+            hist['oid'] = oi['_id']
+            hist['name'] = name
+            hist['to'] = oi['subscribers']
+            hist['by'] = username
+            hist['when'] = datetime.now()
+            hist['_id'] = cls.objects.insert(hist)
+            return hist
+        else:
+            error = {'error': 'History object could not be created'}
+        return error
+
+        
