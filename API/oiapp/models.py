@@ -75,6 +75,7 @@ class Oi(Base):
             if u:
                 invitations.remove(p)
                 oi['subscribers'].append(u['username'])
+                oi['senders'].append(u['username'])
         cls.objects.save(oi)
         send_invitations(oi)  
 
@@ -179,8 +180,8 @@ class User(Base):
 
 
     @classmethod
-    def is_oi_user(cls, email):
-        u = User.get({'sub_email': email})
+    def is_oi_user(cls, email):        
+        u = cls.get({'$or': [{'sub_email': email.strip()}, {'username': email.strip()}]})
         if u is not None:
             return u
         return False
