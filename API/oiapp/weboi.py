@@ -38,8 +38,11 @@ def new_oi():
             tags = request.form['tags']
         current_app.logger.info(owner)
         doc = Oi.create(owner['username'], name, contacts, tags)
-        Audit.new_oi(owner, doc['_id'], '')
-        return jsonify({'oi': Oi.to_dict(doc)})
+            if '_id' in doc:
+            Audit.new_oi(owner, doc['_id'], '')
+            return jsonify({'oi': Oi.to_dict(doc)})
+        else:
+            abort(401, 'API KEY not valid')
     else:
         abort(401)
 
