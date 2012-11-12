@@ -231,8 +231,9 @@ class User(Base):
     @classmethod
     def create(cls, username, password, email, device=None):
         # check if the user is nt registered already
-        u = User.get({'username': username})
-        if u is None:
+        if cls.is_oi_user(username) or cls.is_oi_user(email):
+            return {'error': 'User already exists'}
+        else:
             user = dict()
             user['username'] = username
             user['email'] = email
@@ -245,9 +246,8 @@ class User(Base):
             if device:
                 user['devices'] = [device]
             user['_id'] = cls.objects.insert(user)
-            return user
-        else:
-            return {'error': 'User already exists'}
+            return user        
+            
 
     @classmethod
     def to_safe_dict(cls, obj):

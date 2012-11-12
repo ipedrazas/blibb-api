@@ -35,8 +35,11 @@ def new_user():
     if 'device' in request.form:
         device_id = request.form['device']
     doc = User.create(username, password, email, device_id)
-    Audit.signup(username, '')
-    return jsonify({'user': User.to_safe_dict(doc)})
+    if 'error' in doc:
+        abort(409, 'User already exists')
+    else:
+        Audit.signup(username, '')
+        return jsonify({'user': User.to_safe_dict(doc)})
 
 
 @oiuser.route('/<username>', methods=['GET'])
