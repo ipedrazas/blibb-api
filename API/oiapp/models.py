@@ -31,8 +31,14 @@ class Audit(Base):
         if is_valid_id(oiid):
             now = datetime.now()
             cls.objects.insert({'t': now, 'o': ObjectId(oiid), 'u': email, 'a': 'p', 's': subscribers, 'd': device})
+            # Ois sent
             queue_ducksboard_delta('80399')
+            # Ois per day
             queue_ducksboard_delta('81014')
+            num_push = len(subscribers)
+            # Ois received
+            queue_ducksboard_delta('90195', num_push)
+
 
     @classmethod
     def login(cls, email, device):
