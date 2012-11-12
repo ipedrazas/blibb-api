@@ -111,6 +111,7 @@ class Oi(Base):
                     tag_list = list(set(tags.lower().split()))
             oi['tags'] = tag_list
             new_id = cls.objects.insert(oi)
+            current_app.logger.info(str(oi))
             if is_valid_id(new_id):
                 oi['_id'] = new_id
                 cls.process_invitations(oi)
