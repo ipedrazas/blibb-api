@@ -27,7 +27,7 @@ class Audit(Base):
     objects = db['audits']
 
     @classmethod
-    def push(cls, email, oiid, subscribers, device):
+    def push(cls, email, oiid, device, subscribers):
         if is_valid_id(oiid):
             now = datetime.now()
             cls.objects.insert({'t': now, 'o': ObjectId(oiid), 'u': email, 'a': 'p', 's': subscribers, 'd': device})
