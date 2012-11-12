@@ -72,10 +72,13 @@ class Oi(Base):
         invitations = oi['invited']
         for p in invitations:
             u = User.is_oi_user(p)
+            current_app.logger.info(p)
+            current_app.logger.info(u)
             if u:
                 invitations.remove(p)
                 oi['subscribers'].append(u['username'])
                 oi['senders'].append(u['username'])
+
         cls.objects.save(oi)
         send_invitations(oi)  
 

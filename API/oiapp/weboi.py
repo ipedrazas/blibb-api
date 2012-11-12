@@ -42,7 +42,7 @@ def new_oi():
             Audit.new_oi(owner, doc['_id'], '')
             return jsonify({'oi': Oi.to_dict(doc)})
         else:
-            abort(401, doc.get('error','ERROR'))
+            abort(409, doc.get('error','ERROR'))
     else:
         abort(401)
 
