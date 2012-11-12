@@ -32,12 +32,12 @@ def set_value(value, endpoint):
     return send({'value': value}, endpoint)
 
 
-def set_delta(endpoint):
-    return send({'delta': 1}, endpoint)
+def set_delta(endpoint, value=1):
+    return send({'delta': value}, endpoint)
 
 
-def set_timestamp_delta(endpoint):
-    return send({"timestamp": time.time(), 'delta': 1}, endpoint)
+def set_timestamp_delta(endpoint, value=1):
+    return send({"timestamp": time.time(), 'delta': value}, endpoint)
 
 
 def send(data, endpoint):
@@ -69,7 +69,7 @@ def processMessage(message):
     value = strs[1]
     action = strs[2]
     if action == 'd':
-        set_delta(widget)
+        set_delta(widget, value)
     elif action == 'v':
         set_value(value, widget)
     elif action == 'dt':

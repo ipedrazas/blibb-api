@@ -181,7 +181,8 @@ class Oi(Base):
         name = doc['name']
         username = user['username']
         last_push = {"when":  datetime.now(), "who": username}
-        cls.objects.update({'_id': doc['_id']}, {"$inc": {'pushes': 1}, '$set': {"push": last_push}})
+        total_push = len(doc['subscribers'])
+        cls.objects.update({'_id': doc['_id']}, {"$inc": {'pushes': 1, 'sent': total_push}, '$set': {"push": last_push}})
         push = do_push(name, channel, username)
         User.inc_push(username)
         return push

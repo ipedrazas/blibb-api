@@ -92,12 +92,13 @@ def queue_twitter_resolution(obj_id, twiter_screen_name):
         socket.send(str(obj_id + '##' + twiter_screen_name))
 
 
-def queue_ducksboard_delta(widget_id, timestamp=False):
+def queue_ducksboard_delta(widget_id, value=1, timestamp=False):
     if widget_id is not None:
+
         if timestamp:
-            msg = widget_id + '##1##td'
+            msg = widget_id + '##'+ value +'##td'
         else:
-            msg = widget_id + '##1##d'
+            msg = widget_id + '##'+ value +'##d'
         queue_ducksboard(widget_id, msg)
 
 
