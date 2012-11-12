@@ -70,10 +70,11 @@ class Oi(Base):
     @classmethod
     def process_invitations(cls, oi):
         invitations = oi['invited']
+        current_app.logger.info('invitations ' + invitations)
         for p in invitations:
             u = User.is_oi_user(p)
-            current_app.logger.info(p)
-            current_app.logger.info(u)
+            current_app.logger.info('invited: ' + p)
+            current_app.logger.info('user: ' + u)
             if u:
                 invitations.remove(p)
                 oi['subscribers'].append(u['username'])
