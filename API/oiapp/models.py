@@ -83,7 +83,7 @@ class Oi(Base):
     @classmethod
     def create(cls, owner, name, contacts, tags):
         ## check name
-        oi_name = Oi.get({'name': name})
+        oi_name = Oi.get({'name': name, 'owner': owner})
         tag_list = []
         if oi_name is None:
             oi = dict()

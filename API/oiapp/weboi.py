@@ -42,8 +42,7 @@ def new_oi():
             Audit.new_oi(owner, doc['_id'], '')
             return jsonify({'oi': Oi.to_dict(doc)})
         else:
-            current_app.logger.info(doc)
-            abort(401, 'API KEY not valid')
+            abort(401, doc.get('error','ERROR'))
     else:
         abort(401)
 
