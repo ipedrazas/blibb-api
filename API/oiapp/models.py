@@ -77,8 +77,10 @@ class Oi(Base):
             current_app.logger.info('invited: ' + str(p))
             current_app.logger.info('user: ' + str(u))
             if u:
-                oi['subscribers'].append(u['username'])
-                oi['senders'].append(u['username'])
+                if u['username'] not in oi['subscribers']:
+                    oi['subscribers'].append(u['username'])
+                if u['username'] not in oi['senders']:
+                    oi['senders'].append(u['username'])
             else:
                 invited.append(p)
 
