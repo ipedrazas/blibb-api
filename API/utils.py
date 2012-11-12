@@ -96,9 +96,9 @@ def queue_ducksboard_delta(widget_id, value=1, timestamp=False):
     if widget_id is not None:
 
         if timestamp:
-            msg = widget_id + '##'+ value +'##td'
+            msg = widget_id + '##'+ str(value) +'##td'
         else:
-            msg = widget_id + '##'+ value +'##d'
+            msg = widget_id + '##'+ str(value) +'##d'
         queue_ducksboard(widget_id, msg)
 
 
