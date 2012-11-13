@@ -24,6 +24,10 @@ def before_request():
 def teardown_request(exception):
     g.e.save()
 
+@oiuser.errorhandler(401)
+@crossdomain(origin='*')
+def custom_401(error):
+     return render_template('401.html'), 401
 
 @oiuser.route('', methods=['POST'])
 @crossdomain(origin='*')
