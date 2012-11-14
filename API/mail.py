@@ -4,20 +4,29 @@
 #
 #
 
+from flask import current_app
 import sendgrid
 from API.utils import get_config_value
 import re
 
 
+def readFile(filename):
+    path = abspath(join(dirname(__file__), '.')) + filename
+    print path
+    f = open(path, 'r')
+    return f.read()
+
 def send_invitations(oi):
     txt_mail = 'Invitation to Join Oi!'
-    html_mail = 'Invitation to Join <b><a href="http://oioi.me/%s">Oi!</a></b>' % (str(oi['_id']))
+    mail = read_file('/oiapp/mail.html')
+    html_mail = mail % (oi['owner'], oi['name'])
     subject = oi['owner'] + " wants to invite you to join " + oi['name']
     mail = {'from': "info@oioi.me", 'from_name': 'Oi!', 'subject': subject, 'txt_body': txt_mail, 'html_body': html_mail, 'to_name': ''}
     for p in oi['invited']:
         if is_valid_email(p):
             mail['to_address'] = p
             send_invitation_mail(mail)
+
 
 
 def is_valid_email(email):
@@ -28,6 +37,7 @@ def is_valid_email(email):
 
 def send_invitation_mail(mail):
 
+    current_app.logger.info('Mail sent to ' + mail['to_address'])
     sendgrid_user = get_config_value('SENDGRID_USER')
     sendgrid_password = get_config_value('SENDGRID_PASSWORD')
     s = sendgrid.Sendgrid(sendgrid_user, sendgrid_password, secure=True)

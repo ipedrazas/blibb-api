@@ -128,6 +128,8 @@ curl -k -d "login_key=d9c36d3c6370bf820b58b4dea2efdbbed10cdeaa" http://api.blibb
 curl -v -u av7HZA3bt69Bey58OYEZNDalVmwpisvMxOVMdvVJSMHrQsOl0x:x -d '{"value": 51.25}'  http://push.ducksboard.com/v/81211
 curl -v -u av7HZA3bt69Bey58OYEZNDalVmwpisvMxOVMdvVJSMHrQsOl0x:x -d '{"delta": 1}'  http://push.ducksboard.com/v/81211
 
+curl -v -u av7HZA3bt69Bey58OYEZNDalVmwpisvMxOVMdvVJSMHrQsOl0x:x -d '{"value": 3510}'  https://push.ducksboard.com/v/90195
+
 http://public.ducksboard.com/tY5avWuPiJDdVgwKoPjt/
 
 
@@ -166,16 +168,23 @@ curl -d "login_key=353d8dd0100f217bd09817db86dcb4196ab13b6d&name=Infra request&c
 ###
 ###		New User
 ###
-curl -d "username=test&email=test@oioi.me&password=test" http://api.blibb.net/users
+curl -d "username=i_o&email=io@oioi.me&password=io" http://api.blibb.net/users
 
 
 ###
 ###		Login
 ###
 curl -d "username=test&password=test" http://api.blibb.net/users/login
+curl -d "username=ipedrazas&password=i" http://api.blibb.net/users/login
+
+###
+###		New Oi
+###
+curl -d "login_key=953cc53572fbd7f5c419d79c8977bd72321db6f0&name=Testing weird bug 8&contacts=i_o,valgreens,mr_pez@hotmail.com,manolo@oioi.me&tags=work" http://api.blibb.net/ois
+
 
 curl -d "login_key=36204c0914e059c008df92ea81abf5b980f2b291" http://api.blibb.net/ois/50870df552d4df75fa00000b/subscribe
-curl -d "login_key=0a0856300a04baee3f42da74ac9447460058c0fc&name=R2&contacts=ipedrazas@gmail.com&tags=work" http://api.blibb.net/ois
+curl -d "login_key=4f0c35c957ff0b67f058cb19d5522233f6afc4e1&name=Test&contacts=i_o,anvalro@gmail.com&tags=work" http://api.blibb.net/ois
 
 508332dd52d4df6e78000000
 5080328152d4df64c6000002
@@ -189,3 +198,11 @@ curl -k -d "login_key=b04a081db5c8f5b153a8b23ce053f377617ed9d4" http://api.blibb
 508332dd52d4df6e78000000
 
  http://api.blibb.net/ois/508332dd52d4df6e78000000
+
+ http://api.blibb.net/user/ipedrazas/invitations
+ http://api.blibb.net/ois/509aac6e52d4df7280000000/history
+
+curl -d "login_key=e9cb9dd502e3331b9f711071f25a46fccd5a191a" http://api.blibb.net/ois/50a3680552d4df09e8000001/unsubscribe
+
+
+
