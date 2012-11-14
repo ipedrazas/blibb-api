@@ -121,7 +121,9 @@ class Oi(Base):
                     else:
                         contacts_list.append(contacts)
             oi['invited'] = contacts_list
-
+            oi['push'] = {'when': '', 'who': ''}
+            oi['sent'] = 0
+            oi['pushes'] = 0
             oi['channel'] = '%s-%s-%s' % (cls.parse_string(owner), cls.parse_string(name), rnd_id)
             oi['senders'] = [owner]
             oi['subscribers'] = [owner]
