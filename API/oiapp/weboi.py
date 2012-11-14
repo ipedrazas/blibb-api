@@ -126,3 +126,28 @@ def subscribe_oi(oiid=None):
     abort(400)
 
 
+@oi.route('/<oiid>/subscribe', methods=['POST'])
+@crossdomain(origin='*')
+def unsubscribe_oi(oiid=None):
+    login_key = request.form['login_key']
+    email = request.form['email']
+    user = get_user(login_key)
+    if is_valid_id(oiid):
+        if Oi.unsubscribe(oiid, user):
+            Audit.unsubscribe(user, '', oiid)
+            return jsonify({'unsubscribed': oiid})
+        else:
+            abort(401)
+    abort(400)
+
+
+@oi.route('/<oiid>/history', methods=['GET'])
+@support_jsonp
+@parse_args
+def get_history_oi(oiid, *args, **kwargs):
+    if is_valid_id(oiid):
+        docs = Audit.get_all({'o': ObjectId(oiid)}, **kwargs)
+        for doc in docs:
+            resultset.append(Audit.to_dict(doc))
+        return jsonify({'resultset': resultset})
+    abort(400)
