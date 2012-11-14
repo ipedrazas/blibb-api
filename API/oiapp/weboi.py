@@ -119,7 +119,7 @@ def subscribe_oi(oiid=None):
         if Oi.subscribe(oiid, user):
             if email is not None:
                 User.add_subscrived_email(user, email)
-            Audit.subscribe(user, '', oiid)
+            Audit.subscribe(user['username'], '', oiid)
             return jsonify({'subscribed': oiid})
         else:
             abort(401)
@@ -134,7 +134,7 @@ def unsubscribe_oi(oiid=None):
     user = get_user(login_key)
     if is_valid_id(oiid):
         if Oi.unsubscribe(oiid, user):
-            Audit.unsubscribe(user, '', oiid)
+            Audit.unsubscribe(user['username'], '', oiid)
             return jsonify({'unsubscribed': oiid})
         else:
             abort(401)
