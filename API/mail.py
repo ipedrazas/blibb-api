@@ -10,7 +10,7 @@ from API.utils import get_config_value
 import re
 
 
-def readFile(filename):
+def read_file(filename):
     path = abspath(join(dirname(__file__), '.')) + filename
     print path
     f = open(path, 'r')
