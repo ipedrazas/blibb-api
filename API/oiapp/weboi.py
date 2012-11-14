@@ -130,7 +130,6 @@ def subscribe_oi(oiid=None):
 @crossdomain(origin='*')
 def unsubscribe_oi(oiid=None):
     login_key = request.form['login_key']
-    email = request.form['email']
     user = get_user(login_key)
     if is_valid_id(oiid):
         if Oi.unsubscribe(oiid, user):
