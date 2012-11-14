@@ -8,6 +8,7 @@ from flask import current_app
 import sendgrid
 from API.utils import get_config_value
 import re
+from os.path import join, abspath, dirname
 
 
 def read_file(filename):
