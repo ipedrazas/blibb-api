@@ -126,7 +126,7 @@ def subscribe_oi(oiid=None):
     abort(400)
 
 
-@oi.route('/<oiid>/subscribe', methods=['POST'])
+@oi.route('/<oiid>/unsubscribe', methods=['POST'])
 @crossdomain(origin='*')
 def unsubscribe_oi(oiid=None):
     login_key = request.form['login_key']
@@ -145,6 +145,7 @@ def unsubscribe_oi(oiid=None):
 @support_jsonp
 @parse_args
 def get_history_oi(oiid, *args, **kwargs):
+    resultset = []
     if is_valid_id(oiid):
         docs = Audit.get_all({'o': ObjectId(oiid)}, **kwargs)
         for doc in docs:
