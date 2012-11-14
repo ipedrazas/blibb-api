@@ -27,10 +27,10 @@ class Audit(Base):
     objects = db['audits']
 
     @classmethod
-    def push(cls, email, oiid, device, subscribers):
+    def push(cls, user, oiid, device, subscribers):
         if is_valid_id(oiid):
             now = datetime.now()
-            cls.objects.insert({'t': now, 'o': ObjectId(oiid), 'u': email, 'a': 'p', 's': subscribers, 'd': device})
+            cls.objects.insert({'t': now, 'o': ObjectId(oiid), 'u': user['username'], 'a': 'p', 's': subscribers, 'd': device})
             # Ois sent
             queue_ducksboard_delta('80399')
             # Ois per day
@@ -41,36 +41,36 @@ class Audit(Base):
 
 
     @classmethod
-    def login(cls, email, device):
+    def login(cls, user, device):
         now = datetime.now()
-        cls.objects.insert({'t': now, 'u': email, 'a': 'l', 'd': device})
+        cls.objects.insert({'t': now, 'u': user['username'], 'a': 'l', 'd': device})
         queue_ducksboard_delta('81209')
 
     @classmethod
-    def new_oi(cls, email, oiid, device):
+    def new_oi(cls, user, oiid, device):
         if is_valid_id(oiid):
             now = datetime.now()
-            cls.objects.insert({'t': now, 'u': email, 'o': oiid, 'a': 'n', 'd': device})
+            cls.objects.insert({'t': now, 'u': user['username'], 'o': oiid, 'a': 'n', 'd': device})
             queue_ducksboard_delta('81176')
 
     @classmethod
-    def subscribe(cls, email, device, oiid):
+    def subscribe(cls, user, device, oiid):
         if is_valid_id(oiid):
             now = datetime.now()
-            cls.objects.insert({'t': now, 'u': email, 'o': ObjectId(oiid), 'a': 's', 'd': device})
+            cls.objects.insert({'t': now, 'u': user['username'], 'o': ObjectId(oiid), 'a': 's', 'd': device})
             queue_ducksboard_delta('81296')
 
     @classmethod
-    def unsubscribe(cls, email, device, oiid):
+    def unsubscribe(cls, user, device, oiid):
         if is_valid_id(oiid):
             now = datetime.now()
-            cls.objects.insert({'t': now, 'u': email, 'o': ObjectId(oiid), 'a': 'u'})
+            cls.objects.insert({'t': now, 'u': user['username'], 'o': ObjectId(oiid), 'a': 'u'})
             queue_ducksboard_delta('90568')
 
     @classmethod
-    def signup(cls, email, device):
+    def signup(cls, user, device):
         now = datetime.now()
-        cls.objects.insert({'t': now, 'u': email, 'a': 'sp', 'd': device})
+        cls.objects.insert({'t': now, 'u': user['username'], 'a': 'sp', 'd': device})
         queue_ducksboard_delta('80347')
 
 

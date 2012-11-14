@@ -17,7 +17,7 @@ def do_push(name=None, channel=None, user=None):
 
     data = dict()
 
-    data['data'] = {'alert': user + ':' + name, 'badge': 'Increment'}
+    data['data'] = {'alert': user + ': ' + name, 'badge': 'Increment'}
     data["channels"] = [channel]
 
     head = dict()
