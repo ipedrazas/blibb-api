@@ -184,6 +184,7 @@ class Oi(Base):
     @classmethod
     def unsubscribe(cls, oiid, user):
         doc = cls.get({'_id': ObjectId(oiid)})
+        current_app.logger.info(str(doc))
         if doc and user in doc['subscribers']:
             cls.remove_user(doc['subscribers'], user)
             cls.objects.save(doc)
@@ -209,6 +210,10 @@ class Oi(Base):
         push = do_push(name, channel, username)
         User.inc_push(username)
         return push
+
+    # @classmethod
+    # def favourite(cls, oiid, user):
+    #     doc = cls.get({'_id': ObjectId(oiid)})
 
 
 class User(Base):
