@@ -65,7 +65,14 @@ class Audit(Base):
         if is_valid_id(oiid):
             now = datetime.now()
             cls.objects.insert({'t': now, 'u': user, 'o': ObjectId(oiid), 'a': 'u'})
-            queue_ducksboard_delta('90568')
+            queue_ducksboard_delta('92094')
+
+    @classmethod
+    def delete(cls, user, device, oiid):
+        if is_valid_id(oiid):
+            now = datetime.now()
+            cls.objects.insert({'t': now, 'u': user, 'o': ObjectId(oiid), 'a': 'd'})
+            queue_ducksboard_delta('92093')
 
     @classmethod
     def signup(cls, user, device):
