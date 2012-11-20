@@ -52,11 +52,10 @@ def new_oi():
         abort(401)
 
 
-@oi.route('', methods=['DELETE'])
+@oi.route('/<oiid>', methods=['DELETE'])
 @crossdomain(origin='*')
-def delete_oi():
+def delete_oi(oiid):
     login_key = request.form['login_key']
-    oiid = request.form['oiid']
     if is_valid_id(oiid):
         doc = Oi.get({'_id': ObjectId(oiid)})
         owner = get_user(login_key)
