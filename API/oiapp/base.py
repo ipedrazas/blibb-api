@@ -19,7 +19,6 @@ class Base(object):
         if kwargs is not None:
             num = kwargs.get('num', 20)
             page = kwargs.get('page', 1)
-            args += ('del', False)
             page = int(page) if page and page > 0 else 1
             num = int(num) if num and int(num) > 0 else 20
             return cls.objects.find(*args, **kwargs).skip(num * (page - 1)).limit(num)
@@ -32,12 +31,10 @@ class Base(object):
 
     @classmethod
     def get(cls, *args, **kwargs):
-        args += ('del', False)
         return cls.objects.find_one(*args, **kwargs)
 
     @classmethod
     def get_as_dict(cls, *args, **kwargs):
-        args += ('del', False)
         return cls.objects.find_one(*args, **kwargs)
 
     @classmethod

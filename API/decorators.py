@@ -24,6 +24,7 @@ def parse_args(f):
         if params:
             for p in params.split(','):
                 fields[p.strip()] = 1
+        args += ('del', False)
         kwargs.update({'page': page, 'num': num, 'fields': fields, 'filters': filters})
         if 'sort' in request.args:
             sort = request.args.get('sort')
