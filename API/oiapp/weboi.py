@@ -89,10 +89,12 @@ def get_ois_by_user(user, *args, **kwargs):
     docs = Oi.get_all(
                         {'$and': [
                             {'del': {'$exists': False}},
-                            {'$or': [{'owner': user.strip()},
-                            {'senders': user.strip()},
-                            {'subscribers':user.strip()},
-                            {'invited': user.strip()}]}
+                            {'$or': [
+                                {'owner': user.strip()},
+                                {'senders': user.strip()},
+                                {'subscribers':user.strip()},
+                                {'invited': user.strip()}
+                            ]}
                         ]},
                          **kwargs)
 
@@ -147,7 +149,7 @@ def delete_oi(oiid=None):
             current_app.logger.info(owner['username'] + ' - ' + doc['owner'])
             if owner['username'] == doc['owner']:
                 Oi.update(oiid, {'name':'del', 'value': True})
-                return jsonify({'result': {'code': 1, 'msg': 'Object deleted'}})
+                return jsonify({'result': {'code': 'true', 'msg': 'Object deleted'}})
             else:
                 abort(401)
         else:
@@ -178,8 +180,9 @@ def unsubscribe_oi(oiid=None):
     login_key = request.form['login_key']
     user = get_user(login_key)
     if is_valid_id(oiid):
-        if Audit.unsubscribe(user['username'], '', oiid):
-            return jsonify({'unsubscribed': oiid})
+        if Oi.unsubscribe(oiid, user['username']):
+            Audit.unsubscribe(user['username'], '', oiid)
+            return jsonify({'result': {'code': 'true', 'msg': 'Object unsubscribed'}})
         else:
             abort(401)
     abort(400)
