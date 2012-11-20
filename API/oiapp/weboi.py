@@ -51,20 +51,6 @@ def new_oi():
     else:
         abort(401)
 
-# it should be DELETE... but it doesn't work..
-@oi.route('/<oiid>/del', methods=['POST'])
-@crossdomain(origin='*')
-def delete_oi(oiid):
-    login_key = request.form['login_key']
-    if is_valid_id(oiid):
-        doc = Oi.get({'_id': ObjectId(oiid)})
-        owner = get_user(login_key)
-        if owner['username'] == doc['owner']:
-            Oi.update(oiid, {'name':'del', 'value': True})
-        else:
-            abort(401)
-    abort(400)
-
 
 @oi.route('', methods=['PATCH'])
 @crossdomain(origin='*')
@@ -138,6 +124,22 @@ def push_oi(oiid=None):
                 abort(401)
         else:
             abort(404)
+    abort(400)
+
+# it should be DELETE... but it doesn't work..
+@oi.route('/<oiid>/del', methods=['POST'])
+@crossdomain(origin='*')
+def delete_oi(oiid=None):
+    login_key = request.form['login_key']
+    if is_valid_id(oiid):
+        doc = Oi.get({'_id': ObjectId(oiid)})
+        owner = get_user(login_key)
+        current_app.logger.info(owner['username'] + ' - ' + doc['owner'])
+        if owner['username'] == doc['owner']:
+            Oi.update(oiid, {'name':'del', 'value': True})
+            return jsonify({'result': {'code': 1, 'msg': 'Object deleted'}})
+        else:
+            abort(401)
     abort(400)
 
 
