@@ -51,8 +51,8 @@ def new_oi():
     else:
         abort(401)
 
-
-@oi.route('/<oiid>', methods=['DELETE'])
+# it should be DELETE... but it doesn't work..
+@oi.route('/<oiid>/del', methods=['POST'])
 @crossdomain(origin='*')
 def delete_oi(oiid):
     login_key = request.form['login_key']
