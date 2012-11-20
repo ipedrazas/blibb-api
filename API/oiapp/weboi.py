@@ -60,7 +60,7 @@ def delete_oi(oiid):
         doc = Oi.get({'_id': ObjectId(oiid)})
         owner = get_user(login_key)
         if owner['username'] == doc['owner']:
-            Oi.update(oiid, {'del': True})
+            Oi.update(oiid, {'name':'del', 'value': True})
         else:
             abort(401)
     abort(400)
