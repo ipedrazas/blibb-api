@@ -99,7 +99,7 @@ class Oi(Base):
 
         oi['invited'] = invited
         cls.objects.save(oi)
-        send_invitations(oi)  
+        send_invitations(oi)
 
 
     @classmethod
@@ -197,7 +197,7 @@ class Oi(Base):
         for e in sub_emails:
             if e in target_list:
                 target_list.remove(e)
-           
+
 
     @classmethod
     def push(cls, doc, user):
@@ -214,7 +214,7 @@ class Oi(Base):
     @classmethod
     def update(cls, oiid, attribute):
         if is_valid_id(oiid):
-            cls.objects.update({'_id': ObjectId(oiid)}, {'$set': {attribute['name']: attribute['value']}})
+            cls.objects.update({'_id': ObjectId(oiid), 'del': {'$exists': False}}, {'$set': {attribute['name']: attribute['value']}})
 
 
 class User(Base):
@@ -224,7 +224,7 @@ class User(Base):
 
 
     @classmethod
-    def is_oi_user(cls, email):        
+    def is_oi_user(cls, email):
         u = cls.get({'$or': [{'sub_email': email.strip()}, {'username': email.strip()}]})
         if u is not None:
             return u
@@ -290,8 +290,8 @@ class User(Base):
             if device:
                 user['devices'] = [device]
             user['_id'] = cls.objects.insert(user)
-            return user        
-            
+            return user
+
 
     @classmethod
     def to_safe_dict(cls, obj):
@@ -358,4 +358,4 @@ class User(Base):
         return redis.StrictRedis(host='127.0.0.1', port=6379, db=0)
 
 
-        
+
