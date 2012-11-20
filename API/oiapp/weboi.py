@@ -70,7 +70,7 @@ def update_oi():
 @parse_args
 def get_ois(*args, **kwargs):
     resultset = []
-    docs = Oi.get_all(*args, **kwargs)
+    docs = Oi.get_all({'del': {'$exists': False}}, **kwargs)
     for doc in docs:
         resultset.append(Oi.to_dict(doc))
 
@@ -86,7 +86,7 @@ def get_ois_by_user(user, *args, **kwargs):
     subscribers = []
     invited = []
 
-    docs = Oi.get_all({'$or': [{'owner': user.strip()}, {'senders': user.strip()}, {'subscribers':user.strip()}, {'invited': user.strip()}]}, **kwargs)
+    docs = Oi.get_all({'$or': [{'owner': user.strip()}, {'senders': user.strip()}, {'subscribers':user.strip()}, {'invited': user.strip()},'del': {'$exists': False}]}, **kwargs)
     for doc in docs:
         if 'senders' in doc and user in doc['senders']:
             senders.append(str(doc['_id']))
@@ -103,7 +103,7 @@ def get_ois_by_user(user, *args, **kwargs):
 @support_jsonp
 def get_oi(oiid):
     if is_valid_id(oiid):
-        doc = Oi.get({'_id': ObjectId(oiid)})
+        doc = Oi.get({'_id': ObjectId(oiid), 'del': {'$exists': False}})
         return jsonify({'oi': Oi.to_dict(doc)})
     abort(400)
 
@@ -114,7 +114,7 @@ def push_oi(oiid=None):
     login_key = request.form['login_key']
     user = get_user(login_key)
     if is_valid_id(oiid):
-        oi = Oi.get({'_id': ObjectId(oiid)})
+        oi = Oi.get({'_id': ObjectId(oiid), 'del': {'$exists': False}})
         if oi:
             if Oi.in_senders(oi, user):
                 push = {'push': Oi.push(oi, user)}
@@ -132,14 +132,17 @@ def push_oi(oiid=None):
 def delete_oi(oiid=None):
     login_key = request.form['login_key']
     if is_valid_id(oiid):
-        doc = Oi.get({'_id': ObjectId(oiid)})
-        owner = get_user(login_key)
-        current_app.logger.info(owner['username'] + ' - ' + doc['owner'])
-        if owner['username'] == doc['owner']:
-            Oi.update(oiid, {'name':'del', 'value': True})
-            return jsonify({'result': {'code': 1, 'msg': 'Object deleted'}})
+        doc = Oi.get({'_id': ObjectId(oiid), 'del': {'$exists': False}})
+        if doc:
+            owner = get_user(login_key)
+            current_app.logger.info(owner['username'] + ' - ' + doc['owner'])
+            if owner['username'] == doc['owner']:
+                Oi.update(oiid, {'name':'del', 'value': True})
+                return jsonify({'result': {'code': 1, 'msg': 'Object deleted'}})
+            else:
+                abort(401)
         else:
-            abort(401)
+            abort(404)
     abort(400)
 
 
