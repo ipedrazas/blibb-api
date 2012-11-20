@@ -2,7 +2,7 @@
 #
 
 
-from flask import Blueprint, request, abort, jsonify, current_app, g
+from flask import Blueprint, request, abort, jsonify, current_app, g, render_template
 from API.oiapp.models import Oi, Audit, User
 from API.event.event import Event
 from bson.objectid import ObjectId
