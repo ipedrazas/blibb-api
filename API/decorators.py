@@ -28,7 +28,7 @@ def parse_args(f):
         if 'sort' in request.args:
             sort = request.args.get('sort')
             kwargs.update({'sort': [(sort, -1)]})
-        args.set('del': False)
+        args.append('del', False)
         return f(*args, **kwargs)
     return decorator
 
