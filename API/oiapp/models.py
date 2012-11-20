@@ -112,7 +112,7 @@ class Oi(Base):
     @classmethod
     def create(cls, owner, name, contacts, tags):
         ## check name
-        oi_name = Oi.get({'name': name, 'owner': owner})
+        oi_name = Oi.get({'name': name, 'owner': owner, 'del': {'$exists': False}})
         tag_list = []
         if oi_name is None:
             oi = dict()
@@ -200,10 +200,11 @@ class Oi(Base):
 
     @classmethod
     def remove_user(cls, target_list, user):
-        sub_emails = user['sub_email']
-        for e in sub_emails:
-            if e in target_list:
-                target_list.remove(e)
+        if 'sub_emails' in user:
+            sub_emails = user['sub_email']
+            for e in sub_emails:
+                if e in target_list:
+                    target_list.remove(e)
 
 
     @classmethod
