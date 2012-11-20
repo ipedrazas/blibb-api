@@ -26,6 +26,11 @@ def teardown_request(exception):
     g.e.save()
 
 
+@oi.errorhandler(401)
+@crossdomain(origin='*')
+def custom_401(error):
+     return render_template('401.html'), 401
+
 @oi.route('', methods=['POST'])
 @crossdomain(origin='*')
 def new_oi():
@@ -46,6 +51,19 @@ def new_oi():
     else:
         abort(401)
 
+
+@oi.route('', methods=['PATCH'])
+@crossdomain(origin='*')
+def update_oi():
+    login_key = request.form['login_key']
+    attr_name  = request.form['attr_name']
+    attr_value = request.form['attr_value']
+    oiid = request.form['oiid']
+    owner = get_user(login_key)
+    if owner:
+        Oi.update(oiid, {attr_name: attr_value})
+        return jsonify({'result': {'code': 1, 'msg': 'Object updated'}})
+    abort(401)
 
 @oi.route('', methods=['GET'])
 @support_jsonp

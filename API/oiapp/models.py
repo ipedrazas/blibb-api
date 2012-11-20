@@ -211,9 +211,10 @@ class Oi(Base):
         User.inc_push(username)
         return push
 
-    # @classmethod
-    # def favourite(cls, oiid, user):
-    #     doc = cls.get({'_id': ObjectId(oiid)})
+    @classmethod
+    def update(cls, oiid, attribute):
+        if is_valid_id(oiid):
+            cls.objects.update({'_id': ObjectId(oiid)}, {'$set': {attribute['name']: attribute['value']}})
 
 
 class User(Base):
