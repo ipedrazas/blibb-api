@@ -52,6 +52,20 @@ def new_oi():
         abort(401)
 
 
+@oi.route('', methods=['DELETE'])
+@crossdomain(origin='*')
+def delete_oi():
+    login_key = request.form['login_key']
+    oiid = request.form['oiid']
+    if is_valid_id(oiid):
+        doc = Oi.get({'_id': ObjectId(oiid)})
+        owner = get_user(login_key)
+        if owner = doc['owner']:
+            Oi.update(oiid, {'del': True})
+        else:
+            abort(401)    
+    abort(400)
+
 @oi.route('', methods=['PATCH'])
 @crossdomain(origin='*')
 def update_oi():
