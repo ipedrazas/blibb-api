@@ -59,8 +59,7 @@ def delete_oi(oiid):
     if is_valid_id(oiid):
         doc = Oi.get({'_id': ObjectId(oiid)})
         owner = get_user(login_key)
-        current_app.logger.info(owner + ' - ' + doc['owner'])
-        if owner == doc['owner']:
+        if owner['username'] == doc['owner']:
             Oi.update(oiid, {'del': True})
         else:
             abort(401)
