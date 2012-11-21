@@ -201,12 +201,13 @@ class Oi(Base):
 
     @classmethod
     def remove_user(cls, target_list, user):
+        if user['username'] in target_list:
+            target_list.remove(user['username'])
         if 'sub_emails' in user:
             sub_emails = user['sub_email']
             for e in sub_emails:
                 if e in target_list:
                     target_list.remove(e)
-
 
     @classmethod
     def push(cls, doc, user):
