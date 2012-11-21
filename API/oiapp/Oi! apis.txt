@@ -204,9 +204,16 @@ curl -k -d "login_key=b04a081db5c8f5b153a8b23ce053f377617ed9d4" http://api.blibb
 
 curl -d "login_key=e9cb9dd502e3331b9f711071f25a46fccd5a191a" http://api.blibb.net/ois/50a3bcbe52d4df76c6000007/unsubscribe
 
-login Ivan: 381cfd1a27672aec257e9ae10151d785be59590b
+curl -d "username=valgreens&password=antonio" http://api.blibb.net/users/login
+curl -d "username=ipedrazas&password=i" http://api.blibb.net/users/login
+
+login Ivan: 136b8bed729ae312ff56f22bba21befeab11bfb6
+login valgreens: d82e2550d973131549e93c57781f62b95114e4eb
+
+
 
 curl -d "login_key=e9cb9dd502e3331b9f711071f25a46fccd5a191a" http://api.blibb.net/ois/50a3bcbe52d4df76c6000007/unsubscribe
 
 
 curl  -d "login_key=381cfd1a27672aec257e9ae10151d785be59590b" http://api.blibb.net/ois/50a968a152d4df0b4700002e/del
+curl -d "login_key=d82e2550d973131549e93c57781f62b95114e4eb&name=Test1&contacts=ipedrazas&tags=work" http://api.blibb.net/ois

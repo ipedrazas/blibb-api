@@ -180,11 +180,11 @@ def unsubscribe_oi(oiid=None):
     login_key = request.form['login_key']
     user = get_user(login_key)
     if is_valid_id(oiid):
-        if Oi.unsubscribe(oiid, user['username']):
-            Audit.unsubscribe(user['username'], '', oiid)
-            return jsonify({'result': {'code': 'true', 'msg': 'Object unsubscribed'}})
-        else:
-            abort(401)
+        if user:
+            if Oi.unsubscribe(oiid, user['username']):
+                Audit.unsubscribe(user['username'], '', oiid)
+                return jsonify({'result': {'code': 'true', 'msg': 'Object unsubscribed'}})
+        abort(401)
     abort(400)
 
 
