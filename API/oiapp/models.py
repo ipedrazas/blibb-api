@@ -192,10 +192,12 @@ class Oi(Base):
     @classmethod
     def unsubscribe(cls, oiid, user):
         doc = cls.get({'_id': ObjectId(oiid)})
-        if doc and user in doc['subscribers']:
-            doc['subscribers'].remove(user)
-            cls.objects.save(doc)
-            return True
+        if doc:
+            if user in doc['subscribers'] or user in doc['senders']:
+                doc['subscribers'].remove(user)
+                doc['senders'].remove(user)
+                cls.objects.save(doc)
+                return True
         return False
 
     @classmethod
