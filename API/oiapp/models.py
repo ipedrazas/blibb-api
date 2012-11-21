@@ -167,7 +167,7 @@ class Oi(Base):
     @classmethod
     def in_senders(cls, doc, user):
         performers = doc.get('senders', None)
-        if performers:
+        if performers and user:
             if user['email'] in performers or user['username'] in performers:
                 return True
         return False
