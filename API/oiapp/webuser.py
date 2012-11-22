@@ -48,7 +48,6 @@ def new_user():
 
 @oiuser.route('/<username>', methods=['GET'])
 @support_jsonp
-@crossdomain(origin='*')
 def get_user(username):
     doc = User.get({'$or': [{'username': username.strip()}, {'email': username.strip()}]})
     return jsonify({'user': User.to_safe_dict(doc)})
