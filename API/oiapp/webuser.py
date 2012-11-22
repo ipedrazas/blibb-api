@@ -48,6 +48,7 @@ def new_user():
 
 @oiuser.route('/<username>', methods=['GET'])
 @support_jsonp
+@crossdomain(origin='*')
 def get_user(username):
     doc = User.get({'$or': [{'username': username.strip()}, {'email': username.strip()}]})
     return jsonify({'user': User.to_safe_dict(doc)})
@@ -92,7 +93,7 @@ def do_logout():
     login_key = request.form['login_key']
     user = User.logout(login_key)
     return jsonify(User.to_safe_dict(user)) if user else abort(401)
-    
+
 
 @oiuser.route('/<username>/invitations', methods=['GET'])
 @support_jsonp
