@@ -80,6 +80,19 @@ class Audit(Base):
         cls.objects.insert({'t': now, 'u': user, 'a': 'sp', 'd': device})
         queue_ducksboard_delta('80347')
 
+    @classmethod
+    def fav(cls, user, device, oiid):
+        now = datetime.now()
+        cls.objects.insert({'t': now, 'u': user, 'o': ObjectId(oiid), 'a': 'f', 'd': device})
+        queue_ducksboard_delta('93345')
+
+    @classmethod
+    def unfav(cls, user, device, oiid):
+        now = datetime.now()
+        cls.objects.insert({'t': now, 'u': user, 'o': ObjectId(oiid),'a': 'uf', 'd': device})
+        queue_ducksboard_delta('93346')
+
+
 
 class Oi(Base):
 
@@ -226,6 +239,25 @@ class Oi(Base):
         if is_valid_id(oiid):
             cls.objects.update({'_id': ObjectId(oiid), 'del': {'$exists': False}}, {'$set': {attribute['name']: attribute['value']}})
 
+    @classmethod
+    def fav(cls, oiid, user):
+        doc = cls.get({'_id': ObjectId(oiid), 'subscribers': user})
+        if doc:
+            if user not in doc['fav']:
+                doc['fav'].append(user)
+                cls.objects.save(doc)
+                return True
+        return False
+
+    @classmethod
+    def unfav(cls, oiid, user):
+        doc = cls.get({'_id': ObjectId(oiid), 'fav': user})
+        if doc:
+            if user in doc['fav']:
+                doc['fav'].remove(user)
+                cls.objects.save(doc)
+                return True
+        return False
 
 class User(Base):
     conn = Connection(get_config_value('MONGO_URL'))

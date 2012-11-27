@@ -199,3 +199,31 @@ def get_history_oi(oiid, *args, **kwargs):
             resultset.append(Audit.to_dict(doc))
         return jsonify({'resultset': resultset})
     abort(400)
+
+
+@oi.route('/<oiid>/fav', methods=['POST'])
+@crossdomain(origin='*')
+def fav_oi(oiid=None):
+    login_key = request.form['login_key']
+    user = get_user(login_key)
+    if is_valid_id(oiid):
+        if user:
+            if Oi.fav(oiid, user['username']):
+                Audit.fav(user['username'], '', oiid)
+                return jsonify({'result': {'code': 'true', 'msg': 'Object fav'}})
+        abort(401)
+    abort(400)
+
+
+@oi.route('/<oiid>/unfav', methods=['POST'])
+@crossdomain(origin='*')
+def fav_oi(oiid=None):
+    login_key = request.form['login_key']
+    user = get_user(login_key)
+    if is_valid_id(oiid):
+        if user:
+            if Oi.unfav(oiid, user['username']):
+                Audit.unfav(user['username'], '', oiid)
+                return jsonify({'result': {'code': 'true', 'msg': 'Object fav'}})
+        abort(401)
+    abort(400)
