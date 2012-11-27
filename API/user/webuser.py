@@ -237,13 +237,15 @@ def get_items_by_tag(username=None, slug=None, tag=None):
         abort(404)
     # ip = request.remote_addr
     blibb_id = Blibb.get_by_slug(username, slug)
-    cond = {'s': slug, 'u': username}
-    Blibb.increase_view(cond, 'vt')
-    # return blibb_id
-    b = Blitem()
-    items = b.get_items_by_tag(blibb_id['id'], tag)
-    return jsonify(items)
+    if blibb_id:
+        cond = {'s': slug, 'u': username}
+        Blibb.increase_view(cond, 'vt')
+        # return blibb_id
+        b = Blitem()
 
+        items = b.get_items_by_tag(blibb_id['id'], tag)
+        return jsonify(items)
+    return jsonify({'results': '0'})
 
 @mod.route('/<username>/<slug>/<id>', methods=['GET'])
 @crossdomain(origin='*')

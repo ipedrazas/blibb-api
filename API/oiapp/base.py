@@ -16,8 +16,6 @@ class Base(object):
 
     @classmethod
     def get_paginated(cls, *args, **kwargs):
-        current_app.logger.info(args)
-        current_app.logger.info(kwargs)
         if kwargs is not None:
             num = kwargs.get('num', 20)
             page = kwargs.get('page', 1)
@@ -29,20 +27,14 @@ class Base(object):
 
     @classmethod
     def get_all(cls, *args, **kwargs):
-        current_app.logger.info(args)
-        current_app.logger.info(kwargs)
         return cls.get_paginated(*args, **kwargs)
 
     @classmethod
     def get(cls, *args, **kwargs):
-        current_app.logger.info(args)
-        current_app.logger.info(kwargs)
         return cls.objects.find_one(*args, **kwargs)
 
     @classmethod
     def get_as_dict(cls, *args, **kwargs):
-        current_app.logger.info(args)
-        current_app.logger.info(kwargs)
         return cls.objects.find_one(*args, **kwargs)
 
     @classmethod
