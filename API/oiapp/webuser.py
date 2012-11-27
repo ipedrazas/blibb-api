@@ -112,8 +112,8 @@ def get_invitations_by_user(username, *args, **kwargs):
     abort(404)
 
 
-@oiuser.route('/<username>/config/app', methods=['GET'])
-@support_jsonp
-@parse_args
-def get_config(username, *args, **kwargs):
+# @oiuser.route('/<username>/config/app', methods=['GET'])
+# @support_jsonp
+# @parse_args
+# def get_config(username, *args, **kwargs):
 
