@@ -242,6 +242,7 @@ class Oi(Base):
     @classmethod
     def fav(cls, oiid, user):
         doc = cls.get({'_id': ObjectId(oiid), 'subscribers': user})
+        current_app.logger.info(str(doc))
         if doc:
             if user not in doc['fav']:
                 doc['fav'].append(user)

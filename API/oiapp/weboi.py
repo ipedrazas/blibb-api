@@ -217,7 +217,7 @@ def fav_oi(oiid=None):
 
 @oi.route('/<oiid>/unfav', methods=['POST'])
 @crossdomain(origin='*')
-def fav_oi(oiid=None):
+def unfav_oi(oiid=None):
     login_key = request.form['login_key']
     user = get_user(login_key)
     if is_valid_id(oiid):
