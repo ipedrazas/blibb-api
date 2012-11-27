@@ -99,27 +99,6 @@ curl -d "email=ipedrazas@oioi.me&password=ivan" http://api.blibb.net/users/login
 curl -d "login_key=385d6ae2e06c3a81ecb6620d264b61b33aafecdb&name=Androido Loco&contacts=mr.pez@oioi.me,valgreens@oioi.me,i@oioi.me" http://api.blibb.net/ois
 
 curl -d "email=i@i.me&password=i" http://api.blibb.net/users/login
-63569c5550b78d0049b283d1dfe0f75879c3b242
-
-curl -k -d "login_key=63569c5550b78d0049b283d1dfe0f75879c3b242" http://api.blibb.net/ois/50697c0b52d4df6099000000/subscribe
-
-
-f6efb4b9f6baa8c868eaf0ebbdcf846bbd1b1221
-curl -d "login_key=f6efb4b9f6baa8c868eaf0ebbdcf846bbd1b1221&name=Check your email&contacts=mr.pez@oioi.me,ipedrazas@oioi.me,i@oioi.me" http://api.blibb.net/ois
-curl -d "login_key=62e038ec7dacba699862c4454e1898009f11f48e&name=Arrived Home Sound and Safe&contacts=ipedrazas@oioi.me,i@oioi.me" http://api.blibb.net/ois
-
-b689b6486288e9975e72ed9fee27ff207254e9e5
-
-curl -k -d "login_key=b689b6486288e9975e72ed9fee27ff207254e9e5" http://api.blibb.net/ois/5069caa352d4df6092000012/subscribe
-9f13871ecfe01da273a0fa0d607a21125c169b9a
-
-curl -d "login_key=9f13871ecfe01da273a0fa0d607a21125c169b9a&name=iPhone App Installed&contacts=mr.pez@oioi.me,valgreens@oioi.me,i@oioi.me" http://api.blibb.net/ois
-
-curl -d "email=ipedrazas@oioi.me&password=ivan" http://api.blibb.net/users/login
-
-curl -d "login_key=2f52b77131aa1f049bb41dff791c7af3b2b65692&name=Test Subscriptions&contacts=mr.pez@oioi.me,valgreens@oioi.me,i@oioi.me" http://api.blibb.net/ois
-
-curl -d "login_key=b71f3994780c9da7471bcca34cb034f055016f07&name=Deployment Finished&contacts=m.pez@oioi.me,valgreens@oioi.me" http://api.blibb.net/ois
 
 
 curl -k -d "login_key=d9c36d3c6370bf820b58b4dea2efdbbed10cdeaa" http://api.blibb.net/ois/506e8f8d52d4df429900000c/subscribe
@@ -137,7 +116,7 @@ http://public.ducksboard.com/tY5avWuPiJDdVgwKoPjt/
 ###
 ###		New User
 ###
-curl -d "username=i_o&email=io@oioi.me&password=io" http://api.blibb.net/users
+curl -d "username=utest&email=utest@oioi.me&password=utest" http://api.blibb.net/users
 
 
 ###
