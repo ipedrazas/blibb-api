@@ -244,7 +244,7 @@ class Oi(Base):
         doc = cls.get({'_id': ObjectId(oiid), 'subscribers': user})
         current_app.logger.info(str(doc))
         if doc:
-            if user not in doc['fav']:
+            if user not in doc.get('fav',[]):
                 doc['fav'].append(user)
                 cls.objects.save(doc)
                 return True
