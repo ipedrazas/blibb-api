@@ -242,7 +242,6 @@ class Oi(Base):
     @classmethod
     def fav(cls, oiid, user):
         doc = cls.get({'_id': ObjectId(oiid), 'subscribers': user})
-        current_app.logger.info(str(doc))
         favs = doc.get('fav',[])
         if doc:
             if user not in favs:
@@ -256,8 +255,10 @@ class Oi(Base):
     def unfav(cls, oiid, user):
         doc = cls.get({'_id': ObjectId(oiid), 'fav': user})
         if doc:
-            if user in doc['fav']:
-                doc['fav'].remove(user)
+            favs = doc.get('fav',[])
+            if user in favs:
+                favs.remove(user)
+                doc['fav'] = favs
                 cls.objects.save(doc)
                 return True
         return False
