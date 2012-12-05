@@ -238,7 +238,7 @@ class Oi(Base):
         if 'sms' in doc:
             msg = user['username'] + ' ' + name
             for number in doc['sms']:
-                send_sms(number, msg)
+                send_sms(msg, number)
         User.inc_push(username)
         return push
 
