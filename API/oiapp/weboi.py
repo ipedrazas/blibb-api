@@ -146,7 +146,8 @@ def delete_oi(oiid=None):
         doc = Oi.get({'_id': ObjectId(oiid), 'del': {'$exists': False}})
         if doc:
             owner = get_user(login_key)
-            current_app.logger.info(owner['username'] + ' - ' + doc['owner'])
+            current_app.logger.info(str(owner))
+            current_app.logger.info(str(doc))
             if owner['username'] == doc['owner']:
                 Oi.update(oiid, {'name':'del', 'value': True})
                 return jsonify({'result': {'code': 'true', 'msg': 'Object deleted'}})
