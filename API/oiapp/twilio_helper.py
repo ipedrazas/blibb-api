@@ -11,9 +11,8 @@ TWILIO_TOKEN = get_config_value('TWILIO_TOKEN')
 TWILIO_NUMBER = get_config_value('TWILIO_NUMBER')
 
 
-client = TwilioRestClient(TWILIO_ACCOUNT, TWILIO_TOKEN)
-
 def send_sms(msg, number):
+    client = TwilioRestClient(TWILIO_ACCOUNT, TWILIO_TOKEN)
     message = client.sms.messages.create(to=number, from_=TWILIO_NUMBER, body=msg)
 
 
