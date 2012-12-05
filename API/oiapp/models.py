@@ -18,7 +18,7 @@ import redis
 import json
 import re
 from API.oiapp.parse import do_push
-from API.oiapp.twilio import send_sms, is_phone_number
+from API.oiapp.twilio_helper import send_sms, is_phone_number
 
 class Audit(Base):
 
