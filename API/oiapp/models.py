@@ -18,7 +18,7 @@ import redis
 import json
 import re
 from API.oiapp.parse import do_push
-
+from API.oiapp.twilio import send_sms, is_phone_number
 
 class Audit(Base):
 
@@ -115,7 +115,10 @@ class Oi(Base):
                 if u['username'] not in oi['senders']:
                     oi['senders'].append(u['username'])
             else:
-                invited.append(p)
+                if is_phone_number(p):
+                    oi['sms'].append(p)
+                else:
+                    invited.append(p)
 
         oi['invited'] = invited
         cls.objects.save(oi)
@@ -231,6 +234,10 @@ class Oi(Base):
         total_push = len(doc['subscribers'])
         cls.objects.update({'_id': doc['_id']}, {"$inc": {'pushes': 1, 'sent': total_push}, '$set': {"push": last_push}})
         push = do_push(name, channel, username)
+        if 'sms' in doc:
+            msg = user['username'] + ' ' + name
+            for number in doc['sms']:
+                send_sms(number, msg)
         User.inc_push(username)
         return push
 
