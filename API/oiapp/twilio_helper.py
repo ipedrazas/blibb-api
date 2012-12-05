@@ -21,6 +21,7 @@ def is_phone_number(number):
     mobile = number[-10:]
     pattern = re.compile(p)
     res = pattern.search(mobile)
+    print "is_phone_number? " + number
     if res:
         return True
     return False
