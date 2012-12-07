@@ -45,6 +45,23 @@ def new_user():
         Audit.signup(username, '')
         return jsonify({'user': User.to_safe_dict(doc)})
 
+@oiuser.route('/facebook', methods=['POST'])
+@crossdomain(origin='*')
+def new_user_facebook():
+    username = request.form['username']
+    fbid = request.form['fbid']
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
+    timezone = request.form['timezone']
+    email = request.form['email']
+
+    doc = User.create_facebook(username, fbid, email, first_name, last_name, timezone)
+    if 'error' in doc:
+        abort(409, 'User already exists')
+    else:
+        Audit.signup(username, '')
+        return jsonify({'user': User.to_safe_dict(doc)})
+
 
 @oiuser.route('/<username>', methods=['GET'])
 @support_jsonp
@@ -85,6 +102,14 @@ def do_login():
     Audit.login(username, '')
     return jsonify(User.to_safe_dict(user)) if user else abort(401)
 
+
+@oiuser.route('/loginfb', methods=['POST'])
+@crossdomain(origin='*')
+def do_login_facebook():
+    username = request.form['fbid']
+    user = User.authenticate(username, pwd)
+    Audit.login(username, '')
+    return jsonify(user) if user else abort(401)
 
 @oiuser.route('/logout', methods=['POST'])
 @crossdomain(origin='*')

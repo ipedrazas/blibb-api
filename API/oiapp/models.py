@@ -346,6 +346,27 @@ class User(Base):
             user['_id'] = cls.objects.insert(user)
             return user
 
+    @classmethod
+    def create_facebook(cls, username, fbid, email, first_name, last_name, timezone):
+        # check if the user is nt registered already
+        if cls.is_oi_user(username) or cls.is_oi_user(email):
+            return {'error': 'User already exists'}
+        else:
+            user = dict()
+            user['username'] = username
+            user['email'] = email
+            user['sub_email'] = [email]
+            user['created_at'] = datetime.now()
+            # salt = sha1(username + str(datetime.now())).hexdigest()
+            # user['salt'] = salt
+            # user['password'] = sha1(salt + password).hexdigest()
+            user['first_name'] = first_name
+            user['last_name'] = last_name
+            user['fbid'] = fbid
+            user['timezone'] = timezone
+            user['role'] = ['user']
+            user['_id'] = cls.objects.insert(user)
+            return user
 
     @classmethod
     def to_safe_dict(cls, obj):
@@ -383,6 +404,17 @@ class User(Base):
                 user = cls.to_safe_dict(stUser)
                 user['key'] = cls.set_key(stUser)
                 return user
+        return False
+
+    @classmethod
+    def login_facebook(cls, facebook_id):
+        stUser = cls.get({'fbid': facebook_id})
+        if stUser is not None:
+            stUser['last_access'] = datetime.now()
+            cls.objects.save(stUser)
+            user = cls.to_safe_dict(stUser)
+            user['key'] = cls.set_key(stUser)
+            return user
         return False
 
     @classmethod
