@@ -56,7 +56,7 @@ def new_user_facebook():
     email = request.form['email']
 
     doc = User.create_facebook(username, fbid, email, first_name, last_name, timezone)
-    user = User.login_facebook(username)
+    user = User.login_facebook(fbid)
     if 'error' in doc:
         abort(409, 'User already exists')
     else:
