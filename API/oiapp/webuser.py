@@ -56,11 +56,12 @@ def new_user_facebook():
     email = request.form['email']
 
     doc = User.create_facebook(username, fbid, email, first_name, last_name, timezone)
+    user = User.login_facebook(username)
     if 'error' in doc:
         abort(409, 'User already exists')
     else:
         Audit.signup(username, '')
-        return jsonify({'user': User.to_safe_dict(doc)})
+        return jsonify(user) if user else abort(401)
 
 
 @oiuser.route('/<username>', methods=['GET'])
@@ -107,7 +108,7 @@ def do_login():
 @crossdomain(origin='*')
 def do_login_facebook():
     username = request.form['fbid']
-    user = User.authenticate(username, pwd)
+    user = User.login_facebook(username)
     Audit.login(username, '')
     return jsonify(user) if user else abort(401)
 
