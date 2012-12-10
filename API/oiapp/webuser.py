@@ -54,11 +54,12 @@ def new_user_facebook():
     last_name = request.form['last_name']
     timezone = request.form['timezone']
     email = request.form['email']
-    img = "http://graph.facebook.com/" + request.form[] + "/picture"
+    img = "http://graph.facebook.com/" + request.form['fbid'] + "/picture"
 
     doc = User.create_facebook(username, fbid, email, first_name, last_name, timezone, img)
     user = User.login_facebook(fbid)
     if 'error' in doc:
+        print str(doc)
         abort(409, 'User already exists')
     else:
         Audit.signup(username, '')
