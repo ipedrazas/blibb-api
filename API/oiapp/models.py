@@ -122,6 +122,11 @@ class Oi(Base):
 
         oi['invited'] = invited
         cls.objects.save(oi)
+        name = User.get_by_name(oi['owner'])
+        if 'first_name' in name:
+            full_name = '%s %s' % (name['first_name'], name['last_name'] )
+        else:
+            full_name = oi['owner']
         send_invitations(oi)
 
 
