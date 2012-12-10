@@ -127,7 +127,7 @@ class Oi(Base):
             full_name = '%s %s' % (name['first_name'], name['last_name'] )
         else:
             full_name = oi['owner']
-        send_invitations(oi)
+        send_invitations(oi, full_name)
 
 
     @classmethod
