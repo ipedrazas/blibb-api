@@ -347,7 +347,7 @@ class User(Base):
             return user
 
     @classmethod
-    def create_facebook(cls, username, fbid, email, first_name, last_name, timezone):
+    def create_facebook(cls, username, fbid, email, first_name, last_name, timezone, img):
         # check if the user is nt registered already
         if cls.is_oi_user(username) or cls.is_oi_user(email):
             return {'error': 'User already exists'}
@@ -357,9 +357,7 @@ class User(Base):
             user['email'] = email
             user['sub_email'] = [email]
             user['created_at'] = datetime.now()
-            # salt = sha1(username + str(datetime.now())).hexdigest()
-            # user['salt'] = salt
-            # user['password'] = sha1(salt + password).hexdigest()
+            user['img'] = img
             user['first_name'] = first_name
             user['last_name'] = last_name
             user['fbid'] = fbid
