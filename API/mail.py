@@ -14,13 +14,13 @@ from os.path import join, abspath, dirname
 def read_file(filename):
     path = abspath(join(dirname(__file__), '.')) + filename
     print path
-    f = open(path, 'r')
+    f = open(path, encoding='utf-8', mode='r')
     return f.read()
 
 def send_invitations(oi, full_name):
     txt_mail = 'Invitation to Join Oi!'
     mail = read_file('/oiapp/mail.html')
-    html_mail = mail % (full_name, oi['_id'], oi['name'], oi['comments'], oi['_id'])
+    html_mail = mail.decode('utf-8') % (full_name, oi['_id'], oi['name'], oi['comments'], oi['_id'])
     subject = full_name + " wants to invite you to join " + oi['name']
     mail = {'from': "info@oioi.me", 'from_name': 'Oi!', 'subject': subject, 'txt_body': txt_mail, 'html_body': html_mail, 'to_name': ''}
     for p in oi['invited']:
