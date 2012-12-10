@@ -39,7 +39,8 @@ def new_oi():
     if owner:
         contacts = request.form['contacts']
         name = request.form['name']
-        if 'commnents' in request.form['comments']
+        if 'commnents' in request.form['comments']:
+            comments = request.form['comments']
         if 'tags' in request.form:
             tags = request.form['tags']
         current_app.logger.info(owner)
