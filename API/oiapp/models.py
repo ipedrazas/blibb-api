@@ -126,7 +126,7 @@ class Oi(Base):
 
 
     @classmethod
-    def create(cls, owner, name, contacts, tags):
+    def create(cls, owner=owner, name=name, contacts=contacts, tags=tags, comments=comments):
         ## check name
         oi_name = Oi.get({'name': name, 'owner': owner, 'del': {'$exists': False}})
         tag_list = []
@@ -150,6 +150,7 @@ class Oi(Base):
             oi['channel'] = '%s-%s-%s' % (cls.parse_string(owner), cls.parse_string(name), rnd_id)
             oi['senders'] = [owner]
             oi['subscribers'] = [owner]
+            oi['comments'] = comments
 
             if tags is not None:
                 if ',' in tags:

@@ -39,10 +39,11 @@ def new_oi():
     if owner:
         contacts = request.form['contacts']
         name = request.form['name']
+        if 'commnents' in request.form['comments']
         if 'tags' in request.form:
             tags = request.form['tags']
         current_app.logger.info(owner)
-        doc = Oi.create(owner['username'], name, contacts, tags)
+        doc = Oi.create(owner['username'], name, contacts, tags, comments)
         if '_id' in doc:
             Audit.new_oi(owner, doc['_id'], '')
             return jsonify({'oi': Oi.to_dict(doc)})
@@ -225,6 +226,6 @@ def unfav_oi(oiid=None):
         if user:
             if Oi.unfav(oiid, user['username']):
                 Audit.unfav(user['username'], '', oiid)
-                return jsonify({'result': {'code': 'true', 'msg': 'Object fav'}})
+                return jsonify({'result': {'code': 'true', 'msg': 'Object unfav'}})
         abort(401)
     abort(400)
