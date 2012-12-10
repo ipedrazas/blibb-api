@@ -1,8 +1,6 @@
-#
-#
-##
-#
-#
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 
 from flask import current_app
 import sendgrid
@@ -11,10 +9,11 @@ import re
 from os.path import join, abspath, dirname
 
 
+
 def read_file(filename):
     path = abspath(join(dirname(__file__), '.')) + filename
     print path
-    f = open(path, encoding='utf-8', mode='r')
+    f = codecs.open(path, encoding='utf-8', mode='r')
     return f.read()
 
 def send_invitations(oi, full_name):
