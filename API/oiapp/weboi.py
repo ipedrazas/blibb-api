@@ -40,7 +40,7 @@ def new_oi():
         contacts = request.form['contacts']
         name = request.form['name']
         comments = ''
-        if 'commnents' in request.form['comments']:
+        if 'comments' in request.form['comments']:
             comments = request.form['comments']
         if 'tags' in request.form:
             tags = request.form['tags']
