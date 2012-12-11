@@ -39,12 +39,8 @@ def new_oi():
     if owner:
         contacts = request.form['contacts']
         name = request.form['name']
-        comments = ''
-        if 'comments' in request.form['comments']:
-            comments = request.form['comments']
-        if 'tags' in request.form:
-            tags = request.form['tags']
-        current_app.logger.info(owner)
+        comments = request.form['comments']
+        tags = request.form['tags']
         doc = Oi.create(owner['username'], name, contacts, tags, comments)
         if '_id' in doc:
             Audit.new_oi(owner, doc['_id'], '')
