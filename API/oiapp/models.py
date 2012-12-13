@@ -7,7 +7,6 @@
 from flask import current_app
 from datetime import datetime
 
-# from bson.objectid import ObjectId
 from pymongo import Connection
 from bson.objectid import ObjectId
 from API.oiapp.base import Base
@@ -98,7 +97,11 @@ class Audit(Base):
         cls.objects.insert({'t': now, 'u': user, 'o': ObjectId(oiid),'a': 'uf', 'd': device})
         queue_ducksboard_delta('93346')
 
-
+    @classmethod
+    def logout(cls, user, device):
+        now = datetime.now()
+        cls.objects.insert({'t': now, 'u': user, 'a': 'lo', 'd': device})
+        queue_ducksboard_delta('99510')
 
 class Oi(Base):
 

@@ -149,6 +149,7 @@ def delete_oi(oiid=None):
             current_app.logger.info(str(doc))
             if owner['username'] == doc['owner']:
                 Oi.update(oiid, {'name':'del', 'value': True})
+                Audit.delete(owner['username'],'',oiid)
                 return jsonify({'result': {'code': 'true', 'msg': 'Object deleted'}})
             else:
                 abort(401)
