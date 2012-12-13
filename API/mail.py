@@ -7,6 +7,7 @@ import sendgrid
 from API.utils import get_config_value
 import re
 from os.path import join, abspath, dirname
+from API.oiapp.models import User
 
 
 
@@ -23,7 +24,13 @@ def send_invitations(oi, full_name):
     subject = full_name + " wants to invite you to join " + oi['name']
     mail = {'from': "info@oioi.me", 'from_name': 'Oi!', 'subject': subject, 'txt_body': txt_mail, 'html_body': html_mail, 'to_name': ''}
     for p in oi['invited']:
-        if is_valid_email(p):
+        # if is_valid_email(p):
+        u = User.is_oi_user(p)
+        if u:
+            if u.get('mail_subscription', False):
+                mail['to_address'] = p
+                send_invitation_mail(mail)
+        else:
             mail['to_address'] = p
             send_invitation_mail(mail)
 
