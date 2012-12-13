@@ -7,7 +7,18 @@ import sendgrid
 from API.utils import get_config_value
 import re
 from os.path import join, abspath, dirname
-from API.oiapp.models import User
+from pymongo import Connection
+
+
+
+def is_oi_user(cls, email):
+    conn = Connection(get_config_value('MONGO_URL'))
+    db = conn['oime']
+    objects = db['users']
+    u = objects.find_one({'$or': [{'sub_email': email.strip()}, {'username': email.strip()}]})
+    if u is not None:
+        return u
+    return False
 
 
 
@@ -25,7 +36,7 @@ def send_invitations(oi, full_name):
     mail = {'from': "info@oioi.me", 'from_name': 'Oi!', 'subject': subject, 'txt_body': txt_mail, 'html_body': html_mail, 'to_name': ''}
     for p in oi['invited']:
         # if is_valid_email(p):
-        u = User.is_oi_user(p)
+        u = is_oi_user(p)
         if u:
             if u.get('mail_subscription', False):
                 mail['to_address'] = p
