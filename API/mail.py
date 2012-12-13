@@ -11,7 +11,7 @@ from pymongo import Connection
 
 
 
-def is_oi_user(cls, email):
+def is_oi_user(email):
     conn = Connection(get_config_value('MONGO_URL'))
     db = conn['oime']
     objects = db['users']
