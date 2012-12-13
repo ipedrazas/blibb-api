@@ -47,6 +47,12 @@ class Audit(Base):
         queue_ducksboard_delta('81209')
 
     @classmethod
+    def login_facebook(cls, user, device):
+        now = datetime.now()
+        cls.objects.insert({'t': now, 'u': user, 'a': 'fl', 'd': device})
+        queue_ducksboard_delta('99437')
+
+    @classmethod
     def new_oi(cls, user, oiid, device):
         if is_valid_id(oiid):
             now = datetime.now()

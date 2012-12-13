@@ -111,7 +111,7 @@ def do_login():
 def do_login_facebook():
     username = request.form['fbid']
     user = User.login_facebook(username)
-    Audit.login(username, '')
+    Audit.login_facebook(username, '')
     return jsonify(user) if user else abort(401)
 
 @oiuser.route('/logout', methods=['POST'])
