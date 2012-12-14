@@ -125,6 +125,7 @@ def do_logout():
 @oiuser.route('/mail/subs', methods=['POST'])
 @crossdomain(origin='*')
 def set_mail_subscription():
+    login_key = request.form['login_key']
     res = User.set_mail_subscription(login_key)
     return jsonify({'subscription': res})
 
