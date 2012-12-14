@@ -454,7 +454,7 @@ class User(Base):
         r = cls.get_redis()
         if r:
             return json.loads(r)
-    return None
+        return None
 
     @classmethod
     def logout(self, key):
