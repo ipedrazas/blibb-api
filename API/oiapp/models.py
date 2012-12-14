@@ -370,6 +370,7 @@ class User(Base):
             user['salt'] = salt
             user['password'] = sha1(salt + password).hexdigest()
             user['role'] = ['user']
+            user['m_subs'] = True
             if device:
                 user['devices'] = [device]
             user['_id'] = cls.objects.insert(user)
