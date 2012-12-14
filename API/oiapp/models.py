@@ -300,13 +300,18 @@ class User(Base):
         return False
 
     @classmethod
-    def set_mail_subscription(cls, user):
-        if user:
-            if 'm_subs' in user:
-                subs = not user['m_subs']
-            else:
-                subs = True
-            cls.objects.update({'username': user['username']}, {'$set': {"m_subs": subs}})
+    def set_mail_subscription(cls, login_key):
+        subs = False
+        if login_key:
+            ruser = cls.get_user(login_key)
+            if ruser:
+                user = cls.get_by_name(ruser['username'])
+                if 'm_subs' in user:
+                    subs = not user['m_subs']
+                else:
+                    subs = True
+                cls.objects.update({'username': user['username']}, {'$set': {"m_subs": subs}})
+        return subs
 
     @classmethod
     def inc_push(cls, username):

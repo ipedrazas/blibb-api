@@ -6,7 +6,7 @@ from flask import Blueprint, request, abort, jsonify, g, current_app, render_tem
 from API.oiapp.models import User, Audit, Oi
 from API.event.event import Event
 
-from API.utils import get_user, get_user_name
+from API.utils import get_user_name
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
 from API.decorators import parse_args
@@ -125,11 +125,8 @@ def do_logout():
 @oiuser.route('/mail/subs', methods=['POST'])
 @crossdomain(origin='*')
 def set_mail_subscription():
-    login_key = request.form['login_key']
-    user = get_user(login_key)
-    current_app.logger.info('set_mail_subscription' + ":" + str(user) + ":" + login_key)
-    User.set_mail_subscription(user)
-    return jsonify({'subscription': not user.get('m_subs', False)})
+    res = User.set_mail_subscription(login_key)
+    return jsonify({'subscription': res})
 
 
 
