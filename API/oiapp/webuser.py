@@ -68,7 +68,7 @@ def new_user_facebook():
 
 @oiuser.route('/<username>', methods=['GET'])
 @support_jsonp
-def get_user(username):
+def get_oi_user(username):
     doc = User.get({'$or': [{'username': username.strip()}, {'email': username.strip()}]})
     return jsonify({'user': User.to_safe_dict(doc)})
 
