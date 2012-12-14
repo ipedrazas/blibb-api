@@ -305,6 +305,7 @@ class User(Base):
         if login_key:
             ruser = cls.get_user(login_key)
             if ruser:
+                current_app.logger.info(ruser)
                 user = cls.get_by_name(ruser['username'])
                 if 'm_subs' in user:
                     subs = not user['m_subs']
@@ -451,7 +452,9 @@ class User(Base):
     @classmethod
     def get_user(cls, key):
         r = cls.get_redis()
-        return r.get(key)
+        if r:
+        return json.loads(r)
+    return None
 
     @classmethod
     def logout(self, key):
