@@ -199,7 +199,14 @@ def get_history_oi(oiid, *args, **kwargs):
         for doc in docs:
             resultset.append(Audit.to_dict(doc))
         return jsonify({'resultset': resultset})
+    else:
+        docs = Audit.get_all({'u': oiid}, **kwargs)
+        for doc in docs:
+            resultset.append(Audit.to_dict(doc))
+        return jsonify({'resultset': resultset})
     abort(400)
+
+
 
 
 @oi.route('/<oiid>/fav', methods=['POST'])

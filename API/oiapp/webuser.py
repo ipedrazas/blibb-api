@@ -122,6 +122,16 @@ def do_logout():
     return jsonify(User.to_safe_dict(user)) if user else abort(401)
 
 
+@oiuser.route('/mail/subs', methods=['POST'])
+@crossdomain(origin='*')
+def do_logout():
+    login_key = request.form['login_key']
+    user = User.logout(login_key)
+    User.set_mail_subscription(user)
+    return jsonify({'subscription': not user.get('m_subs', False)})
+
+
+
 @oiuser.route('/<username>/invitations', methods=['GET'])
 @support_jsonp
 @parse_args

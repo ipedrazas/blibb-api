@@ -101,7 +101,7 @@ class Audit(Base):
     def logout(cls, user, device):
         now = datetime.now()
         cls.objects.insert({'t': now, 'u': user, 'a': 'lo', 'd': device})
-        queue_ducksboard_delta('99510')
+        queue_ducksboard_delta('99716')
 
 class Oi(Base):
 
@@ -299,6 +299,11 @@ class User(Base):
             return u
         return False
 
+    @classmethod
+    def set_mail_subscription(cls, user):
+        if user:
+            subs = not user.get('m_subs', False)
+            cls.objects.update({'username': username}, {'$set': {"m_subs": subs}})
 
     @classmethod
     def inc_push(cls, username):

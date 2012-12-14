@@ -38,7 +38,7 @@ def send_invitations(oi, full_name):
         # if is_valid_email(p):
         u = is_oi_user(p)
         if u:
-            if u.get('mail_subscription', False):
+            if u.get('m_subs', False):
                 mail['to_address'] = p
                 send_invitation_mail(mail)
         else:
