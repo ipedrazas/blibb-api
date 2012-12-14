@@ -306,7 +306,7 @@ class User(Base):
                 subs = not user['m_subs']
             else:
                 subs = True
-            cls.objects.update({'username': username}, {'$set': {"m_subs": subs}})
+            cls.objects.update({'username': user['username']}, {'$set': {"m_subs": subs}})
 
     @classmethod
     def inc_push(cls, username):
