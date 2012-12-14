@@ -302,7 +302,10 @@ class User(Base):
     @classmethod
     def set_mail_subscription(cls, user):
         if user:
-            subs = not user.get('m_subs', False)
+            if 'm_subs' in user:
+                subs = not user['m_subs']
+            else:
+                subs = True
             cls.objects.update({'username': username}, {'$set': {"m_subs": subs}})
 
     @classmethod

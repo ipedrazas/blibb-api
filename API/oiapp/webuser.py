@@ -127,6 +127,7 @@ def do_logout():
 def set_mail_subscription():
     login_key = request.form['login_key']
     user = get_user(login_key)
+    current_app.logger.info(set_mail_subscription + ":" + str(user))
     User.set_mail_subscription(user)
     return jsonify({'subscription': not user.get('m_subs', False)})
 
