@@ -6,7 +6,7 @@ from flask import Blueprint, request, abort, jsonify, g, current_app, render_tem
 from API.oiapp.models import User, Audit, Oi
 from API.event.event import Event
 
-from API.utils import get_user_name, get_user
+from API.utils import get_user, get_user_name
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
 from API.decorators import parse_args
