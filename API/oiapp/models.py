@@ -453,7 +453,7 @@ class User(Base):
     def get_user(cls, key):
         r = cls.get_redis()
         if r:
-        return json.loads(r)
+            return json.loads(r)
     return None
 
     @classmethod
