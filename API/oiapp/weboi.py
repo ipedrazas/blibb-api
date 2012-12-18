@@ -42,7 +42,7 @@ def new_oi():
         comments = request.form['comments']
         tags = request.form['tags']
         gp = request.form['group']
-        if gp == 1:
+        if gp is 1 or gp is '1':
             group = True
         else:
             group = False
