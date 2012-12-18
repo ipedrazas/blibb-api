@@ -46,7 +46,7 @@ def new_oi():
             group = True
         else:
             group = False
-        current_app.logger.info('group: ' + str(group))
+        current_app.logger.info('group: ' + str(group) + ' ' + str(gp))
         doc = Oi.create(owner['username'], name, contacts, tags, comments, group)
         if '_id' in doc:
             Audit.new_oi(owner, doc['_id'], '')
