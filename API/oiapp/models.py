@@ -140,7 +140,7 @@ class Oi(Base):
 
 
     @classmethod
-    def create(cls, owner, name, contacts, tags, comments):
+    def create(cls, owner, name, contacts, tags, comments, group=False):
         ## check name
         oi_name = Oi.get({'name': name, 'owner': owner, 'del': {'$exists': False}})
         tag_list = []
@@ -165,6 +165,7 @@ class Oi(Base):
             oi['senders'] = [owner]
             oi['subscribers'] = [owner]
             oi['comments'] = comments
+            oi['group'] = group
 
             if tags is not None:
                 if ',' in tags:
@@ -213,8 +214,9 @@ class Oi(Base):
             if guest in user['sub_email']:
                 cls.remove_user(guests, user)
                 doc['invited'] = guests
-                if username not in doc['senders']:
-                    doc['senders'].append(username)
+                if doc.get('group', False):
+                    if username not in doc['senders']:
+                        doc['senders'].append(username)
                 if username not in doc['subscribers']:
                     doc['subscribers'].append(username)
                 cls.objects.save(doc)
@@ -285,6 +287,7 @@ class Oi(Base):
                 cls.objects.save(doc)
                 return True
         return False
+
 
 class User(Base):
     conn = Connection(get_config_value('MONGO_URL'))
