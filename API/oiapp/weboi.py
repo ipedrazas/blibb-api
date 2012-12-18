@@ -42,12 +42,8 @@ def new_oi():
         comments = request.form['comments']
         tags = request.form['tags']
         gp = int(request.form['group'])
+        group = True if gp == 1 else False
 
-        if gp == 1:
-            group = True
-        else:
-            group = False
-        current_app.logger.info('group: ' + str(group) + ' ' + str(gp))
         doc = Oi.create(owner['username'], name, contacts, tags, comments, group)
         if '_id' in doc:
             Audit.new_oi(owner, doc['_id'], '')

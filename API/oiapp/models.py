@@ -212,15 +212,14 @@ class Oi(Base):
         username = user['username']
         for guest in guests:
             if guest in user['sub_email']:
-                cls.remove_user(guests, user)
-                doc['invited'] = guests
+                guests.remove(guest)
                 if doc.get('group', False):
                     if username not in doc['senders']:
                         doc['senders'].append(username)
                 if username not in doc['subscribers']:
                     doc['subscribers'].append(username)
-                cls.objects.save(doc)
-                return True
+        cls.objects.save(doc)
+        return True
 
     @classmethod
     def unsubscribe(cls, oiid, user):
