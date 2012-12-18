@@ -67,6 +67,7 @@ def update_oi():
         return jsonify({'result': {'code': 1, 'msg': 'Object updated'}})
     abort(401)
 
+
 @oi.route('', methods=['GET'])
 @support_jsonp
 @parse_args
@@ -172,7 +173,21 @@ def subscribe_oi(oiid=None):
             if email is not None:
                 User.add_subscrived_email(user, email)
             Audit.subscribe(user['username'], '', oiid)
-            return jsonify({'subscribed': oiid})
+            return jsonify({'result': {'code': 'true', 'msg': 'Object subscribed'}})
+        else:
+            abort(401)
+    abort(400)
+
+@oi.route('/<oiid>/reject', methods=['POST'])
+@crossdomain(origin='*')
+def reject_oi(oiid=None):
+    login_key = request.form['login_key']
+    email = request.form['email']
+    user = get_user(login_key)
+    if is_valid_id(oiid):
+        if Oi.reject(oiid, user):
+            Audit.reject(user['username'], '', oiid)
+            return jsonify({'result': {'code': 'true', 'msg': 'Object rejected'}})
         else:
             abort(401)
     abort(400)

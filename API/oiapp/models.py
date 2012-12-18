@@ -66,6 +66,14 @@ class Audit(Base):
             queue_ducksboard_delta('81296')
 
     @classmethod
+    def reject(cls, user, device, oiid):
+        if is_valid_id(oiid):
+            now = datetime.now()
+            cls.objects.insert({'t': now, 'u': user, 'o': ObjectId(oiid), 'a': 's', 'r': device})
+            queue_ducksboard_delta('81296')
+
+
+    @classmethod
     def unsubscribe(cls, user, device, oiid):
         if is_valid_id(oiid):
             now = datetime.now()
