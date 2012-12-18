@@ -41,8 +41,9 @@ def new_oi():
         name = request.form['name']
         comments = request.form['comments']
         tags = request.form['tags']
-        gp = request.form['group']
-        if gp is 1 or gp is '1':
+        gp = int(request.form['group'])
+
+        if gp == 1:
             group = True
         else:
             group = False
