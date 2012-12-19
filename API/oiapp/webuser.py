@@ -45,6 +45,30 @@ def new_user():
         Audit.signup(username, '')
         return jsonify({'user': User.to_safe_dict(doc)})
 
+@oiuser.route('/<username>', methods=['POST'])
+@crossdomain(origin='*')
+def update(username):
+    login_key = request.form['login_key']
+    user = get_user(login_key)
+    if username == user['username']:
+        first_name = request.form.get('first_name', None)
+        last_name = request.form.get('last_name', None)
+        timezone = request.form.get('timezone', None)
+        img_url = request.form.get('img_url', None)
+        updated_user = {}
+        if first_name:
+            updated_user['first_name'] = first_name
+        if last_name:
+            updated_user['last_name'] = last_name
+        if timezone:
+            updated_user['timezone'] = timezone
+        if img_url:
+            updated_user['img'] = img_url
+        User.update(username, updated_user)
+    else:
+        abort(401)
+
+
 @oiuser.route('/facebook', methods=['POST'])
 @crossdomain(origin='*')
 def new_user_facebook():

@@ -303,6 +303,12 @@ class User(Base):
 
 
     @classmethod
+    def update(username, updated_user):
+        if username:
+             cls.objects.update({'username': user['username']}, {'$set': updated_user})
+
+
+    @classmethod
     def is_oi_user(cls, email):
         u = cls.get({'$or': [{'sub_email': email.strip()}, {'username': email.strip()}]})
         if u is not None:
