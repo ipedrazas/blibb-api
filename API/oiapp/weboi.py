@@ -41,7 +41,7 @@ def new_oi():
         name = request.form['name']
         comments = request.form['comments']
         tags = request.form['tags']
-        gp = int(request.form['group'])
+        gp = int(request.form.get('group', 0))
         group = True if gp == 1 else False
 
         doc = Oi.create(owner['username'], name, contacts, tags, comments, group)
