@@ -1,0 +1,13 @@
+/users                          [POST]  ==>     New user
+/users                          [GET]   ==>     get all users
+
+/users/facebook                 [POST]  ==>     New user by Facebook
++ /users/login                    [POST]  ==>     login
+/users/loginfb           [POST]  ==>     login by facebook
+
+/users/<username>               [GET]   ==>     Get user
+/users/<username>               [POST]  ==>     Update User
+/users/<username>/password      [POST]  ==>     change password
+/users/<username>/invitations   [GET]   ==>     get invitations by user
++ /users/<username>/logout        [POST]  ==>     logout
+/users/<username>/mailsubs      [POST]  ==>     set Mail Subscription settings

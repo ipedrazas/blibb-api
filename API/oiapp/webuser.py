@@ -73,7 +73,8 @@ def update(username):
 
 @oiuser.route('/facebook', methods=['POST'])
 @crossdomain(origin='*')
-def new_user_facebook():
+def new_user_facebook():current_app.logger.info('update')
+    current_app.logger.info('facebook')
     username = request.form['username']
     fbid = request.form['fbid']
     first_name = request.form['first_name']
@@ -142,6 +143,7 @@ def do_login_facebook():
     Audit.login_facebook(username, '')
     return jsonify(user) if user else abort(401)
 
+
 @oiuser.route('/<username>/logout', methods=['POST'])
 @crossdomain(origin='*')
 def do_logout(username):
@@ -151,12 +153,15 @@ def do_logout(username):
         return jsonify(User.to_safe_dict(user)) if user else abort(401)
     abort(401)
 
-@oiuser.route('/mail/subs', methods=['POST'])
+@oiuser.route('/<username>/mailsubs', methods=['POST'])
 @crossdomain(origin='*')
-def set_mail_subscription():
+def set_mail_subscription(username):
     login_key = request.form['login_key']
-    res = User.set_mail_subscription(login_key)
-    return jsonify({'subscription': res})
+    user = get_user(login_key)
+    if username == user['username']:
+        res = User.set_mail_subscription(user)
+        return jsonify({'subscription': res})
+    abort(401)
 
 
 
