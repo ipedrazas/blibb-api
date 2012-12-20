@@ -494,7 +494,7 @@ class User(Base):
     @classmethod
     def set_redis_key(cls, key, value):
         r = cls.get_redis()
-        r.set(userkey, json.dumps(value))
+        r.set(key, json.dumps(value))
 
     @classmethod
     def get_redis(self):
