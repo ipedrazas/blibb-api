@@ -122,7 +122,7 @@ def change_password(username):
         old_password = request.form.get('old_password', False)
         res = User.change_password(username, pwd, old_password)
         current_app.logger.info(str(res))
-        return jsonify(User.to_safe_dict(res)) if res else abort(401)
+        return jsonify({'result': {'code': 'true', 'msg': 'Password updated'}}) if res else abort(401)
     abort(401)
 
 @oiuser.route('/login', methods=['POST'])
