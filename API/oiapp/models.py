@@ -330,10 +330,7 @@ class User(Base):
     @classmethod
     def set_mail_subscription(cls, user):
         current_app.logger.info('set_mail_subscription' + ':' + str(user))
-        if 'm_subs' in user:
-            subs = not user['m_subs']
-        else:
-            subs = True
+        subs = user.get('m_subs', True)
         cls.objects.update({'username': user['username']}, {'$set': {"m_subs": subs}})
         return subs
 
