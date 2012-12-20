@@ -432,7 +432,7 @@ class User(Base):
         stUser = cls.get({'username': username.strip()})
         # False only if the user has been created from Facebook
         # and doesn't have any password set yet
-        if stUser.get('password', False):
+        if stUser.get('password', False) and old_password:
             shPwd = sha1(stUser['salt'] + old_password)
             if stUser['password'] == shPwd.hexdigest():
                 stUser['password'] = shPwd.hexdigest()
