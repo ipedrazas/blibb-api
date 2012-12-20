@@ -329,7 +329,7 @@ class User(Base):
 
     @classmethod
     def set_mail_subscription(cls, user):
-        current_app.logger.info(set_mail_subscription + ':' + str(user))
+        current_app.logger.info('set_mail_subscription' + ':' + str(user))
         if 'm_subs' in user:
             subs = not user['m_subs']
         else:
