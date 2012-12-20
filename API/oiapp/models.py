@@ -328,10 +328,11 @@ class User(Base):
         return False
 
     @classmethod
-    def set_mail_subscription(cls, user):
+    def set_mail_subscription(cls, login_key, username):
         current_app.logger.info('set_mail_subscription' + ':' + str(user))
-        subs = user.get('m_subs', False)
-        res = (not subs)
+        user = cls.get({'username': username})
+        user['m_subs'] = not user.get('m_subs', False)
+        set_redis_key(login_key, cls.to_safe_dict(user))
         cls.objects.update({'username': user['username']}, {'$set': {"m_subs": res}})
         return res
 
@@ -487,10 +488,14 @@ class User(Base):
 
     @classmethod
     def set_key(cls, user):
-        r = cls.get_redis()
         userkey = sha1(user['email'] + user['last_access'] + str(datetime.now())).hexdigest()
-        r.set(userkey, json.dumps(user))
+        cls.set_redis_key(userkey, user)
         return userkey
+
+    @classmethod
+    def set_redis_key(cls, key, value):
+        r = cls.get_redis()
+        r.set(userkey, json.dumps(value))
 
     @classmethod
     def get_redis(self):

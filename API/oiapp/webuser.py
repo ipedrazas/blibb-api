@@ -159,10 +159,8 @@ def do_logout(username):
 def set_mail_subscription(username):
     login_key = request.form['login_key']
     user = get_user(login_key)
-    current_app.logger.info(user)
-    current_app.logger.info(username)
     if username == user['username']:
-        res = User.set_mail_subscription(user)
+        res = User.set_mail_subscription(login_key, username)
         return jsonify({'subscription': res})
     abort(401)
 
