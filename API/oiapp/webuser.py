@@ -116,13 +116,14 @@ def get_users(*args, **kwargs):
 def change_password(username):
     login_key = request.form['login_key']
     user = User.get_user(login_key)
-    if username == user.get('username', ''):
-        pwd = request.form['password']
-        now = str(datetime.now())
-        old_password = request.form.get('old_password', False)
-        res = User.change_password(username, pwd, old_password)
-        current_app.logger.info(str(res))
-        return jsonify({'result': {'code': 'true', 'msg': 'Password updated'}}) if res else abort(401)
+    if user:
+        if username == user.get('username', ''):
+            pwd = request.form['password']
+            now = str(datetime.now())
+            old_password = request.form.get('old_password', False)
+            res = User.change_password(username, pwd, old_password)
+            current_app.logger.info(str(res))
+            return jsonify({'result': {'code': 'true', 'msg': 'Password updated'}}) if res else abort(401)
     abort(401)
 
 @oiuser.route('/login', methods=['POST'])
