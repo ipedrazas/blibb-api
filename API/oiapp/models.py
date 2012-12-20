@@ -329,7 +329,6 @@ class User(Base):
 
     @classmethod
     def set_mail_subscription(cls, login_key, username):
-        current_app.logger.info('set_mail_subscription' + ':' + str(user))
         user = cls.get({'username': username})
         user['m_subs'] = not user.get('m_subs', False)
         set_redis_key(login_key, cls.to_safe_dict(user))
