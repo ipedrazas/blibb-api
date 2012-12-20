@@ -65,6 +65,7 @@ def update(username):
         if img_url:
             updated_user['img'] = img_url
         User.update(username, updated_user)
+        return jsonify({'result': {'code': 1, 'msg': 'Object updated'}})
     else:
         abort(401)
 
