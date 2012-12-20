@@ -333,7 +333,7 @@ class User(Base):
         user['m_subs'] = not user.get('m_subs', False)
         cls.set_redis_key(login_key, cls.to_safe_dict(user))
         cls.objects.update({'username': user['username']}, {'$set': {"m_subs": user['m_subs']}})
-        return res
+        return user['m_subs']
 
     @classmethod
     def inc_push(cls, username):
