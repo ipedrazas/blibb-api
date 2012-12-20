@@ -115,13 +115,13 @@ def get_users(*args, **kwargs):
 @crossdomain(origin='*')
 def change_password(username):
     login_key = request.form['login_key']
-    user_name = User.get_user(login_key)
-    if username == user_name:
+    user = User.get_user(login_key)
+    if username == user.get('username', False):
         pwd = request.form['password']
         now = str(datetime.now())
         old_password = request.form.get('old_password', now)
-        user = User.change_password(username, pwd, old_password)
-        return jsonify(User.to_safe_dict(user)) if user else abort(401)
+        res = User.change_password(username, pwd, old_password)
+        return jsonify(User.to_safe_dict(res)) if res else abort(401)
     abort(401)
 
 @oiuser.route('/login', methods=['POST'])
