@@ -116,7 +116,9 @@ def get_users(*args, **kwargs):
 def change_password(username):
     login_key = request.form['login_key']
     user = User.get_user(login_key)
-    if username == user.get('username', False):
+    current_app.logger.info(user['username'])
+    current_app.logger.info(username)
+    if username == user.get('username', ''):
         pwd = request.form['password']
         now = str(datetime.now())
         old_password = request.form.get('old_password', now)
