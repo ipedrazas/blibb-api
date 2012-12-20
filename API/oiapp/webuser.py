@@ -117,10 +117,9 @@ def change_password(username):
     login_key = request.form['login_key']
     user = User.get_user(login_key)
     if user:
-        if username == user.get('username', ''):
+        if username == user['username']:
             pwd = request.form['password']
-            now = str(datetime.now())
-            old_password = request.form.get('old_password', False)
+            old_password = request.form.get('old_password', '')
             res = User.change_password(username, pwd, old_password)
             current_app.logger.info(str(res))
             return jsonify({'result': {'code': 'true', 'msg': 'Password updated'}}) if res else abort(401)

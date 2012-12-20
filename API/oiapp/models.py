@@ -435,12 +435,15 @@ class User(Base):
         if stUser.get('password', False):
             shPwd = sha1(stUser['salt'] + str(old_password))
             if stUser['password'] == shPwd.hexdigest():
+                current_app.logger.info('passwords match')
                 stUser['password'] = shPwd.hexdigest()
                 cls.objects.save(stUser)
                 return True
             else:
+                current_app.logger.info('passwords not match')
                 return False
         else:
+            current_app.logger.info('no password yet. Setting...')
             shPwd = sha1(stUser['salt'] + password)
             stUser['password'] = shPwd.hexdigest()
             cls.objects.save(stUser)
