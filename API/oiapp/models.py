@@ -432,8 +432,8 @@ class User(Base):
         stUser = cls.get({'username': username.strip()})
         # False only if the user has been created from Facebook
         # and doesn't have any password set yet
-        if stUser.get('password', False) and old_password:
-            shPwd = sha1(stUser['salt'] + old_password)
+        if stUser.get('password', False):
+            shPwd = sha1(stUser['salt'] + str(old_password))
             if stUser['password'] == shPwd.hexdigest():
                 stUser['password'] = shPwd.hexdigest()
                 cls.objects.save(stUser)
@@ -481,8 +481,9 @@ class User(Base):
         r = cls.get_redis()
         if r:
             juser = r.get(key)
-            current_app.logger.info(juser)
-            return json.loads(juser)
+            if juser:
+                current_app.logger.info(juser)
+                return json.loads(juser)
         return None
 
     @classmethod
