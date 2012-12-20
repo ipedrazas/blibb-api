@@ -148,9 +148,10 @@ def do_login_facebook():
 @crossdomain(origin='*')
 def do_logout(username):
     login_key = request.form['login_key']
-    user = User.logout(login_key)
+    user = get_user(login_key)
     if user['username'] == username:
-        return jsonify(User.to_safe_dict(user)) if user else abort(401)
+        off = User.logout(login_key)
+        return jsonify(User.to_safe_dict(user)) if off else abort(401)
     abort(401)
 
 @oiuser.route('/<username>/mailsubs', methods=['POST'])
