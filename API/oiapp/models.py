@@ -305,7 +305,7 @@ class User(Base):
     @classmethod
     def update(cls, username, updated_user):
         if username:
-             cls.objects.update({'username': user['username']}, {'$set': updated_user})
+             cls.objects.update({'username': username}, {'$set': updated_user})
 
 
     @classmethod
