@@ -2,18 +2,19 @@
 + /users                          [GET]   ==>     get all users
                                                         fields=first_name,last_name,pushes,img,created_at,fbid,last_push,role,timezone,last_access,email,sub_email,m_subs
                                                         sort=last_access
+                                                        num=40
 
-                                                        Get all users sorted by last_access
-                                                        https://api.oioi.me/users?fields=first_name,last_name,pushes,img,created_at,fbid,last_push,role,timezone,last_access,email,sub_email,m_subs&sort=last_access
+                                                        Get the first 40 users sorted by last_access
+                                                        https://api.oioi.me/users?fields=first_name,last_name,pushes,img,created_at,fbid,last_push,role,timezone,last_access,email,sub_email,m_subs&sort=last_access&num=40
 
 
-/users/facebook                 [POST]  ==>     New user by Facebook
++ /users/facebook                 [POST]  ==>     New user by Facebook
 + /users/login                    [POST]  ==>     login
 + /users/loginfb           [POST]  ==>     login by facebook
 
 + /users/<username>               [GET]   ==>     Get user
-/users/<username>               [POST]  ==>     Update User
++ /users/<username>               [POST]  ==>     Update User
 /users/<username>/password      [POST]  ==>     change password
-/users/<username>/invitations   [GET]   ==>     get invitations by user
++ /users/<username>/invitations   [GET]   ==>     get invitations by user
 + /users/<username>/logout        [POST]  ==>     logout
-/users/<username>/mailsubs      [POST]  ==>     set Mail Subscription settings
++ /users/<username>/mailsubs      [POST]  ==>     set Mail Subscription settings

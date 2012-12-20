@@ -51,7 +51,7 @@ def update(username):
     current_app.logger.info('update')
     login_key = request.form['login_key']
     user = get_user(login_key)
-    if username == user['username']:
+    if username == user.get('username', False):
         first_name = request.form.get('first_name', None)
         last_name = request.form.get('last_name', None)
         timezone = request.form.get('timezone', None)
@@ -119,7 +119,7 @@ def change_password(username):
     user_name = get_user_name(login_key)
     if username == user_name:
         pwd = request.form['password']
-        now = datetime.now()
+        now = str(datetime.now())
         old_password = request.form.get('old_password', now)
         user = User.change_password(username, pwd, old_password)
         return jsonify(User.to_safe_dict(user)) if user else abort(401)
