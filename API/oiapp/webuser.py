@@ -6,7 +6,6 @@ from flask import Blueprint, request, abort, jsonify, g, current_app, render_tem
 from API.oiapp.models import User, Audit, Oi
 from API.event.event import Event
 from datetime import datetime
-from API.utils import get_user_name, get_user
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
 from API.decorators import parse_args
@@ -50,7 +49,7 @@ def new_user():
 def update(username):
     current_app.logger.info('update')
     login_key = request.form['login_key']
-    user = get_user(login_key)
+    user = User.get_user(login_key)
     if username == user.get('username', False):
         first_name = request.form.get('first_name', None)
         last_name = request.form.get('last_name', None)
@@ -116,7 +115,7 @@ def get_users(*args, **kwargs):
 @crossdomain(origin='*')
 def change_password(username):
     login_key = request.form['login_key']
-    user_name = get_user_name(login_key)
+    user_name = User.get_user(login_key)
     if username == user_name:
         pwd = request.form['password']
         now = str(datetime.now())
@@ -148,7 +147,7 @@ def do_login_facebook():
 @crossdomain(origin='*')
 def do_logout(username):
     login_key = request.form['login_key']
-    user = get_user(login_key)
+    user = User.get_user(login_key)
     if user['username'] == username:
         off = User.logout(login_key)
         return jsonify(User.to_safe_dict(user)) if off else abort(401)
@@ -158,7 +157,7 @@ def do_logout(username):
 @crossdomain(origin='*')
 def set_mail_subscription(username):
     login_key = request.form['login_key']
-    user = get_user(login_key)
+    user = User.get_user(login_key)
     if username == user['username']:
         res = User.set_mail_subscription(login_key, username)
         return jsonify({'subscription': res})
