@@ -441,6 +441,7 @@ class User(Base):
             else:
                 return False
         else:
+            shPwd = sha1(stUser['salt'] + password)
             stUser['password'] = shPwd.hexdigest()
             cls.objects.save(stUser)
             return True
