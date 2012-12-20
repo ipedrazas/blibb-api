@@ -430,17 +430,21 @@ class User(Base):
     @classmethod
     def change_password(cls, username, password, old_password):
         stUser = cls.get({'username': username.strip()})
-        if stUser is not None:
+        # False only if the user has been created from Facebook
+        # and doesn't have any password set yet
+        if stUser.get('password', False):
             shPwd = sha1(stUser['salt'] + old_password)
             if stUser['password'] == shPwd.hexdigest():
-                shPwd = sha1(stUser['salt'] + password)
                 stUser['password'] = shPwd.hexdigest()
-                stUser['last_access'] = datetime.now()
                 cls.objects.save(stUser)
-                user = cls.to_safe_dict(stUser)
-                user['key'] = cls.set_key(stUser)
-                return user
-        return False
+                return True
+            else:
+                return False
+        else:
+            stUser['password'] = shPwd.hexdigest()
+            cls.objects.save(stUser)
+            return True
+
 
     @classmethod
     def authenticate(cls, username, password):

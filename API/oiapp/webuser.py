@@ -116,13 +116,12 @@ def get_users(*args, **kwargs):
 def change_password(username):
     login_key = request.form['login_key']
     user = User.get_user(login_key)
-    current_app.logger.info(user['username'])
-    current_app.logger.info(username)
     if username == user.get('username', ''):
         pwd = request.form['password']
         now = str(datetime.now())
-        old_password = request.form.get('old_password', now)
+        old_password = request.form.get('old_password', False)
         res = User.change_password(username, pwd, old_password)
+        current_app.logger.info(str(res))
         return jsonify(User.to_safe_dict(res)) if res else abort(401)
     abort(401)
 
