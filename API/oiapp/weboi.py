@@ -185,7 +185,7 @@ def reject_oi(oiid=None):
     email = request.form['email']
     user = get_user(login_key)
     if is_valid_id(oiid):
-        if Oi.reject(oiid, user):
+        if Oi.reject(oiid, email):
             Audit.reject(user['username'], '', oiid)
             return jsonify({'result': {'code': 'true', 'msg': 'Object rejected'}})
         else:

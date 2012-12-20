@@ -5,7 +5,7 @@
 from flask import Blueprint, request, abort, jsonify, g, current_app, render_template
 from API.oiapp.models import User, Audit, Oi
 from API.event.event import Event
-
+from datetime import datetime
 from API.utils import get_user_name, get_user
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
@@ -116,7 +116,8 @@ def change_password():
     login_key = request.form['login_key']
     username = get_user_name(login_key)
     pwd = request.form['password']
-    old_password = request.form['old_password']
+    now = datetime.now()
+    old_password = request.form.get('old_password', now)
     user = User.change_password(username, pwd, old_password)
     return jsonify(User.to_safe_dict(user)) if user else abort(401)
 
