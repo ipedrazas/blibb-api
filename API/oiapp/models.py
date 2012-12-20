@@ -213,21 +213,33 @@ class Oi(Base):
         return False
 
     @classmethod
+    def reject(cls, oiid, email):
+        doc = cls.get({'_id': ObjectId(oiid)})
+        guests = doc.get('invited', None)
+        if guests:
+            if email in guests:
+                guests.remove(email)
+                return True
+        return False
+
+    @classmethod
     def subscribe(cls, oiid, user):
         doc = cls.get({'_id': ObjectId(oiid)})
         current_app.logger.info("Doc to subscribe" + str(doc))
         guests = doc.get('invited', None)
         username = user['username']
-        for guest in guests:
-            if guest in user['sub_email']:
-                guests.remove(guest)
-                if doc.get('group', False):
-                    if username not in doc['senders']:
-                        doc['senders'].append(username)
-                if username not in doc['subscribers']:
-                    doc['subscribers'].append(username)
-        cls.objects.save(doc)
-        return True
+        if guests:
+            for guest in guests:
+                if guest in user['sub_email']:
+                    guests.remove(guest)
+                    if doc.get('group', False):
+                        if username not in doc['senders']:
+                            doc['senders'].append(username)
+                    if username not in doc['subscribers']:
+                        doc['subscribers'].append(username)
+            cls.objects.save(doc)
+            return True
+        return False
 
     @classmethod
     def unsubscribe(cls, oiid, user):
