@@ -73,7 +73,7 @@ def update(username):
 
 @oiuser.route('/facebook', methods=['POST'])
 @crossdomain(origin='*')
-def new_user_facebook():current_app.logger.info('update')
+def new_user_facebook():
     current_app.logger.info('facebook')
     username = request.form['username']
     fbid = request.form['fbid']
