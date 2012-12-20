@@ -48,6 +48,7 @@ def new_user():
 @oiuser.route('/<username>', methods=['POST'])
 @crossdomain(origin='*')
 def update(username):
+    current_app.logger.info('update')
     login_key = request.form['login_key']
     user = get_user(login_key)
     if username == user['username']:
@@ -110,17 +111,18 @@ def get_users(*args, **kwargs):
     return jsonify({'resultset': resultset})
 
 
-@oiuser.route('/password', methods=['POST'])
+@oiuser.route('/<username>/password', methods=['POST'])
 @crossdomain(origin='*')
-def change_password():
+def change_password(username):
     login_key = request.form['login_key']
-    username = get_user_name(login_key)
-    pwd = request.form['password']
-    now = datetime.now()
-    old_password = request.form.get('old_password', now)
-    user = User.change_password(username, pwd, old_password)
-    return jsonify(User.to_safe_dict(user)) if user else abort(401)
-
+    user_name = get_user_name(login_key)
+    if username == user_name:
+        pwd = request.form['password']
+        now = datetime.now()
+        old_password = request.form.get('old_password', now)
+        user = User.change_password(username, pwd, old_password)
+        return jsonify(User.to_safe_dict(user)) if user else abort(401)
+    abort(401)
 
 @oiuser.route('/login', methods=['POST'])
 @crossdomain(origin='*')
@@ -140,13 +142,14 @@ def do_login_facebook():
     Audit.login_facebook(username, '')
     return jsonify(user) if user else abort(401)
 
-@oiuser.route('/logout', methods=['POST'])
+@oiuser.route('/<username>/logout', methods=['POST'])
 @crossdomain(origin='*')
-def do_logout():
+def do_logout(username):
     login_key = request.form['login_key']
     user = User.logout(login_key)
-    return jsonify(User.to_safe_dict(user)) if user else abort(401)
-
+    if user['username'] == username:
+        return jsonify(User.to_safe_dict(user)) if user else abort(401)
+    abort(401)
 
 @oiuser.route('/mail/subs', methods=['POST'])
 @crossdomain(origin='*')
