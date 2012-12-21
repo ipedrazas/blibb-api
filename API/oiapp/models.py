@@ -249,7 +249,7 @@ class Oi(Base):
         last_push = {"when":  datetime.now(), "who": username}
         total_push = len(doc['subscribers'])
         cls.objects.update({'_id': doc['_id']}, {"$inc": {'pushes': 1, 'sent': total_push}, '$set': {"push": last_push}})
-        push = do_push(name, channel, username, doc['_id'])
+        push = do_push(name, channel, username, str(doc['_id'])
         print 'Sms: ' + str(doc.get('sms',''))
         if 'sms' in doc:
             msg = user['username'] + ' ' + name
