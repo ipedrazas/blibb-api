@@ -119,26 +119,6 @@ class Oi(Base):
 
     @classmethod
     def process_invitations(cls, oi):
-        # invitations = oi['invited']
-        # invited = []
-        # current_app.logger.info('invitations ' + str(invitations))
-        # for p in invitations:
-        #     u = User.is_oi_user(p)
-        #     current_app.logger.info('invited: ' + str(p))
-        #     current_app.logger.info('user: ' + str(u))
-        #     if u:
-        #         if u['username'] not in oi['subscribers']:
-        #             oi['subscribers'].append(u['username'])
-        #         if u['username'] not in oi['senders']:
-        #             oi['senders'].append(u['username'])
-        #     else:
-        #         if is_phone_number(p):
-        #             oi['sms'].append(p)
-        #         else:
-        #             invited.append(p)
-
-        # oi['invited'] = invited
-        # cls.objects.save(oi)
         name = User.get_by_name(oi['owner'])
         if 'first_name' in name:
             full_name = '%s %s' % (name['first_name'], name['last_name'] )
@@ -269,7 +249,7 @@ class Oi(Base):
         last_push = {"when":  datetime.now(), "who": username}
         total_push = len(doc['subscribers'])
         cls.objects.update({'_id': doc['_id']}, {"$inc": {'pushes': 1, 'sent': total_push}, '$set': {"push": last_push}})
-        push = do_push(name, channel, username)
+        push = do_push(name, channel, username, doc['_id'])
         print 'Sms: ' + str(doc.get('sms',''))
         if 'sms' in doc:
             msg = user['username'] + ' ' + name

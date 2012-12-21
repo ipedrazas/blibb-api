@@ -13,11 +13,11 @@ APPLICATION_ID = get_config_value('PARSE_APPLICATION_ID')
 REST_API_KEY = get_config_value('PARSE_REST_API_KEY')
 
 
-def do_push(name=None, channel=None, user=None):
+def do_push(name=None, channel=None, user=None, oiid=None):
 
     data = dict()
 
-    data['data'] = {'alert': user + ': ' + name, 'badge': 'Increment', 'action': 'me.oioi.simple.OPENAPP', 'title': 'Oi!'}
+    data['data'] = {'alert': user + ': ' + name, 'badge': 'Increment', 'action': 'me.oioi.simple.OPENAPP', 'title': 'Oi!', 'oiid': oiid}
     data["channels"] = [channel]
 
     head = dict()
