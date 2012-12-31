@@ -46,7 +46,7 @@ def new_oi():
 
         doc = Oi.create(owner['username'], name, contacts, tags, comments, group)
         if '_id' in doc:
-            Audit.new_oi(owner, doc['_id'], '')
+            Audit.new_oi(owner['username'], doc['_id'], '')
             return jsonify({'oi': Oi.to_dict(doc)})
         else:
             abort(409, doc.get('error','ERROR'))
