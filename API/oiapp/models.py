@@ -91,6 +91,7 @@ class Audit(Base):
     def signup(cls, user, device):
         now = datetime.now()
         cls.objects.insert({'t': now, 'u': user, 'a': 'sp', 'd': device})
+
         queue_ducksboard_delta('80347')
 
     @classmethod
@@ -151,8 +152,10 @@ class Oi(Base):
             oi['pushes'] = 0
             oi['channel'] = '%s-%s-%s' % (cls.parse_string(owner), cls.parse_string(name), rnd_id)
             oi['senders'] = [owner]
-            oi['subscribers'] = [owner]
+            if group:
+                oi['subscribers'] = [owner]
             oi['comments'] = comments
+
             oi['group'] = group
 
             if tags is not None:
@@ -363,9 +366,9 @@ class User(Base):
             return {'error': 'User already exists'}
         else:
             user = dict()
-            user['username'] = username
-            user['email'] = email
-            user['sub_email'] = [email]
+            user['username'] = username.trim()
+            user['email'] = email.trim()
+            user['sub_email'] = [email.trim()]
             user['created_at'] = datetime.now()
             salt = sha1(username + str(datetime.now())).hexdigest()
             user['salt'] = salt
@@ -384,14 +387,14 @@ class User(Base):
             return {'error': 'User already exists'}
         else:
             user = dict()
-            user['username'] = username
-            user['email'] = email
-            user['sub_email'] = [email]
+            user['username'] = username.trim()
+            user['email'] = email.trim()
+            user['sub_email'] = [email.trim()]
             user['created_at'] = datetime.now()
             user['img'] = img
-            user['first_name'] = first_name
-            user['last_name'] = last_name
-            user['fbid'] = fbid
+            user['first_name'] = first_name.trim()
+            user['last_name'] = last_name.trim()
+            user['fbid'] = fbid.trim()
             user['timezone'] = timezone
             user['role'] = ['user']
             user['_id'] = cls.objects.insert(user)

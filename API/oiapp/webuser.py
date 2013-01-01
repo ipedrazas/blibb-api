@@ -130,8 +130,9 @@ def change_password(username):
 def do_login():
     username = request.form['username']
     pwd = request.form['password']
+    origin = request.form.get("origin", None)
     user = User.authenticate(username, pwd)
-    Audit.login(username, '')
+    Audit.login(username, origin)
     return jsonify(User.to_safe_dict(user)) if user else abort(401)
 
 
