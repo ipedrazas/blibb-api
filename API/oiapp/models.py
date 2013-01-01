@@ -366,9 +366,9 @@ class User(Base):
             return {'error': 'User already exists'}
         else:
             user = dict()
-            user['username'] = username.trim()
-            user['email'] = email.trim()
-            user['sub_email'] = [email.trim()]
+            user['username'] = username.strip()
+            user['email'] = email.strip()
+            user['sub_email'] = [email.strip()]
             user['created_at'] = datetime.now()
             salt = sha1(username + str(datetime.now())).hexdigest()
             user['salt'] = salt
@@ -387,14 +387,14 @@ class User(Base):
             return {'error': 'User already exists'}
         else:
             user = dict()
-            user['username'] = username.trim()
-            user['email'] = email.trim()
-            user['sub_email'] = [email.trim()]
+            user['username'] = username.strip()
+            user['email'] = email.strip()
+            user['sub_email'] = [email.strip()]
             user['created_at'] = datetime.now()
             user['img'] = img
-            user['first_name'] = first_name.trim()
-            user['last_name'] = last_name.trim()
-            user['fbid'] = fbid.trim()
+            user['first_name'] = first_name.strip()
+            user['last_name'] = last_name.strip()
+            user['fbid'] = fbid.strip()
             user['timezone'] = timezone
             user['role'] = ['user']
             user['_id'] = cls.objects.insert(user)
