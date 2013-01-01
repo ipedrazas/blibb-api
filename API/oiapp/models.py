@@ -152,8 +152,10 @@ class Oi(Base):
             oi['pushes'] = 0
             oi['channel'] = '%s-%s-%s' % (cls.parse_string(owner), cls.parse_string(name), rnd_id)
             oi['senders'] = [owner]
+            subscribers = []
             if group:
-                oi['subscribers'] = [owner]
+                subscribers.append(owner)
+            oi['subscribers'] = subscribers
             oi['comments'] = comments
 
             oi['group'] = group
