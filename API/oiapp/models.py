@@ -217,15 +217,11 @@ class Oi(Base):
     @classmethod
     def subscribe(cls, oiid, user):
         doc = cls.get({'_id': ObjectId(oiid)})
-        current_app.logger.info("Doc to subscribe" + str(doc))
         guests = doc.get('invited', None)
         username = user['username']
-        current_app.logger.info("Invited:" + str(guests))
         if guests:
             for guest in guests:
-                current_app.logger.info("Email: " + guest + " in " + str(user['sub_email']))
                 if guest in user['sub_email']:
-                    current_app.logger.info("Removing " + guest + " from " + str(doc))
                     guests.remove(guest)
                     if doc.get('group', False):
                         if username not in doc['senders']:
@@ -483,9 +479,9 @@ class User(Base):
         if r:
             juser = r.get(key)
             if juser:
-                stUser = cls.get({'username': juser['username']})
-                user = cls.to_safe_dict(stUser)
-                return json.loads(user)
+                # stUser = cls.get({'username': juser['username']})
+                # user = cls.to_safe_dict(stUser)
+                return json.loads(juser)
         return None
 
     @classmethod
