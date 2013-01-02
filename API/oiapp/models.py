@@ -97,7 +97,7 @@ class Audit(Base):
     @classmethod
     def facebook_signup(cls, user, device):
         now = datetime.now()
-        cls.objects.insert({'t': now, 'u': user, 'a': 'sp', 'd': device})
+        cls.objects.insert({'t': now, 'u': user, 'a': 'spf', 'd': device})
 
         queue_ducksboard_delta('80347')
 
@@ -223,12 +223,14 @@ class Oi(Base):
         if guests:
             for guest in guests:
                 if guest in user['sub_email']:
+                    current_app.logger.info("Removing " + guest + " from " + str(doc))
                     guests.remove(guest)
                     if doc.get('group', False):
                         if username not in doc['senders']:
                             doc['senders'].append(username)
                     if username not in doc['subscribers']:
                         doc['subscribers'].append(username)
+                    doc['invited'] = guests
             cls.objects.save(doc)
             return True
         return False
