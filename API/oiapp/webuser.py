@@ -34,10 +34,8 @@ def new_user():
     username = request.form['username']
     password = request.form['password']
     email = request.form['email']
-    device_id = ''
-    if 'device' in request.form:
-        device_id = request.form['device']
-    doc = User.create(username, password, email, device_id)
+    device = request.form.get("origin", None)
+    doc = User.create(username, password, email, device)
     if 'error' in doc:
         abort(409, 'User already exists')
     else:
@@ -81,14 +79,14 @@ def new_user_facebook():
     timezone = request.form['timezone']
     email = request.form['email']
     img = "http://graph.facebook.com/" + request.form['fbid'] + "/picture"
-
+    device = request.form.get("origin", None)
     doc = User.create_facebook(username, fbid, email, first_name, last_name, timezone, img)
     user = User.login_facebook(fbid)
     if 'error' in doc:
         print str(doc)
         abort(409, 'User already exists')
     else:
-        Audit.signup(username, '')
+        Audit.facebook_signup(username, device)
         return jsonify(user) if user else abort(401)
 
 
@@ -141,7 +139,8 @@ def do_login():
 def do_login_facebook():
     username = request.form['fbid']
     user = User.login_facebook(username)
-    Audit.login_facebook(username, '')
+    origin = request.form.get("origin", None)
+    Audit.login_facebook(username, origin)
     return jsonify(user) if user else abort(401)
 
 

@@ -95,6 +95,13 @@ class Audit(Base):
         queue_ducksboard_delta('80347')
 
     @classmethod
+    def facebook_signup(cls, user, device):
+        now = datetime.now()
+        cls.objects.insert({'t': now, 'u': user, 'a': 'sp', 'd': device})
+
+        queue_ducksboard_delta('80347')
+
+    @classmethod
     def fav(cls, user, device, oiid):
         now = datetime.now()
         cls.objects.insert({'t': now, 'u': user, 'o': ObjectId(oiid), 'a': 'f', 'd': device})
