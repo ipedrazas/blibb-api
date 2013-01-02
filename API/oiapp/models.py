@@ -483,8 +483,9 @@ class User(Base):
         if r:
             juser = r.get(key)
             if juser:
-                current_app.logger.info(juser)
-                return json.loads(juser)
+                stUser = cls.get({'username': juser['username']})
+                user = cls.to_safe_dict(stUser)
+                return json.loads(user)
         return None
 
     @classmethod
