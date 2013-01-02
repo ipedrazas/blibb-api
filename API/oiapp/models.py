@@ -220,7 +220,7 @@ class Oi(Base):
         current_app.logger.info("Doc to subscribe" + str(doc))
         guests = doc.get('invited', None)
         username = user['username']
-        current_app.logger.info("Invited:" + guests)
+        current_app.logger.info("Invited:" + str(guests))
         if guests:
             for guest in guests:
                 current_app.logger.info("Email: " + guest)
