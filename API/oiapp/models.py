@@ -220,10 +220,10 @@ class Oi(Base):
         current_app.logger.info("Doc to subscribe" + str(doc))
         guests = doc.get('invited', None)
         username = user['username']
-        current_app.logger.info("Invited:" + guests
+        current_app.logger.info("Invited:" + guests)
         if guests:
             for guest in guests:
-                current_app.logger.info("Email: " + guest +
+                current_app.logger.info("Email: " + guest)
                 if guest in user['sub_email']:
                     current_app.logger.info("Removing " + guest + " from " + str(doc))
                     guests.remove(guest)
