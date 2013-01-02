@@ -69,7 +69,7 @@ class Audit(Base):
     def reject(cls, user, device, oiid):
         if is_valid_id(oiid):
             now = datetime.now()
-            cls.objects.insert({'t': now, 'u': user, 'o': ObjectId(oiid), 'a': 's', 'r': device})
+            cls.objects.insert({'t': now, 'u': user, 'o': ObjectId(oiid), 'a': 'r', 'r': device})
             queue_ducksboard_delta('81296')
 
 
@@ -393,6 +393,8 @@ class User(Base):
             user['email'] = email.strip()
             user['sub_email'] = [email.strip()]
             user['created_at'] = datetime.now()
+            salt = sha1(username + str(datetime.now())).hexdigest()
+            user['salt'] = salt
             user['img'] = img
             user['first_name'] = first_name.strip()
             user['last_name'] = last_name.strip()
