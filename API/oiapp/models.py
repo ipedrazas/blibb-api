@@ -224,7 +224,7 @@ class Oi(Base):
         if guests:
             for guest in guests:
                 current_app.logger.info("Email: " + guest)
-                if guest in user['sub_email']:
+                if guest is in user['sub_email']:
                     current_app.logger.info("Removing " + guest + " from " + str(doc))
                     guests.remove(guest)
                     if doc.get('group', False):
