@@ -136,7 +136,7 @@ class Oi(Base):
 
 
     @classmethod
-    def create(cls, owner, name, contacts, tags, comments, group=False):
+    def create(cls, owner, name, contacts, tags, comments, group=True):
         ## check name
         oi_name = Oi.get({'name': name, 'owner': owner, 'del': {'$exists': False}})
         tag_list = []
