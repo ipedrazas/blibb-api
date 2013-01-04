@@ -29,13 +29,7 @@ def createInitialBatch():
 
 
 def createUser(name, email, password):
-	user = User()
-	user.name = name
-	user.email = email
-	user.password = password
-	user.active = True
-
-	return user.save()
+	User.create(name, email, password, 'script')
 
 
 createInitialBatch()

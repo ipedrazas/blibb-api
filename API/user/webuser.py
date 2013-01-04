@@ -137,23 +137,26 @@ def addItemtoBlibb(username=None, slug=None):
 
     tags = request.form['tags'] if 'tags' in request.form else ''
     blibb = Blibb.get_object({'u': username, 's': slug}, {'_id': 1, 't.i': 1})
-    blibb_id = blibb['_id']
-    controls = Blibb.get_controls_as_dict(blibb.get('t'))
-    current_app.logger.info(str(user) + ' - ' + str(app_token) + ' - ' + str(blibb_id) + ' - ' + username + ' - ' + slug)
-    if Blibb.can_write(user, app_token, blibb_id):
-        bitems = Blitem.get_items_from_request(controls, request)
-        if len(bitems) > 0:
-            blitem_id = Blitem.insert(blibb_id, user, bitems, tags)
-            if is_valid_id(blitem_id):
-                cond = {'s': slug, 'u': username}
-                Blibb.inc_num_item(cond)
-                Blitem.post_process(blitem_id, bitems)
-                res = {'id': blitem_id}
-                return jsonify(res)
+    if blibb:
+        blibb_id = blibb['_id']
+        controls = Blibb.get_controls_as_dict(blibb.get('t'))
+        current_app.logger.info(str(user) + ' - ' + str(app_token) + ' - ' + str(blibb_id) + ' - ' + username + ' - ' + slug)
+        if Blibb.can_write(user, app_token, blibb_id):
+            bitems = Blitem.get_items_from_request(controls, request)
+            if len(bitems) > 0:
+                blitem_id = Blitem.insert(blibb_id, user, bitems, tags)
+                if is_valid_id(blitem_id):
+                    cond = {'s': slug, 'u': username}
+                    Blibb.inc_num_item(cond)
+                    Blitem.post_process(blitem_id, bitems)
+                    res = {'id': blitem_id}
+                    return jsonify(res)
+            else:
+                return jsonify({'error': 'your POST data was not complete'})
         else:
-            return jsonify({'error': 'your POST data was not complete'})
+            abort(401)
     else:
-        abort(401)
+        abort(404)
 
 
 @mod.route('/<username>/<slug>', methods=['GET'])
