@@ -19,7 +19,7 @@ class ProductionConfig(Config):
     BUCKET = 'static.blibb.net'
     EXPIRE = 3600
     NUM_URL = 3
-    MONGO_URL = 'mongodb://blibbadmin:admin@localhost:27069'
+    MONGO_URL = 'mongodb://blibbadmin:verylongadmin@localhost:27069'
 
 
 class TestConfig(Config):
@@ -31,7 +31,7 @@ class TestConfig(Config):
     BUCKET = 'static.blibb.it'
     EXPIRE = 3600
     NUM_URL = 3
-    MONGO_URL = 'mongodb://blibbadmin:admin@localhost:27069'
+    MONGO_URL = 'mongodb://blibbadmin:verylongadmin@localhost:27069'
 
 
 class DevelopmentConfig(Config):
@@ -43,4 +43,4 @@ class DevelopmentConfig(Config):
     BUCKET = 'static.blibb.it'
     EXPIRE = 3600
     NUM_URL = 3
-    MONGO_URL = 'mongodb://blibbadmin:admin@localhost:27069'
+    MONGO_URL = 'mongodb://blibbadmin:verylongadmin@localhost:27069'
