@@ -261,12 +261,19 @@ class Oi(Base):
         last_push = {"when":  datetime.now(), "who": username}
         total_push = len(doc['subscribers'])
         cls.objects.update({'_id': doc['_id']}, {"$inc": {'pushes': 1, 'sent': total_push}, '$set': {"push": last_push}})
-        push = do_push(name, channel, username, str(doc['_id']))
-        print 'Sms: ' + str(doc.get('sms',''))
-        if 'sms' in doc:
-            msg = user['username'] + ' ' + name
-            for number in doc['sms']:
-                send_sms(msg, number)
+        if doc.get('group', False):
+            push = do_push(name, channel, username, str(doc['_id']))
+        else:
+            subscribers = doc['subscribers']
+            push = []
+            for subscriber in subscribers:
+                push.append(do_push(name, subscriber, username, str(doc['_id'])))
+
+        # print 'Sms: ' + str(doc.get('sms',''))
+        # if 'sms' in doc:
+        #     msg = user['username'] + ' ' + name
+        #     for number in doc['sms']:
+        #         send_sms(msg, number)
         User.inc_push(username)
         return push
 
