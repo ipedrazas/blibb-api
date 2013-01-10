@@ -132,6 +132,7 @@ class Oi(Base):
             full_name = '%s %s' % (name['first_name'], name['last_name'] )
         else:
             full_name = oi['owner']
+
         send_invitations(oi, full_name)
 
 
@@ -163,6 +164,14 @@ class Oi(Base):
             subscribers = []
             if group:
                 subscribers.append(owner)
+
+            for p in oi['invited']:
+                u = User.is_oi_user(p)
+                if u:
+                    # If the user explicitly asks to check invitations
+                    if not u.get('ask', False):
+                        subscribers.append(u['username'])
+
 
             oi['subscribers'] = subscribers
             oi['comments'] = comments
