@@ -165,12 +165,13 @@ class Oi(Base):
             if group:
                 subscribers.append(owner)
 
-            for p in oi['invited']:
+            for p in contacts_list:
                 u = User.is_oi_user(p)
                 if u:
                     # If the user explicitly asks to check invitations
                     if not u.get('ask', False):
                         subscribers.append(u['username'])
+                        oi['invited'].remove(p)
 
 
             oi['subscribers'] = subscribers
@@ -191,7 +192,7 @@ class Oi(Base):
             else:
                 error = {'error': 'Error creating the Oi'}
         else:
-            error = {'error': 'Oi with that name already exists'}
+            error = {'error': 'Oi with those details already exists'}
         return error
 
     @classmethod
