@@ -2,7 +2,7 @@ from flask import Blueprint, request, abort, jsonify, g, current_app, render_tem
 from API.oiapp.models import User, Audit, Oi
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
-from API.oiapp.models import AcraError
+from API.oiapp.models import AcraError, Audit
 from datetime import datetime
 
 
@@ -24,6 +24,7 @@ def new_acra_error_msg():
         'display': request.form.get('DISPLAY',''),
         'installation_id': request.form.get('INSTALLATION_ID',''),
     }
+
     AcraError.add(acra)
     return "ok"
 

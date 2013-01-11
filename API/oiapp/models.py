@@ -29,12 +29,14 @@ class AcraError(Base):
     @classmethod
     def add(cls, acra_object):
         cls.objects.insert(acra_object)
+        queue_ducksboard_delta('105506')
 
 class Audit(Base):
 
     conn = Connection(get_config_value('MONGO_URL'))
     db = conn['oime']
     objects = db['audits']
+
 
     @classmethod
     def push(cls, user, oiid, device, subscribers):
