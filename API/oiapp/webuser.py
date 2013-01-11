@@ -5,7 +5,6 @@
 from flask import Blueprint, request, abort, jsonify, g, current_app, render_template
 from API.oiapp.models import User, Audit, Oi
 from API.event.event import Event
-from datetime import datetime
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
 from API.decorators import parse_args
@@ -27,6 +26,7 @@ def teardown_request(exception):
 @crossdomain(origin='*')
 def custom_401(error):
      return render_template('401.html'), 401
+
 
 @oiuser.route('', methods=['POST'])
 @crossdomain(origin='*')

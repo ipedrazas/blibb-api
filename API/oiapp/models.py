@@ -19,6 +19,17 @@ import re
 from API.oiapp.parse import do_push
 from API.oiapp.twilio_helper import send_sms, is_phone_number
 
+
+class AcraError(Base):
+
+    conn = Connection(get_config_value('MONGO_URL'))
+    db = conn['oime']
+    objects = db['acra']
+
+    @classmethod
+    def add(cls, acra_object):
+        cls.objects.insert(acra_object)
+
 class Audit(Base):
 
     conn = Connection(get_config_value('MONGO_URL'))
