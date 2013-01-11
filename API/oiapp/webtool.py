@@ -13,7 +13,6 @@ webtool = Blueprint('oiwebtool', __name__, url_prefix='/tools')
 @webtool.route('/acra', methods=['POST'])
 @crossdomain(origin='*')
 def new_acra_error_msg():
-    current_app.logger.info(str(request.form))
     acra = {
         'timestamp':  datetime.now(),
         'stack_trace': request.form.get('STACK_TRACE',''),
@@ -25,7 +24,6 @@ def new_acra_error_msg():
         'display': request.form.get('DISPLAY',''),
         'installation_id': request.form.get('INSTALLATION_ID',''),
     }
-    current_app.logger.info(str(acra))
     AcraError.add(acra)
     return "ok"
 
