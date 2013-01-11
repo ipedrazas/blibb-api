@@ -16,15 +16,17 @@ def new_acra_error_msg():
     current_app.logger.info(str(request.form))
     acra = {
         'timestamp':  datetime.now(),
-        'stack_trace': request.form['stack_trace'],
-        'package_name': request.form['package_name'],
-        'app_version_code': request.form['app_version_code'],
-        'app_version_name': request.form['app_version_name'],
-        'phone_model': request.form['phone_model'],
-        'android_version': request.form['android_version'],
-        'display': request.form['display'],
-        'installation_id': request.form['installation_id']
+        'stack_trace': request.form.get('STACK_TRACE',''),
+        'package_name': request.form.get('PACKAGE_NAME',''),
+        'app_version_code': request.form.get('APP_VERSION_CODE',''),
+        'app_version_name': request.form.get('APP_VERSION_NAME',''),
+        'phone_model': request.form.get('PHONE_MODEL',''),
+        'android_version': request.form.get('ANDROID_VERSION',''),
+        'display': request.form.get('DISPLAY',''),
+        'installation_id': request.form.get('INSTALLATION_ID',''),
     }
     current_app.logger.info(str(acra))
     AcraError.add(acra)
     return "ok"
+
+
