@@ -208,6 +208,18 @@ def unsubscribe_oi(oiid=None):
         abort(401)
     abort(400)
 
+@oi.route('/<oiid>/<username>/unsubscribe', methods=['POST'])
+@crossdomain(origin='*')
+def unsubscribe_oi(oiid=None):
+    login_key = request.form['login_key']
+    user = get_user(login_key)
+    if is_valid_id(oiid):
+        if Oi.unsubscribe_user(oiid, user, username):
+            Audit.unsubscribe(user['username'], '', oiid)
+            return jsonify({'result': {'code': 'true', 'msg': 'Object unsubscribed'}})
+        abort(401)
+    abort(400)
+
 
 @oi.route('/<oiid>/history', methods=['GET'])
 @support_jsonp
