@@ -150,7 +150,7 @@ class Oi(Base):
 
 
     @classmethod
-    def create(cls, owner, name, contacts, tags, comments, group=True):
+    def create(cls, owner, name, contacts, tags, comments, group=True, public=False):
         ## check name
         oi_name = Oi.get({'name': name, 'owner': owner, 'del': {'$exists': False}})
         tag_list = []
@@ -174,6 +174,7 @@ class Oi(Base):
             oi['channel'] = '%s-%s-%s' % (cls.parse_string(owner), cls.parse_string(name), rnd_id)
             oi['senders'] = [owner]
             oi['group'] = group
+            oi['public'] = public
             subscribers = []
             if group:
                 subscribers.append(owner)

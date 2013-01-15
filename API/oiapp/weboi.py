@@ -43,8 +43,10 @@ def new_oi():
         tags = request.form['tags']
         gp = int(request.form.get('group', 0))
         group = True if gp == 1 else False
+        pub = int(request.form.get('public', 0))
+        public = True if pub == 1 else False
 
-        doc = Oi.create(owner['username'], name, contacts, tags, comments, group)
+        doc = Oi.create(owner['username'], name, contacts, tags, comments, group, public)
         if '_id' in doc:
             Audit.new_oi(owner['username'], doc['_id'], '')
             return jsonify({'oi': Oi.to_dict(doc)})
