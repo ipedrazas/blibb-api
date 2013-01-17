@@ -172,10 +172,10 @@ class Oi(Base):
             oi['sent'] = 0
             oi['pushes'] = 0
             oi['channel'] = '%s-%s-%s' % (cls.parse_string(owner), cls.parse_string(name), rnd_id)
-            oi['senders'] = [owner]
             oi['group'] = group
             oi['public'] = public
             subscribers = []
+            senders = [owner]
             if group:
                 subscribers.append(owner)
 
@@ -183,11 +183,15 @@ class Oi(Base):
                 u = User.is_oi_user(p)
                 if u:
                     # If the user explicitly asks to check invitations
+                    username = u['username']
                     if not u.get('ask', False):
-                        subscribers.append(u['username'])
+                        if username not in subscribers:
+                            subscribers.append(username)
                         oi['invited'].remove(p)
+                        if group and username not in senders:
+                            senders.append(username)
 
-
+            oi['senders'] = senders
             oi['subscribers'] = subscribers
             oi['comments'] = comments
 
