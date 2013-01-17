@@ -123,13 +123,13 @@ def get_oi(oiid):
         return jsonify({'oi': Oi.to_dict(doc)})
     abort(400)
 
-@oi.route('/<oiid>/<username>/public', methods=['GET'])
+@oi.route('/<username>/public', methods=['GET'])
 @support_jsonp
 @parse_args
-def get_public_oi(oiid, *args, **kwargs):
+def get_public_oi(username, *args, **kwargs):
     resultset = []
     if is_valid_id(oiid):
-        docs = Oi.get_all({'del': {'$exists': False}, 'o': ObjectId(oiid), 'public': True}, **kwargs)
+        docs = Oi.get_all({'del': {'$exists': False},'owner': username, 'public': True}, **kwargs)
         for doc in docs:
             resultset.append(Oi.to_dict(doc))
         return jsonify({'resultset': resultset})
