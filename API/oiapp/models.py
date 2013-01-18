@@ -161,7 +161,7 @@ class Oi(Base):
                     oi["senders"].append(username)
 
     @classmethod
-    def get_full_name(owner):
+    def get_full_name(cls, owner):
         name = User.get_by_name(owner)
         if 'first_name' in name:
             return '%s %s' % (name['first_name'], name['last_name'] )
