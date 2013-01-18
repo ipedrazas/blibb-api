@@ -116,7 +116,7 @@ def queue_mail(oiid, full_name, name, email, comments):
     socket.connect("tcp://localhost:5558")
     if oiid is not None:
         # oiid, full_name, name, email, comments
-         msg = '%s##%s##%s##%s##%s' % (oiid, full_name, name, email, comments)
+        msg = '%s##%s##%s##%s##%s' % (oiid, full_name, name, email, comments)
         socket.send(msg)
 
 
