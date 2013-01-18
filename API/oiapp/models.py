@@ -139,7 +139,26 @@ class Oi(Base):
     objects = db['ois']
 
     @classmethod
+    def add_invitation(cls, oi):
+        cls.process_invitations(oi)
+        cls.objects.save(oi)
+
+
+
+    @classmethod
     def process_invitations(cls, oi):
+        contacts_list = oi["invited"]
+        for p in contacts_list:
+                u = User.is_oi_user(p)
+                if u:
+                    # If the user explicitly asks to check invitations
+                    username = u['username']
+                    if not u.get('ask', False):
+                        if username not in subscribers:
+                            subscribers.append(username)
+                        oi['invited'].remove(p)
+                        if group and username not in senders:
+                            senders.append(username)
         name = User.get_by_name(oi['owner'])
         if 'first_name' in name:
             full_name = '%s %s' % (name['first_name'], name['last_name'] )
@@ -179,17 +198,7 @@ class Oi(Base):
             if group:
                 subscribers.append(owner)
 
-            for p in contacts_list:
-                u = User.is_oi_user(p)
-                if u:
-                    # If the user explicitly asks to check invitations
-                    username = u['username']
-                    if not u.get('ask', False):
-                        if username not in subscribers:
-                            subscribers.append(username)
-                        oi['invited'].remove(p)
-                        if group and username not in senders:
-                            senders.append(username)
+            cls.process_invitations(oi)
 
             oi['senders'] = senders
             oi['subscribers'] = subscribers

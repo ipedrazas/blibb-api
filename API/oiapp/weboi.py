@@ -250,6 +250,17 @@ def get_history_oi(oiid, *args, **kwargs):
     abort(400)
 
 
+@oi.route('/<oiid>/invited', methods=['POST'])
+@crossdomain(origin='*')
+def add_invited_oi(oiid=None):
+    login_key = request.form['login_key']
+    invited = request.form['email']
+    user = get_user(login_key)
+    if is_valid_id(oiid):
+        if user and Oi.add_invitation(oiid, invited):
+            return jsonify({'result': {'code': 'true', 'msg': 'Object fav'}})
+        abort(401)
+    abort(400)
 
 
 @oi.route('/<oiid>/fav', methods=['POST'])
