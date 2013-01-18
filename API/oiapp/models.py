@@ -144,7 +144,7 @@ class Oi(Base):
         cls.add_invited(email, oi)
         cls.objects.save(oi)
         full_name = cls.get_full_name(oi['owner'])
-        send_invitation(email, full_name)
+        send_invitation(email, full_name, oi)
 
 
     @classmethod
@@ -175,7 +175,7 @@ class Oi(Base):
 
         full_name = cls.get_full_name(oi['owner'])
         for email in oi["invited"]:
-            send_invitation(email, full_name)
+            send_invitation(email, full_name, oi)
 
 
     @classmethod

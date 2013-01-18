@@ -29,7 +29,7 @@ def read_file(filename):
     return f.read()
 
 
-def send_invitation(email, full_name):
+def send_invitation(email, full_name, oi):
     txt_mail = 'Invitation to Join Oi!'
     mail = read_file('/oiapp/mail.html')
     html_mail = mail.decode('utf-8') % (full_name, oi['_id'], oi['name'], oi['comments'], oi['_id'])
