@@ -11,7 +11,7 @@ from pymongo import Connection
 from bson.objectid import ObjectId
 from API.oiapp.base import Base
 from API.utils import get_config_value, is_valid_id, queue_ducksboard_delta
-from API.mail import send_invitations
+from API.mail import send_invitation
 from hashlib import sha1
 import redis
 import json
@@ -139,33 +139,43 @@ class Oi(Base):
     objects = db['ois']
 
     @classmethod
-    def add_invitation(cls, oi):
-        cls.process_invitations(oi)
+    def add_invitation(cls, oiid, email):
+        oi = Oi.get({'_id': ObjectId(oiid), 'del': {'$exists': False}})
+        cls.add_invited(email, oi)
         cls.objects.save(oi)
+        full_name = cls.get_full_name(oi['owner'])
+        send_invitation(email, full_name)
 
 
+    @classmethod
+    def add_invited(cls, email, oi):
+        u = User.is_oi_user(email)
+        if u:
+            # If the user explicitly asks to check invitations
+            username = u['username']
+            if not u.get('ask', False):
+                if username not in oi["subscribers"]:
+                    oi["subscribers"].append(username)
+                oi['invited'].remove(p)
+                if group and username not in oi["senders"]:
+                    oi["senders"].append(username)
+
+    @classmethod
+    def get_full_name(owner):
+        name = User.get_by_name(owner)
+        if 'first_name' in name:
+            return '%s %s' % (name['first_name'], name['last_name'] )
+        return owner
 
     @classmethod
     def process_invitations(cls, oi):
         contacts_list = oi["invited"]
         for p in contacts_list:
-                u = User.is_oi_user(p)
-                if u:
-                    # If the user explicitly asks to check invitations
-                    username = u['username']
-                    if not u.get('ask', False):
-                        if username not in subscribers:
-                            subscribers.append(username)
-                        oi['invited'].remove(p)
-                        if group and username not in senders:
-                            senders.append(username)
-        name = User.get_by_name(oi['owner'])
-        if 'first_name' in name:
-            full_name = '%s %s' % (name['first_name'], name['last_name'] )
-        else:
-            full_name = oi['owner']
+            cls.add_invited(p, oi)
 
-        send_invitations(oi, full_name)
+        full_name = cls.get_full_name(oi['owner'])
+        for email in oi["invited"]:
+            send_invitation(email, full_name)
 
 
     @classmethod
