@@ -3,9 +3,9 @@
 
 
 from flask import current_app
+import re
 import sendgrid
 from API.utils import get_config_value
-import re
 from os.path import join, abspath, dirname
 from pymongo import Connection
 

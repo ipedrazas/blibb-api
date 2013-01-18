@@ -10,8 +10,7 @@ from datetime import datetime
 from pymongo import Connection
 from bson.objectid import ObjectId
 from API.oiapp.base import Base
-from API.utils import get_config_value, is_valid_id, queue_ducksboard_delta
-from API.mail import send_invitation
+from API.utils import get_config_value, is_valid_id, queue_ducksboard_delta, queue_mail
 from hashlib import sha1
 import redis
 import json
@@ -144,7 +143,7 @@ class Oi(Base):
         cls.add_invited(email, oi)
         cls.objects.save(oi)
         full_name = cls.get_full_name(oi['owner'])
-        send_invitation(email, full_name, oi)
+        queue_mail(oi['_id'], full_name, oi['name'], email, oi['comments'])
 
 
     @classmethod
@@ -168,17 +167,6 @@ class Oi(Base):
         return owner
 
     @classmethod
-    def process_invitations(cls, oi):
-        contacts_list = oi["invited"]
-        for p in contacts_list:
-            cls.add_invited(p, oi)
-
-        full_name = cls.get_full_name(oi['owner'])
-        for email in oi["invited"]:
-            send_invitation(email, full_name, oi)
-
-
-    @classmethod
     def create(cls, owner, name, contacts, tags, comments, group=True, public=False):
         ## check name
         oi_name = Oi.get({'name': name, 'owner': owner, 'del': {'$exists': False}})
@@ -200,18 +188,17 @@ class Oi(Base):
             oi['push'] = {'when': '', 'who': ''}
             oi['sent'] = 0
             oi['pushes'] = 0
-            oi['channel'] = '%s-%s-%s' % (cls.parse_string(owner), cls.parse_string(name), rnd_id)
             oi['group'] = group
             oi['public'] = public
             subscribers = []
-            senders = [owner]
             if group:
                 subscribers.append(owner)
-
-            cls.process_invitations(oi)
-
-            oi['senders'] = senders
+                oi['channel'] = '%s-%s-%s' % (cls.parse_string(owner), cls.parse_string(name), rnd_id)
+            oi['senders'] = [owner]
             oi['subscribers'] = subscribers
+            contacts_list = oi["invited"]
+            for p in contacts_list:
+                cls.add_invited(p, oi)
             oi['comments'] = comments
 
             if tags is not None:
@@ -224,7 +211,9 @@ class Oi(Base):
             current_app.logger.info(str(oi))
             if is_valid_id(new_id):
                 oi['_id'] = new_id
-                cls.process_invitations(oi)
+                full_name = cls.get_full_name(oi['owner'])
+                for email in oi['invited']:
+                    queue_mail(new_id, full_name, name, email, comments)
                 return oi
             else:
                 error = {'error': 'Error creating the Oi'}
