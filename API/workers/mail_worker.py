@@ -1,6 +1,6 @@
 #
 #
-#   worker ducksboard
+#   worker Mail
 #
 #
 from __future__ import division
@@ -8,14 +8,10 @@ import zmq
 import sys
 from os.path import join, abspath, dirname
 import sendgrid
-from API.utils import get_config_value
-from pymongo import Connection
-
 
 parentpath = abspath(join(dirname(__file__), '../..'))
 sys.path.append(parentpath)
 
-from API.oiapp.models import User, Oi
 from API.utils import get_config_value
 
 
