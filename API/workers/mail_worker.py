@@ -8,6 +8,8 @@ import zmq
 import sys
 from os.path import join, abspath, dirname
 import sendgrid
+import time
+
 
 parentpath = abspath(join(dirname(__file__), '../..'))
 sys.path.append(parentpath)
