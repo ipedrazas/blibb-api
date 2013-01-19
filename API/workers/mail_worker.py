@@ -40,26 +40,18 @@ def send_invitation_mail(mail):
 
 
 def processMessage(message):
-    strs = message.split('##')
-    oiid = strs[0]
-    full_name = strs[1]
-    name = strs[2]
-    email = strs[3]
-    comments = strs[4]
-
     txt_mail = 'Invitation to Join Oi!'
     mail = read_file('/oiapp/mail.html')
-    html_mail = mail.decode('utf-8') % (full_name, oiid, name, comments, oiid)
-    subject = full_name + " wants to send you " + name
+    html_mail = mail.decode('utf-8') % (message['full_name'], message['oiid'], message['name'], message['comments'], message['oiid'])
+    subject = message['full_name'] + " wants to send you " + message['name']
     mail = {'from': "info@oioi.me", 'from_name': 'Oi!', 'subject': subject, 'txt_body': txt_mail, 'html_body': html_mail, 'to_name': ''}
-    mail['to_address'] = email
+    mail['to_address'] = message['email']
     send_invitation_mail(mail)
 
 while True:
     #  Wait for next request from client
     # message = socket.recv()
-    [m, msg] = subscriber.recv_multipart()
-
+    msg = subscriber.recv_json()
     processMessage(msg)
 
     #  Do some 'work'

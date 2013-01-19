@@ -116,9 +116,10 @@ def queue_mail(oiid, full_name, name, email, comments):
     socket.connect("tcp://localhost:5558")
     if oiid is not None:
         # oiid, full_name, name, email, comments
-        msg = '%s##%s##%s##%s##%s' % (oiid, full_name, name, email, comments)
+        # msg = '%s##%s##%s##%s##%s' % (oiid, full_name, name, email, comments)
+        msg = {'id': oiid, 'full_name': full_name, 'name': name, 'email': email, 'comments': comments}
         # socket.send_unicode(msg)
-        socket.send_multipart(["M", msg])
+        socket.send_json(msg)
 
 
 def queue_ducksboard(widget_id, msg):
