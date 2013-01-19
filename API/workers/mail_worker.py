@@ -30,7 +30,7 @@ def read_file(filename):
 
 
 def send_invitation_mail(mail):
-    current_app.logger.info('Mail sent to ' + mail['to_address'])
+    print 'Mail sent to ' + mail['to_address']
     sendgrid_user = get_config_value('SENDGRID_USER')
     sendgrid_password = get_config_value('SENDGRID_PASSWORD')
     s = sendgrid.Sendgrid(sendgrid_user, sendgrid_password, secure=True)
@@ -52,7 +52,7 @@ while True:
     #  Wait for next request from client
     # message = socket.recv()
     msg = socket.recv_json()
-    current_app.logger.info(str(msg))
+    print str(msg)
     processMessage(msg)
 
     #  Do some 'work'
