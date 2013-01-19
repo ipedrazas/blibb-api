@@ -22,6 +22,13 @@ socket = context.socket(zmq.REP)
 socket.bind("tcp://*:5558")
 
 
+def read_file(filename):
+    path = abspath(join(dirname(__file__), '.')) + filename
+    print path
+    f = open(path, 'r')
+    return f.read()
+
+
 def send_invitation_mail(mail):
     current_app.logger.info('Mail sent to ' + mail['to_address'])
     sendgrid_user = get_config_value('SENDGRID_USER')
