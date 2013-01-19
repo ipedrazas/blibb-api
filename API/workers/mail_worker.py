@@ -41,7 +41,7 @@ def send_invitation_mail(mail):
 
 def processMessage(message):
     txt_mail = 'Invitation to Join Oi!'
-    mail = read_file('/oiapp/mail.html')
+    mail = read_file('/templates/mail.html')
     html_mail = mail.decode('utf-8') % (message['full_name'], message['oiid'], message['name'], message['comments'], message['oiid'])
     subject = message['full_name'] + " wants to send you " + message['name']
     mail = {'from': "info@oioi.me", 'from_name': 'Oi!', 'subject': subject, 'txt_body': txt_mail, 'html_body': html_mail, 'to_name': ''}
