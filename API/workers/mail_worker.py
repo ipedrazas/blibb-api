@@ -51,7 +51,7 @@ def processMessage(message):
 while True:
     #  Wait for next request from client
     # message = socket.recv()
-    msg = subscriber.recv_json()
+    msg = socket.recv_json()
     processMessage(msg)
 
     #  Do some 'work'
