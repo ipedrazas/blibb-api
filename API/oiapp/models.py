@@ -156,7 +156,7 @@ class Oi(Base):
                 if username not in oi["subscribers"]:
                     oi["subscribers"].append(username)
                 oi['invited'].remove(email)
-                if group and username not in oi["senders"]:
+                if oi['group'] and username not in oi["senders"]:
                     oi["senders"].append(username)
 
     @classmethod
