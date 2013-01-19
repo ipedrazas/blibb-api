@@ -52,6 +52,7 @@ while True:
     #  Wait for next request from client
     # message = socket.recv()
     msg = socket.recv_json()
+    current_app.logger.info(str(msg))
     processMessage(msg)
 
     #  Do some 'work'
