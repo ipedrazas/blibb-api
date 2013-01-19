@@ -1,6 +1,6 @@
 # LOGIN
 
-curl -k -d "email=admin@oioi.me&password=admin" http://api.blibb.net/users/login
+curl -k -d "username=ipedrazas&password=i" http://api.oioi.me/users/login
 
 
 "key": "6951956082b192b13f95049856b98bad4e0caeb6",
