@@ -118,7 +118,7 @@ def queue_mail(oiid, full_name, name, email, comments):
         # oiid, full_name, name, email, comments
         msg = '%s##%s##%s##%s##%s' % (oiid, full_name, name, email, comments)
         # socket.send_unicode(msg)
-        socket.send_multipart([oiid, full_name, name, email, comments])
+        socket.send_multipart(["M", msg])
 
 
 def queue_ducksboard(widget_id, msg):
