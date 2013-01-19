@@ -213,7 +213,7 @@ class Oi(Base):
                 oi['_id'] = new_id
                 full_name = cls.get_full_name(oi['owner'])
                 for email in oi['invited']:
-                    queue_mail(new_id, full_name, name, email, comments)
+                    queue_mail(str(new_id), full_name, name, email, comments)
                 return oi
             else:
                 error = {'error': 'Error creating the Oi'}
