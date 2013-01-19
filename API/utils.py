@@ -117,7 +117,7 @@ def queue_mail(oiid, full_name, name, email, comments):
     if oiid is not None:
         # oiid, full_name, name, email, comments
         # msg = '%s##%s##%s##%s##%s' % (oiid, full_name, name, email, comments)
-        msg = {'id': oiid, 'full_name': full_name, 'name': name, 'email': email, 'comments': comments}
+        msg = {'oiid': oiid, 'full_name': full_name, 'name': name, 'email': email, 'comments': comments}
         # socket.send_unicode(msg)
         socket.send_json(msg)
 
