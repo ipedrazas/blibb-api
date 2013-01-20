@@ -163,7 +163,8 @@ class Oi(Base):
             if not u.get('ask', False):
                 if username not in oi["subscribers"]:
                     oi["subscribers"].append(username)
-                oi['invited'].remove(email)
+                if email in oi['invited']:
+                    oi['invited'].remove(email)
                 if oi['group'] and username not in oi["senders"]:
                     oi["senders"].append(username)
 
