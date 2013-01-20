@@ -138,6 +138,14 @@ class Oi(Base):
     objects = db['ois']
 
     @classmethod
+    def is_owner(cls, oi, user):
+        if isinstance(user, dict):
+            username = user.get('username', False)
+        else:
+            username = user
+        return username == oi['owner']
+
+    @classmethod
     def add_invitation(cls, oiid, email):
         oi = Oi.get({'_id': ObjectId(oiid), 'del': {'$exists': False}})
         cls.add_invited(email, oi)
@@ -285,12 +293,13 @@ class Oi(Base):
     def unsubscribe_user(cls, oiid, user, username):
         doc = cls.get({'_id': ObjectId(oiid)})
         if doc:
-            if user['username'] == doc['owner']:
-                doc['subscribers'].remove(username)
-            if user in doc['senders']:
-                doc['senders'].remove(username)
-            cls.objects.save(doc)
-            return True
+            if cls.is_owner(doc, user):
+                if username in doc['subscribers']:
+                    doc['subscribers'].remove(username)
+                if username in doc['senders']:
+                    doc['senders'].remove(username)
+                cls.objects.save(doc)
+                return True
         return False
 
     @classmethod
