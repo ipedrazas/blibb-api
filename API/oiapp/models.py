@@ -153,7 +153,7 @@ class Oi(Base):
             cls.add_invited(email, oi)
             cls.objects.save(oi)
             full_name = cls.get_full_name(oi['owner'])
-            queue_mail(oi['_id'], full_name, oi['name'], email, oi['comments'])
+            queue_mail(str(oi['_id']), full_name, oi['name'], email, oi['comments'])
 
 
     @classmethod
