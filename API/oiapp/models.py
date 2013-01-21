@@ -150,10 +150,10 @@ class Oi(Base):
         oi = Oi.get({'_id': ObjectId(oiid), 'del': {'$exists': False}})
         current_app.logger.info('add_inviation: ' + str(oi))
         if oi:
-            cls.add_invited(email, oi)
+            if not cls.add_invited(email, oi):
+                full_name = cls.get_full_name(oi['owner'])
+                queue_mail(str(oi['_id']), full_name, oi['name'], email, oi['comments'])
             cls.objects.save(oi)
-            full_name = cls.get_full_name(oi['owner'])
-            queue_mail(str(oi['_id']), full_name, oi['name'], email, oi['comments'])
 
 
     @classmethod
@@ -165,10 +165,12 @@ class Oi(Base):
             if not u.get('ask', False):
                 if username not in oi["subscribers"]:
                     oi["subscribers"].append(username)
-                if email in oi['invited']:
-                    oi['invited'].remove(email)
                 if oi['group'] and username not in oi["senders"]:
                     oi["senders"].append(username)
+                if email in oi['invited']:
+                    oi['invited'].remove(email)
+                    return True
+        return False
 
     @classmethod
     def get_full_name(cls, owner):
