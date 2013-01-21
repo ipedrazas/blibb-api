@@ -148,10 +148,12 @@ class Oi(Base):
     @classmethod
     def add_invitation(cls, oiid, email):
         oi = Oi.get({'_id': ObjectId(oiid), 'del': {'$exists': False}})
-        cls.add_invited(email, oi)
-        cls.objects.save(oi)
-        full_name = cls.get_full_name(oi['owner'])
-        queue_mail(oi['_id'], full_name, oi['name'], email, oi['comments'])
+        current_app.logger.info('add_inviation: ' + str(oi))
+        if oi:
+            cls.add_invited(email, oi)
+            cls.objects.save(oi)
+            full_name = cls.get_full_name(oi['owner'])
+            queue_mail(oi['_id'], full_name, oi['name'], email, oi['comments'])
 
 
     @classmethod
