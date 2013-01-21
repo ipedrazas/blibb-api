@@ -317,7 +317,7 @@ class Oi(Base):
 
     @classmethod
     def push(cls, doc, user):
-        channel = doc['channel']
+        channel = doc.get('channel', False)
         name = doc['name']
         username = user['username']
         last_push = {"when":  datetime.now(), "who": username}
