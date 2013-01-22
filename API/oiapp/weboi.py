@@ -257,8 +257,9 @@ def add_invited_oi(oiid=None):
     invited = request.form['email']
     user = get_user(login_key)
     if is_valid_id(oiid):
-        if user and Oi.add_invitation(oiid, invited):
-            return jsonify({'result': {'code': 'true', 'msg': 'Object fav'}})
+        if user
+            if Oi.add_invitation(oiid, invited):
+                return jsonify({'result': {'code': 'true', 'msg': 'Object fav'}})
         abort(401)
     abort(400)
 

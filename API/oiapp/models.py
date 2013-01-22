@@ -154,6 +154,8 @@ class Oi(Base):
                 full_name = cls.get_full_name(oi['owner'])
                 queue_mail(str(oi['_id']), full_name, oi['name'], email, oi['comments'])
             cls.objects.save(oi)
+            return True
+        return False
 
 
     @classmethod
