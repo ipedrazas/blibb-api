@@ -193,7 +193,7 @@ def subscribe_oi(oiid=None):
 
 @oi.route('/<oiid>/<username>/unsubscribe', methods=['POST'])
 @crossdomain(origin='*')
-def unsubscribe_oi(oiid=None, username=None):
+def unsubscribe_user_oi(oiid=None, username=None):
     login_key = request.form['login_key']
     user = get_user(login_key)
     if is_valid_id(oiid):
