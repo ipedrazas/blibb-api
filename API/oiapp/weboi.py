@@ -212,9 +212,9 @@ def unsubscribe_oi(oiid=None):
     if is_valid_id(oiid):
         if user:
             if username:
-                res = Oi.unsubscribe(oiid, username):
+                res = Oi.unsubscribe(oiid, username)
                 Audit.unsubscribe(user['username'], '', oiid)
-                return jsonify({'result': {'code': 'true', 'msg': 'Object unsubscribed'}})
+                return jsonify({'result': {'code': res, 'msg': 'Object unsubscribed'}})
         abort(401)
     abort(400)
 
