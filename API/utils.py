@@ -54,7 +54,7 @@ def get_key(key):
 
 
 def get_user(key):
-    r = cls.get_redis()
+    r = get_redis()
     if r:
         juser = r.get(key)
         if juser:
