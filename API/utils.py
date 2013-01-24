@@ -53,7 +53,7 @@ def get_key(key):
     return r.get(key)
 
 
-def get_user(cls, key):
+def get_user(key):
     r = cls.get_redis()
     if r:
         juser = r.get(key)
