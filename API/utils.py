@@ -53,12 +53,12 @@ def get_key(key):
     return r.get(key)
 
 
-def get_user(key):
-    r = get_redis()
-    juser = r.get(key)
-    # current_app.logger.info("get_user: " + str(juser))
-    if juser:
-        return json.loads(juser)
+def get_user(cls, key):
+    r = cls.get_redis()
+    if r:
+        juser = r.get(key)
+        if juser:
+            return json.loads(juser)
     return None
 
 

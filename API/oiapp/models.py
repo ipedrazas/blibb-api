@@ -550,8 +550,6 @@ class User(Base):
         if r:
             juser = r.get(key)
             if juser:
-                # stUser = cls.get({'username': juser['username']})
-                # user = cls.to_safe_dict(stUser)
                 return json.loads(juser)
         return None
 
