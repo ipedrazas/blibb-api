@@ -67,6 +67,24 @@ def update(username):
     else:
         abort(401)
 
+@oiuser.route('/getinfb', methods=['POST'])
+@crossdomain(origin='*')
+def getin_facebook():
+    current_app.logger.info('getinfb')
+    token = reques.form.get('token', False)
+    username = request.form['username']
+    fbid = request.form['fbid']
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
+    timezone = request.form['timezone']
+    email = request.form['email']
+    img = "http://graph.facebook.com/" + request.form['fbid'] + "/picture"
+    device = request.form.get("origin", None)
+    doc = User.create_facebook(username, fbid, email, first_name, last_name, timezone, img)
+    user = User.login_facebook(fbid)
+    Audit.facebook_signup(username, device)
+    return jsonify(user) if user else abort(401)
+
 
 @oiuser.route('/facebook', methods=['POST'])
 @crossdomain(origin='*')
