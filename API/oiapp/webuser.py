@@ -67,7 +67,7 @@ def update(username):
     else:
         abort(401)
 
-@oiuser.route('/getinfb', methods=['POST'])
+@oiuser.route('/facebook', methods=['POST'])
 @crossdomain(origin='*')
 def getin_facebook():
     current_app.logger.info('getinfb')
@@ -81,33 +81,15 @@ def getin_facebook():
     img = "http://graph.facebook.com/" + request.form['fbid'] + "/picture"
     device = request.form.get("origin", None)
     doc = User.create_facebook(username, fbid, email, first_name, last_name, timezone, img)
-    current_app.logger.info(str(doc))
     user = User.login_facebook(fbid)
-    current_app.logger.info(str(user))
-    Audit.facebook_signup(username, device)
+    Audit.login_facebook(username, device)
     return jsonify(user) if user else abort(401)
 
 
-@oiuser.route('/facebook', methods=['POST'])
-@crossdomain(origin='*')
-def new_user_facebook():
-    current_app.logger.info('facebook')
-    username = request.form['username']
-    fbid = request.form['fbid']
-    first_name = request.form['first_name']
-    last_name = request.form['last_name']
-    timezone = request.form['timezone']
-    email = request.form['email']
-    img = "http://graph.facebook.com/" + request.form['fbid'] + "/picture"
-    device = request.form.get("origin", None)
-    doc = User.create_facebook(username, fbid, email, first_name, last_name, timezone, img)
-    user = User.login_facebook(fbid)
-    if 'error' in doc:
-        print str(doc)
-        abort(409, 'User already exists')
-    else:
-        Audit.facebook_signup(username, device)
-        return jsonify(user) if user else abort(401)
+@oiuser.route('/hb', methods=['GET'])
+@support_jsonp
+def do_heartbeat(username):
+    return jsonify({'heartbeat': 'tu-tup'})
 
 
 @oiuser.route('/<username>', methods=['GET'])
