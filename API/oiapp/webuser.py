@@ -88,7 +88,7 @@ def getin_facebook():
 
 @oiuser.route('/hb', methods=['GET'])
 @support_jsonp
-def do_heartbeat(username):
+def do_heartbeat():
     return jsonify({'heartbeat': 'tu-tup'})
 
 
