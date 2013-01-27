@@ -81,7 +81,9 @@ def getin_facebook():
     img = "http://graph.facebook.com/" + request.form['fbid'] + "/picture"
     device = request.form.get("origin", None)
     doc = User.create_facebook(username, fbid, email, first_name, last_name, timezone, img)
+    current_app.logger.info(str(doc))
     user = User.login_facebook(fbid)
+    current_app.logger.info(str(user))
     Audit.facebook_signup(username, device)
     return jsonify(user) if user else abort(401)
 
