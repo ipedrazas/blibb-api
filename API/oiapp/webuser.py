@@ -71,7 +71,7 @@ def update(username):
 @crossdomain(origin='*')
 def getin_facebook():
     current_app.logger.info('getinfb')
-    token = reques.form.get('token', False)
+    token = request.form.get('token', False)
     username = request.form['username']
     fbid = request.form['fbid']
     first_name = request.form['first_name']
