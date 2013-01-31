@@ -174,6 +174,17 @@ def delete_oi(oiid=None):
             abort(404)
     abort(400)
 
+@oi.route('/<oiid>/subscribe/public', methods=['POST'])
+@crossdomain(origin='*')
+def subscribe_public_oi(oiid=None):
+    login_key = request.form['login_key']
+    user = get_user(login_key)
+    if is_valid_id(oiid):
+        Oi.subscribe_public(oiid, user)
+        Audit.subscribe(user['username'], '', oiid)
+        return jsonify({'result': {'code': 'true', 'msg': 'Object subscribed'}})
+    abort(400)
+
 
 @oi.route('/<oiid>/subscribe', methods=['POST'])
 @crossdomain(origin='*')

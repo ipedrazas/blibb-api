@@ -266,6 +266,17 @@ class Oi(Base):
         return False
 
     @classmethod
+    def subscribe_public(cls, oiid, user):
+        doc = cls.get({'_id': ObjectId(oiid)})
+        username = user['username']
+        if doc.get('group', False):
+            if username not in doc['senders']:
+                doc['senders'].append(username)
+        if username not in doc['subscribers']:
+            doc['subscribers'].append(username)
+        cls.objects.save(doc)
+
+    @classmethod
     def subscribe(cls, oiid, user):
         doc = cls.get({'_id': ObjectId(oiid)})
         guests = doc.get('invited', None)
