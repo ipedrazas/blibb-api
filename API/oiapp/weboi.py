@@ -180,9 +180,10 @@ def subscribe_public_oi(oiid=None):
     login_key = request.form['login_key']
     user = get_user(login_key)
     if is_valid_id(oiid):
-        Oi.subscribe_public(oiid, user)
-        Audit.subscribe(user['username'], '', oiid)
-        return jsonify({'result': {'code': 'true', 'msg': 'Object subscribed'}})
+        if Oi.subscribe_public(oiid, user):
+            Audit.subscribe(user['username'], '', oiid)
+            return jsonify({'result': {'code': 'true', 'msg': 'Object subscribed'}})
+        abort(401)
     abort(400)
 
 
