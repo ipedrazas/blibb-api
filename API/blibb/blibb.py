@@ -7,6 +7,7 @@
 
 from flask import jsonify, current_app
 from datetime import datetime
+from string import digits, ascii_letters
 
 from bson.objectid import ObjectId
 from pymongo import Connection
@@ -21,7 +22,7 @@ from API.utils import is_valid_id, date_to_str, get_config_value
 conn = Connection(get_config_value('MONGO_URL'))
 db = conn['blibb']
 objects = db['blibbs']
-
+NUM_CHARS = get_config_value['NUM_CHARS']
 
 class Blibb(object):
 
@@ -69,9 +70,12 @@ class Blibb(object):
             acl = dict()
             acl['read'] = read_access
             acl['write'] = write_access
+            num = int(NUM_CHARS)
+            url_id = "".join(sample(digits + ascii_letters, num))
+            'si': url_id
             doc = {"n": name, "s": slug, "d": desc, "u": user, "c": now,
                     "t": template, "img": image, 'a': acl, 'f': fields,
-                    'at': slug, 'st': {'v': 0}}
+                    'at': slug, 'st': {'v': 0}, 'si': url_id}
 
             newId = objects.insert(doc)
             return str(newId)
