@@ -152,7 +152,7 @@ class Oi(Base):
         if oi:
             if not cls.add_invited(email, oi):
                 full_name = cls.get_full_name(oi['owner'])
-                queue_mail(str(oi['_id']), full_name, oi['name'], email, oi['comments'])
+                queue_mail(str(oi['_id']), full_name, oi['name'], email, oi['comments'], '/templates/mail.html')
             cls.objects.save(oi)
             return True
         return False

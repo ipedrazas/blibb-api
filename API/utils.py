@@ -109,7 +109,7 @@ def queue_ducksboard_value(widget_id, value):
         queue_ducksboard(widget_id, msg)
 
 
-def queue_mail(oiid, full_name, name, email, comments):
+def queue_mail(oiid, full_name, name, email, comments, template):
     print 'Queuing to mail worker ' + str(oiid)
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
@@ -117,7 +117,7 @@ def queue_mail(oiid, full_name, name, email, comments):
     if oiid is not None:
         # oiid, full_name, name, email, comments
         # msg = '%s##%s##%s##%s##%s' % (oiid, full_name, name, email, comments)
-        msg = {'oiid': oiid, 'full_name': full_name, 'name': name, 'email': email, 'comments': comments}
+        msg = {'oiid': oiid, 'full_name': full_name, 'name': name, 'email': email, 'comments': comments, 'template': template}
         # socket.send_unicode(msg)
         socket.send_json(msg)
 
