@@ -114,7 +114,7 @@ def getBlibb(blibb_id=None, params=None):
 
 @mod.route('/short/<short_id>', methods=['GET'])
 @support_jsonp
-def getBlibbShort(short_id=None, params=None):
+def getBlibbShort(short_id=None):
     if short_id is None:
         abort(404)
 
