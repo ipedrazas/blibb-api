@@ -112,6 +112,21 @@ def getBlibb(blibb_id=None, params=None):
     else:
         abort(404)
 
+@mod.route('/short/<short_id>', methods=['GET'])
+@crossdomain(origin='*')
+def getBlibb(short_id=None, params=None):
+    if short_id is None:
+        abort(404)
+
+    if params is None:
+        o = Blibb.get_object({'si': short_id})
+        r = Blibb.flat_object(o)
+
+    if r != 'null':
+        return jsonify(r)
+    else:
+        abort(404)
+
 
 @mod.route('/<blibb_id>/template', methods=['GET'])
 @crossdomain(origin='*')
