@@ -22,7 +22,7 @@ from API.utils import is_valid_id, date_to_str, get_config_value
 conn = Connection(get_config_value('MONGO_URL'))
 db = conn['blibb']
 objects = db['blibbs']
-NUM_CHARS = get_config_value['NUM_CHARS']
+NUM_CHARS = get_config_value('NUM_CHARS')
 
 class Blibb(object):
 
