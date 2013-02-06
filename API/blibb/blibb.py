@@ -72,7 +72,6 @@ class Blibb(object):
             acl['write'] = write_access
             num = int(NUM_CHARS)
             url_id = "".join(sample(digits + ascii_letters, num))
-            'si': url_id
             doc = {"n": name, "s": slug, "d": desc, "u": user, "c": now,
                     "t": template, "img": image, 'a': acl, 'f': fields,
                     'at': slug, 'st': {'v': 0}, 'si': url_id}
