@@ -8,6 +8,7 @@
 from flask import jsonify, current_app
 from datetime import datetime
 from string import digits, ascii_letters
+from random import sample
 
 from bson.objectid import ObjectId
 from pymongo import Connection
