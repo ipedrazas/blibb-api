@@ -31,8 +31,15 @@ mod = Blueprint('content', __name__, url_prefix='')
 @mod.route('/image/upload', methods=['POST', 'OPTIONS'])
 @crossdomain(origin='*')
 def upload():
-    login_key = request.form['login_key']
-    user = get_user_name(login_key)
+    login_key = request.form('login_key', False
+    app_token = request.form.get('app_token', False)
+    app_user = request.form.get('u', False)
+
+    if login_key:
+        user = get_user_name(login_key)
+    elif app_token and app_user:
+        user = app_user
+
     bid = None
     if 'blibb_id' in request.form:
         bid = request.form['blibb_id']
