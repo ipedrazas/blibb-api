@@ -19,6 +19,7 @@ from API.error import Message
 from API.utils import is_valid_id, send_url, queue_twitter_resolution, get_config_value
 import re
 from blinker import signal
+from random import sample
 
 
 conn = Connection(get_config_value('MONGO_URL'))
