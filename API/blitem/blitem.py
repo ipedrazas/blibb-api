@@ -20,6 +20,7 @@ from API.utils import is_valid_id, send_url, queue_twitter_resolution, get_confi
 import re
 from blinker import signal
 from random import sample
+from string import digits, ascii_letters
 
 
 conn = Connection(get_config_value('MONGO_URL'))
