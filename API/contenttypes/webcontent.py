@@ -37,7 +37,7 @@ def upload():
 
     if login_key:
         user = get_user_name(login_key)
-    elif:
+    else:
         user = app_user
 
     bid = None
