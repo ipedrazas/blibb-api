@@ -24,6 +24,7 @@ from blinker import signal
 conn = Connection(get_config_value('MONGO_URL'))
 db = conn['blibb']
 objects = db['blitems']
+NUM_CHARS = get_config_value('NUM_CHARS')
 
 
 def do_post_process(item):
@@ -65,8 +66,10 @@ class Blitem(object):
                 for t in tag_list:
                     Blibb.add_tag(blibb_id, t)
 
+            num = int(NUM_CHARS)
+            url_id = "".join(sample(digits + ascii_letters, num))
             now = datetime.utcnow()
-            doc = {"b": bid, "u": user, "bs": bs, "c": now, "i": items, 'tg': tag_list, 'st': 'active'}
+            doc = {"b": bid, "u": user, "bs": bs, "c": now, "i": items, 'tg': tag_list, 'st': 'active', 'si': url_id}
             newId = objects.insert(doc)
             post_process.send(doc)
             return str(newId)
@@ -129,6 +132,7 @@ class Blitem(object):
             blitem['id'] = blitem_id
             blitem['parent'] = str(doc.get('b', ''))
             blitem['num_comments'] = doc.get('cc', '')
+            blitem['url_id'] = doc.get('si', '')
             i = doc.get('i', False)
             if i:
                 for r in i:

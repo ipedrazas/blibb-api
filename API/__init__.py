@@ -47,8 +47,10 @@ from API.comment.webcomment import mod as CommentModule
 from API.oiapp.weboi import oi as OiModule
 from API.oiapp.webuser import oiuser as UserOiModule
 from API.oiapp.webtool import webtool as WebOiModule
+from API.bsm.webbsm import bsm as WebBsmModule
 
 
+app.register_blueprint(WebBsmModule)
 app.register_blueprint(WebOiModule)
 app.register_blueprint(UserOiModule)
 app.register_blueprint(OiModule)
