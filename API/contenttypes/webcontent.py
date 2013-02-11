@@ -31,7 +31,7 @@ mod = Blueprint('content', __name__, url_prefix='')
 @mod.route('/image/upload', methods=['POST', 'OPTIONS'])
 @crossdomain(origin='*')
 def upload():
-    login_key = request.form('login_key', False)
+    login_key = request.form.get('login_key', False)
     app_token = request.form.get('app_token', False)
     app_user = request.form.get('u', False)
 
