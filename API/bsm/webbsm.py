@@ -23,11 +23,15 @@ def send_message():
     app_token = request.form['app_token']
 
     if is_valid_id(blitem_id):
-        blitem = Blitem.get({'_id': ObjectId(blitem_id)})
+        blitem = Blitem.get({'_id': ObjectId(blitem_id), 'i.v': transaction})
         flat = Blitem.flat_object(blitem)
-        current_app.logger.info(flat)
+        current_app.logger.info(blitem)
         template = read_file('/bsm/templates/mysecretvalentine.html')
-        html_mail = template.decode('utf-8') % (flat['url'],'http://blibb.net/go/' + flat['url_id'], flat['message'])
+        html_mail = template.decode('utf-8')
+        html_mail = html_mail.replace("*|IMAGE|*", flat['url'])
+        html_mail = html_mail.replace("*|URL|*", 'http://blibb.net/go/' + flat['url_id'])
+        html_mail = html_mail.replace("*|MESSAGE|*", flat['message']))
+
         mail = {
             'to_address': flat['to'],
             'from_name': 'Your Secret Valentine',
