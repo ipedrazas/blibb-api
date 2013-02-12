@@ -5,7 +5,7 @@ from API.oiapp.models import Audit
 from API.blitem.blitem import Blitem
 from API.event.event import Event
 from bson.objectid import ObjectId
-from API.utils import is_valid_id, read_file
+from API.utils import is_valid_id, read_file, get_config_value
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
 from API.decorators import parse_args
