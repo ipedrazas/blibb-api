@@ -49,7 +49,8 @@ def send_message():
             message = sendgrid.Message((mail['from'], mail['from_name']), mail['subject'], mail['txt_body'], mail['html_body'])
             message.add_to(mail['to_address'], '')
             s.web.send(message)
-            return jsonify({'return': 'success'})
+            # return jsonify({'return': 'success'})
+            return html_mail
         abort(401)
     abort(400)
 
