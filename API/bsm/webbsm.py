@@ -26,7 +26,7 @@ def send_message():
         blitem = Blitem.get({'_id': ObjectId(blitem_id)})
         flat = Blitem.flat_object(blitem)
         # mail = read_file('/templates/mail.html')
-        template = read_file(message['template'])
+        template = read_file('templates/mysecretvalentine.html')
         html_mail = template.decode('utf-8') % (flat['url'],'http://blibb.net/go/' + flat['url_id'], flat['message'])
         mail = {
             'to_address': flat['to'],
