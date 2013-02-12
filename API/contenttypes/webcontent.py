@@ -64,11 +64,13 @@ def upload():
         k.set_metadata('owner', user)
         extension = os.path.splitext(filename)[1]
         k.content_type = file.content_type
-        if extension == 'jpg' or extension=='jpeg':
+        current_app.logger.info('########## Extension: ' + str(extension))
+        current_app.logger.info('########## file.content_type: ' + str(file.content_type))
+        if extension.lower() == 'jpg':
             k.content_type = 'image/jpeg'
-        if extension == 'png':
+        if extension.lower() == 'png':
             k.content_type = 'image/png'
-        if extension == 'gif':
+        if extension.lower() == 'gif':
             k.content_type = 'image/gif'
         k.set_contents_from_string(file.read())
         k.make_public()
