@@ -23,7 +23,7 @@ def send_message():
     app_token = request.form['app_token']
 
     if is_valid_id(blitem_id):
-        blitem = Blitem.get_item({'_id': ObjectId(blitem_id), 'i.v': transaction})
+        blitem = Blitem.get({'_id': ObjectId(blitem_id)})
         flat = Blitem.flat_object(blitem)
         # mail = read_file('/templates/mail.html')
         template = read_file(message['template'])
