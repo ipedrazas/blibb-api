@@ -30,7 +30,7 @@ def send_message():
         html_mail = template.decode('utf-8')
         html_mail = html_mail.replace("*|IMAGE|*", flat['url'])
         html_mail = html_mail.replace("*|URL|*", 'http://blibb.net/go/' + flat['url_id'])
-        html_mail = html_mail.replace("*|MESSAGE|*", flat['message']))
+        html_mail = html_mail.replace("*|MESSAGE|*", flat['message'])
 
         mail = {
             'to_address': flat['to'],
