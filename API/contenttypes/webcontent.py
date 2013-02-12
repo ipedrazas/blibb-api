@@ -62,8 +62,8 @@ def upload():
         k = Key(bucket)
         k.key = user + '/' + filename
         k.set_metadata('owner', user)
-        k.content_type = mimetypes.guess_type(filename)
-        # k.content_type = file.content_type
+        # k.content_type = mimetypes.guess_type(filename)
+        k.content_type = file.content_type
         k.set_contents_from_string(file.read())
         k.make_public()
         url = 'http://%s/%s' % (bucket_name, k.key)
