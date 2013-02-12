@@ -46,7 +46,7 @@ def send_message():
         sendgrid_password = get_config_value('SENDGRID_PASSWORD')
         s = sendgrid.Sendgrid(sendgrid_user, sendgrid_password, secure=True)
         message = sendgrid.Message((mail['from'], mail['from_name']), mail['subject'], mail['txt_body'], mail['html_body'])
-        message.add_to(mail['to_address'], mail['to_name'])
+        message.add_to(mail['to_address'], '')
         s.web.send(message)
 
 
