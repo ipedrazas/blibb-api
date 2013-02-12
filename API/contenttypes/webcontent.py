@@ -20,6 +20,7 @@ from API.decorators import support_jsonp
 
 from boto import connect_s3
 from boto.s3.key import Key
+import mimetypes
 
 mod = Blueprint('content', __name__, url_prefix='')
 
@@ -61,7 +62,8 @@ def upload():
         k = Key(bucket)
         k.key = user + '/' + filename
         k.set_metadata('owner', user)
-        k.content_type = file.content_type
+        k.content_type = mimetypes.guess_type(filename)
+        # k.content_type = file.content_type
         k.set_contents_from_string(file.read())
         k.make_public()
         url = 'http://%s/%s' % (bucket_name, k.key)
