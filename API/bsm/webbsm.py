@@ -25,8 +25,8 @@ def send_message():
     if is_valid_id(blitem_id):
         blitem = Blitem.get({'_id': ObjectId(blitem_id)})
         flat = Blitem.flat_object(blitem)
-        # mail = read_file('/templates/mail.html')
-        template = read_file('templates/mysecretvalentine.html')
+        current_app.logger.info(flat)
+        template = read_file('/bsm/templates/mysecretvalentine.html')
         html_mail = template.decode('utf-8') % (flat['url'],'http://blibb.net/go/' + flat['url_id'], flat['message'])
         mail = {
             'to_address': flat['to'],
