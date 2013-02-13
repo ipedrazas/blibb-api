@@ -66,12 +66,14 @@ def upload():
         k.content_type = file.content_type
         current_app.logger.info('########## Extension: ' + str(extension))
         current_app.logger.info('########## file.content_type: ' + str(file.content_type))
-        if extension.lower() == 'jpg':
+        if extension.lower() == '.jpg':
             k.content_type = 'image/jpeg'
-        if extension.lower() == 'png':
+        if extension.lower() == '.png':
             k.content_type = 'image/png'
-        if extension.lower() == 'gif':
+        if extension.lower() == '.gif':
             k.content_type = 'image/gif'
+        current_app.logger.info('########## Extension: ' + str(extension))
+        current_app.logger.info('########## file.content_type: ' + str(k.content_type))
         k.set_contents_from_string(file.read())
         k.make_public()
         url = 'http://%s/%s' % (bucket_name, k.key)
