@@ -33,3 +33,6 @@ API/*.log
 API/test/twitter_cmd_test.py
 API/test/*.txt
 API/test/*.xls
+
+# Exclude virtualenv
+env
