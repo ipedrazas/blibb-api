@@ -183,58 +183,54 @@ class Oi(Base):
 
     @classmethod
     def create(cls, owner, name, contacts, tags, comments, group=True, public=False):
-        ## check name
-        oi_name = Oi.get({'name': name, 'owner': owner, 'del': {'$exists': False}})
-        tag_list = []
-        if oi_name is None:
-            oi = dict()
-            oi['owner'] = owner
-            now = datetime.now()
-            oi['created_at'] = now
-            oi['name'] = name
-            rnd_id = str(sha1(name + owner + str(now)).hexdigest())
-            contacts_list = []
-            if contacts is not None:
-                    if ',' in contacts:
-                        contacts_list = list(set(contacts.strip().lower().split(',')))
-                    else:
-                        contacts_list.append(contacts)
-            oi['invited'] = contacts_list
-            oi['push'] = {'when': '', 'who': ''}
-            oi['sent'] = 0
-            oi['pushes'] = 0
-            oi['group'] = group
-            oi['public'] = public
-            subscribers = []
-            if group:
-                subscribers.append(owner)
-                oi['channel'] = '%s-%s-%s' % (cls.parse_string(owner), cls.parse_string(name), rnd_id)
-            oi['senders'] = [owner]
-            oi['subscribers'] = subscribers
-            contacts_list = oi["invited"]
-            for p in contacts_list:
-                cls.add_invited(p, oi)
-            oi['comments'] = comments
 
-            if tags is not None:
-                if ',' in tags:
-                    tag_list = list(set(tags.lower().split(',')))
+        tag_list = []
+
+        oi = dict()
+        oi['owner'] = owner
+        now = datetime.now()
+        oi['created_at'] = now
+        oi['name'] = name
+        rnd_id = str(sha1(name + owner + str(now)).hexdigest())
+        contacts_list = []
+        if contacts is not None:
+                if ',' in contacts:
+                    contacts_list = list(set(contacts.strip().lower().split(',')))
                 else:
-                    tag_list = list(set(tags.lower().split()))
-            oi['tags'] = tag_list
-            new_id = cls.objects.insert(oi)
-            current_app.logger.info(str(oi))
-            if is_valid_id(new_id):
-                oi['_id'] = new_id
-                full_name = cls.get_full_name(oi['owner'])
-                for email in oi['invited']:
-                    queue_mail(str(new_id), full_name, name, email, comments, '/templates/mail.html')
-                return oi
+                    contacts_list.append(contacts)
+        oi['invited'] = contacts_list
+        oi['push'] = {'when': '', 'who': ''}
+        oi['sent'] = 0
+        oi['pushes'] = 0
+        oi['group'] = group
+        oi['public'] = public
+        subscribers = []
+        if group:
+            subscribers.append(owner)
+            oi['channel'] = '%s-%s-%s' % (cls.parse_string(owner), cls.parse_string(name), rnd_id)
+        oi['senders'] = [owner]
+        oi['subscribers'] = subscribers
+        contacts_list = oi["invited"]
+        for p in contacts_list:
+            cls.add_invited(p, oi)
+        oi['comments'] = comments
+
+        if tags is not None:
+            if ',' in tags:
+                tag_list = list(set(tags.lower().split(',')))
             else:
-                error = {'error': 'Error creating the Oi'}
-        else:
-            error = {'error': 'Oi with those details already exists'}
-        return error
+                tag_list = list(set(tags.lower().split()))
+        oi['tags'] = tag_list
+        new_id = cls.objects.insert(oi)
+        current_app.logger.info(str(oi))
+        if is_valid_id(new_id):
+            oi['_id'] = new_id
+            full_name = cls.get_full_name(oi['owner'])
+            for email in oi['invited']:
+                queue_mail(str(new_id), full_name, name, email, comments, '/templates/mail.html')
+            return oi
+
+        return {'error': 'Error creating the Oi'}
 
     @classmethod
     def parse_string(cls, buffer):
