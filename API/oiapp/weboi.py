@@ -46,6 +46,7 @@ def new_oi():
         pub = int(request.form.get('public', 0))
         public = True if pub == 1 else False
 
+        current_app.logger.info(contacts)
         doc = Oi.create(owner['username'], name, contacts, tags, comments, group, public)
         if '_id' in doc:
             Audit.new_oi(owner['username'], doc['_id'], '')
