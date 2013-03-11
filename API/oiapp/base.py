@@ -60,4 +60,9 @@ class Base(object):
     def save(cls, object):
         return cls.objects.save(object)
 
+    @classmethod
+    def remove(cls, objectid):
+        if ObjectId.is_valid(objectid):
+            cls.objects.remove({'_id': ObjectId(objectid)})
+
 
