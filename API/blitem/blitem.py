@@ -16,7 +16,8 @@ from API.comment.comment import Comment
 from API.contenttypes.song import Song
 
 from API.error import Message
-from API.utils import is_valid_id, send_url, queue_twitter_resolution, get_config_value
+from API.utils import is_valid_id, send_url, queue_twitter_resolution
+from API.utils import get_config_value, date_to_str
 import re
 from blinker import signal
 from random import sample
@@ -71,7 +72,8 @@ class Blitem(object):
             num = int(NUM_CHARS)
             url_id = "".join(sample(digits + ascii_letters, num))
             now = datetime.utcnow()
-            doc = {"b": bid, "u": user, "bs": bs, "c": now, "i": items, 'tg': tag_list, 'st': 'active', 'si': url_id}
+            doc = {"b": bid, "u": user, "bs": bs, "c": now, "i": items,
+                   "tg": tag_list, "st": "active", "si": url_id}
             newId = objects.insert(doc)
             post_process.send(doc)
             return str(newId)
@@ -135,6 +137,8 @@ class Blitem(object):
             blitem['parent'] = str(doc.get('b', ''))
             blitem['num_comments'] = doc.get('cc', '')
             blitem['url_id'] = doc.get('si', '')
+            if 'c' in doc:
+                blitem['created'] = date_to_str(doc['c'])
             i = doc.get('i', False)
             if i:
                 for r in i:
@@ -165,11 +169,13 @@ class Blitem(object):
     @classmethod
     def get_items_page(self, filter, fields, page=1):
         PER_PAGE = 20
-        docs = objects.find(filter, fields).sort("c", -1).skip(PER_PAGE * (page - 1)).limit(PER_PAGE)
+        docs = objects.find(filter, fields).sort("c", -1).skip(
+            PER_PAGE * (page - 1)).limit(PER_PAGE)
         return docs
 
     @classmethod
-    def get_all_items(self, blibb_id, page, attributes={'tags': True, 'comments': True}, flat=True):
+    def get_all_items(self, blibb_id, page, attributes={
+            'tags': True, 'comments': True}, flat=True):
         if is_valid_id(blibb_id):
             docs = self.get_items_page({'b': ObjectId(blibb_id)}, {'i': 1, 'tg': 1, 'b': 1}, page)
             result = dict()
