@@ -177,7 +177,7 @@ class Blitem(object):
     def get_all_items(self, blibb_id, page, attributes={
             'tags': True, 'comments': True}, flat=True):
         if is_valid_id(blibb_id):
-            docs = self.get_items_page({'b': ObjectId(blibb_id)}, {'i': 1, 'tg': 1, 'b': 1}, page)
+            docs = self.get_items_page({'b': ObjectId(blibb_id)}, {'i': 1, 'tg': 1, 'b': 1, 'c': 1}, page)
             result = dict()
             blitems = []
             for d in docs:
