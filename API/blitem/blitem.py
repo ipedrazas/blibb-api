@@ -138,7 +138,7 @@ class Blitem(object):
             blitem['num_comments'] = doc.get('cc', '')
             blitem['url_id'] = doc.get('si', '')
             if 'c' in doc:
-                blitem['created'] = date_to_str(doc['c'])
+                blitem['_created'] = date_to_str(doc['c'])
             i = doc.get('i', False)
             if i:
                 for r in i:
