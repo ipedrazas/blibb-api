@@ -38,3 +38,4 @@ API/test/*.xls
 env
 
 Vagrantfile
+.vagrant
