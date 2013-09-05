@@ -36,3 +36,5 @@ API/test/*.xls
 
 # Exclude virtualenv
 env
+
+Vagrantfile

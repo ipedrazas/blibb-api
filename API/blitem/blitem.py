@@ -133,10 +133,10 @@ class Blitem(object):
         elements = []
         if doc is not None:
             blitem_id = str(doc.get('_id', ''))
-            blitem['id'] = blitem_id
-            blitem['parent'] = str(doc.get('b', ''))
-            blitem['num_comments'] = doc.get('cc', '')
-            blitem['url_id'] = doc.get('si', '')
+            blitem['_id'] = blitem_id
+            blitem['_parent'] = str(doc.get('b', ''))
+            blitem['_num_comments'] = doc.get('cc', '')
+            blitem['_url_id'] = doc.get('si', '')
             if 'c' in doc:
                 blitem['_created'] = date_to_str(doc['c'])
             i = doc.get('i', False)
