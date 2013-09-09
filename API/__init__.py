@@ -17,6 +17,7 @@ if not app.debug:
 if os.path.exists('/var/blibb/dev.pid'):
     app.config.from_object('API.config.DevelopmentConfig')
     app.logger.info("Config: Development")
+    app.logger.setLevel(logging.DEBUG)
     lvl = logging.getLevelName(app.logger.getEffectiveLevel())
     app.logger.info("LogLevel " + lvl)
 elif os.path.exists('/var/blibb/test.pid'):
