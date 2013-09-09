@@ -73,7 +73,8 @@ def updateItem():
     user = get_user_name(key)
     current_app.logger.info('labels: ' + str(user))
     if is_valid_id(bid):
-        b = Blibb.get_object({'_id': ObjectId(bid)}, {'u': 1, 't.i.n': 1, 't.i.s': 1})
+        b = Blibb.get_object({
+            '_id': ObjectId(bid)}, {'u': 1, 't.i.n': 1, 't.i.s': 1})
         if Blibb.can_write(user, app_token, bid):
             labels = Blibb.get_labels(b.get('t'))
             current_app.logger.info('labels: ' + str(labels))
@@ -92,7 +93,8 @@ def updateItem():
 @crossdomain(origin='*')
 def getBlitemFields(blibb_id=None):
     if is_valid_id(blibb_id):
-        b = Blibb.get_object({'_id': ObjectId(blibb_id)}, {'u': 1, 't.i.n': 1, 't.i.s': 1})
+        b = Blibb.get_object(
+            {'_id': ObjectId(blibb_id)}, {'u': 1, 't.i.n': 1, 't.i.s': 1})
         res = Blibb.getLabels(b.get('t'))
     else:
         res = Message.get('id_not_valid')
@@ -117,12 +119,15 @@ def getBlitem(blitem_id=None):
 @crossdomain(origin='*')
 def deleteBlitem(blitem_id=None, login_key=None):
     user = get_user_name(login_key)
-    if is_valid_id(blitem_id):
-        if Blitem.can_write(user, blitem_id):
-            Blitem.remove({'_id': ObjectId(blitem_id)})
-            return jsonify({'response': 'deleted'})
+    if user:
+        if is_valid_id(blitem_id):
+            if Blitem.can_write(user, blitem_id):
+                current_app.logger.error(blitem_id)
+                Blitem.remove({'_id': ObjectId(blitem_id)})
+                return jsonify({'response': 'deleted'})
 
-    abort(404)
+        abort(404)
+    abort(401)
 
 
 @mod.route('/tag', methods=['POST'])

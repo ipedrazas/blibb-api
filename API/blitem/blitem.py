@@ -52,7 +52,7 @@ class Blitem(object):
     @classmethod
     def remove(self, filter):
         if filter is not None:
-            objects.update(filter, {'$set': {'st': 'del'}})
+            objects.remove(filter)
 
     @classmethod
     def insert(self, blibb_id, user, items, tags=None):
