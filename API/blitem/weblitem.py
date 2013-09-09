@@ -73,12 +73,10 @@ def updateItem():
     user = get_user_name(key)
     current_app.logger.info('labels: ' + str(user))
     if is_valid_id(bid):
-        b = Blibb.get_object({
-            '_id': ObjectId(bid)}, {'u': 1, 't.i.n': 1, 't.i.s': 1})
+        b = Blibb.get_object({'_id': ObjectId(bid)}, {'u': 1, 't.i': 1, 'f': 1})
+        controls = Blibb.get_controls_as_dict(b.get('t'))
         if Blibb.can_write(user, app_token, bid):
-            labels = Blibb.get_labels(b.get('t'))
-            current_app.logger.info('labels: ' + str(labels))
-            bitems = Blitem.get_items_from_request(labels, request)
+            bitems = Blitem.get_items_from_request(controls, request)
             current_app.logger.info('items from request: ' + str(bitems))
             blitem_id = Blitem.update(item_id, bid, user, bitems, tags)
             Blitem.post_process(blitem_id, bitems)
