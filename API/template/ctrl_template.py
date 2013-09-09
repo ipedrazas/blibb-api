@@ -11,9 +11,12 @@ from bson.objectid import ObjectId
 from pymongo import Connection
 from API.helpers import slugify
 from API.control.bcontrol import Control
-from API.utils import is_valid_id, read_file, parse_text, get_config_value
+from API.utils import is_valid_id, read_file, parse_text
+from API.utils import get_config_value, string_to_filter
 import json
 import pystache
+
+from flask import current_app
 
 
 conn = Connection(get_config_value('MONGO_URL'))
@@ -191,7 +194,9 @@ class ControlTemplate(object):
         return {'read': read, 'write': write}
 
     @classmethod
-    def get_active_templates(self, filter, fields):
+    def get_active_templates(self, string_filter, fields):
+        current_app.logger.error(string_filter)
+        filter = string_to_filter(string_filter)
         docs = objects.find(filter, fields)
         templates = []
         for doc in docs:

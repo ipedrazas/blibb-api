@@ -20,7 +20,6 @@ def get_all_templates(login_key=None):
 @template.route('/templates', methods=['GET'])
 @parse_args
 def getTemplates(filters, fields, page, num):
-    # filter = {'q': status}
     return json.dumps(ControlTemplate.get_active_templates(filters, fields))
 
 

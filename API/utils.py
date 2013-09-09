@@ -13,6 +13,17 @@ import json
 import datetime
 
 
+def string_to_filter(buffer):
+    if isinstance(buffer, basestring):
+        params = buffer.split(',')
+        filter = {}
+        for k, v in params:
+            filter[k] = v
+        return filter
+    else:
+        return buffer
+
+
 def parse_text(text):
     return " ".join(text.split())
 
@@ -97,9 +108,9 @@ def queue_ducksboard_delta(widget_id, value=1, timestamp=False):
     if widget_id is not None:
 
         if timestamp:
-            msg = widget_id + '##'+ str(value) +'##td'
+            msg = widget_id + '##' + str(value) + '##td'
         else:
-            msg = widget_id + '##'+ str(value) +'##d'
+            msg = widget_id + '##' + str(value) + '##d'
         queue_ducksboard(widget_id, msg)
 
 
@@ -117,7 +128,13 @@ def queue_mail(oiid, full_name, name, email, comments, template):
     if oiid is not None:
         # oiid, full_name, name, email, comments
         # msg = '%s##%s##%s##%s##%s' % (oiid, full_name, name, email, comments)
-        msg = {'oiid': oiid, 'full_name': full_name, 'name': name, 'email': email, 'comments': comments, 'template': template}
+        msg = {
+            'oiid': oiid,
+            'full_name': full_name,
+            'name': name,
+            'email': email,
+            'comments': comments,
+            'template': template}
         # socket.send_unicode(msg)
         socket.send_json(msg)
 
@@ -170,4 +187,3 @@ def get_config_value(key=None):
     data = json.load(json_data)
     json_data.close()
     return data.get(key, '')
-

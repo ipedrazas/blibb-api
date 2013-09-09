@@ -12,12 +12,11 @@ def parse_args(f):
         params = request.args.get('fields')
         page = request.args.get('page', 1)
         num = request.args.get('num', 20)
-
-        # current_app.logger.info("From decorator: " + str(num))
         raw_filters = request.args.get('filter')
+        # current_app.logger.info("From decorator: " + str(raw_filters))
         fields = dict()
         filters = dict()
-        if filters:
+        if raw_filters:
             for filt in raw_filters.split(','):
                 entry = filt.split(':')
                 filters[entry[0].strip()] = entry[1].strip()
