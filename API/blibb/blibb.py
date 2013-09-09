@@ -16,7 +16,7 @@ from API.contenttypes.picture import Picture
 from API.template.ctrl_template import ControlTemplate
 from API.om.acl import ACL
 from API.error import Message
-
+import hashlib
 from API.utils import is_valid_id, date_to_str, get_config_value
 
 
@@ -24,6 +24,7 @@ conn = Connection(get_config_value('MONGO_URL'))
 db = conn['blibb']
 objects = db['blibbs']
 NUM_CHARS = get_config_value('NUM_CHARS')
+
 
 class Blibb(object):
 
@@ -74,8 +75,8 @@ class Blibb(object):
             num = int(NUM_CHARS)
             url_id = "".join(sample(digits + ascii_letters, num))
             doc = {"n": name, "s": slug, "d": desc, "u": user, "c": now,
-                    "t": template, "img": image, 'a': acl, 'f': fields,
-                    'at': slug, 'st': {'v': 0}, 'si': url_id}
+                   "t": template, "img": image, 'a': acl, 'f': fields,
+                   'at': slug, 'st': {'v': 0}, 'si': url_id}
 
             newId = objects.insert(doc)
             return str(newId)
@@ -99,7 +100,7 @@ class Blibb(object):
     def get_label_from_template(self, obj_id):
         if is_valid_id(obj_id):
             result = self.get_object({'_id': ObjectId(obj_id)},
-                                        {'t.i.n': 1, 't.i.s': 1})
+                                     {'t.i.n': 1, 't.i.s': 1})
             if result is not None:
                 return self.get_labels(result['t'])
             else:
@@ -111,7 +112,7 @@ class Blibb(object):
     def get_template_view(self, obj_id):
         if is_valid_id(obj_id):
             fields = {'t.v': 1, 'n': 1, 'd': 1, 'c': 1, 'u': 1, 'tg': 1,
-                        's': 1, 'img': 1, 'ni': 1, 'st': 1}
+                      's': 1, 'img': 1, 'ni': 1, 'st': 1}
             res = self.get_object({'_id': ObjectId(obj_id)}, fields)
             if '_id' in res:
                 return self.flat_object(res)
@@ -122,7 +123,9 @@ class Blibb(object):
         print template
         items = template['i']
         for item in items:
-            fields.append({'field': item['s'], 'type': item['tx'], 'order': item['o']})
+            fields.append(
+                {'field': item['s'], 'type': item['tx'], 'order': item['o']}
+            )
 
     @classmethod
     def flat_object(self, doc):
@@ -152,7 +155,10 @@ class Blibb(object):
                 ni = {'num_items': stats.get('ni', 0)}
                 buf['stats'] = [nv, nw, ni]
             if 'a' in doc:
-                buf['access'] = {'read': ACL.get_access(doc.get('a').get('read')), 'write': ACL.get_access(doc.get('a').get('write'))}
+                buf['access'] = {
+                    'read': ACL.get_access(doc.get('a').get('read')),
+                    'write': ACL.get_access(doc.get('a').get('write'))
+                }
             if 'img' in doc:
                 img = doc['img']
                 if 'id' in img:
@@ -188,11 +194,12 @@ class Blibb(object):
     def get_blibbs(self, filter, fields, page=1):
         PER_PAGE = 20
         docs = objects.find(filter, fields).sort("c", -1).skip(
-                PER_PAGE * (page - 1)).limit(PER_PAGE)
+            PER_PAGE * (page - 1)).limit(PER_PAGE)
         return docs
 
     def get_by_user(self, username, page=1):
-        r = self.get_blibbs({'u': username, 'del': {'$ne': True}},
+        r = self.get_blibbs(
+            {'u': username, 'del': {'$ne': True}},
             {'t': 0}, page)
         rs = []
         count = 0
@@ -234,7 +241,11 @@ class Blibb(object):
             # return template
             webhooks = []
             for wh in whs:
-                w = {'action': wh.get('a'), 'callback': wh.get('u'), 'fields': wh.get('f')}
+                w = {
+                    'action': wh.get('a'),
+                    'callback': wh.get('u'),
+                    'fields': wh.get('f')
+                }
                 webhooks.append(w)
             return webhooks
 
@@ -250,19 +261,29 @@ class Blibb(object):
     @classmethod
     def add_tag(self, obj_id, tag):
         if is_valid_id(obj_id):
-            objects.update({'_id': ObjectId(obj_id)}, {"$addToSet": {'tg': tag.lower()}}, False)
+            objects.update(
+                {'_id': ObjectId(obj_id)},
+                {"$addToSet": {'tg': tag.lower()}},
+                False)
 
     @classmethod
     def add_user_to_group(self, user, obj_id):
         if is_valid_id(obj_id):
-            objects.update({'_id': ObjectId(obj_id)},
-                {"$addToSet": {'g': user}}, False)
+            objects.update(
+                {'_id': ObjectId(obj_id)},
+                {"$addToSet": {'g': user}},
+                False)
 
     @classmethod
     def add_webhook(self, object_id, webhook):
         if is_valid_id(object_id):
-            self.objects.update({'_id': ObjectId(object_id)}, {'$pull': {'wh': {'a': webhook['a']}}})
-            self.objects.update({'_id': ObjectId(object_id)}, {'$addToSet': {'wh': webhook}})
+            self.objects.update(
+                {'_id': ObjectId(object_id)},
+                {'$pull': {'wh': {'a': webhook['a']}}}
+            )
+            self.objects.update(
+                {'_id': ObjectId(object_id)},
+                {'$addToSet': {'wh': webhook}})
         else:
             return Message.get('id_not_valid')
 
@@ -292,9 +313,11 @@ class Blibb(object):
         """
 
         if is_valid_id(blibb_id):
-            blibb = self.get_object({'_id': ObjectId(blibb_id)}, {'a': 1, 'u': 1, 'g': 1, 'at': 1})
+            blibb = self.get_object({'_id': ObjectId(blibb_id)}, {
+                'a': 1, 'u': 1, 'g': 1, 'at': 1, 'n': 1, 'd': 1})
             current_app.logger.info(str(blibb))
-            atoken = blibb.get('at', 0)
+            # atoken = blibb.get('at', 0)
+            atoken = hashlib.sha1(blibb['n'] + blibb['d']).hexdigest()
             owner = blibb['u']
             acl = blibb.get('a', {})
             if atoken == app_token:
@@ -341,7 +364,10 @@ class Blibb(object):
 
                 doc['st'] = {}
 
-                objects.update({'_id': ObjectId(object_id)}, {"$inc": {'st.f': 1}})
+                objects.update(
+                    {'_id': ObjectId(object_id)},
+                    {"$inc": {'st.f': 1}}
+                )
 
                 return objects.insert(doc)
 
