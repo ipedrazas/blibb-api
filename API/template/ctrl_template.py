@@ -12,11 +12,11 @@ from pymongo import Connection
 from API.helpers import slugify
 from API.control.bcontrol import Control
 from API.utils import is_valid_id, read_file, parse_text
-from API.utils import get_config_value, string_to_filter
+from API.utils import get_config_value
 import json
 import pystache
 
-from flask import current_app
+# from flask import current_app
 
 
 conn = Connection(get_config_value('MONGO_URL'))
@@ -29,7 +29,14 @@ class ControlTemplate(object):
     @classmethod
     def insert(self, name, desc, user, thumbnail, status="draft"):
         now = datetime.utcnow()
-        doc = {"n": name, "d": desc, "u": user, "c": now, "s": slugify(name), 't': thumbnail, 'q': status}
+        doc = {
+            "n": name,
+            "d": desc,
+            "u": user,
+            "c": now,
+            "s": slugify(name),
+            't': thumbnail,
+            'q': status}
         newId = objects.insert(doc)
         return str(newId)
 
@@ -56,7 +63,12 @@ class ControlTemplate(object):
                 # current_app.logger.info('Control ID' + cid)
         # current_app.logger.info(items)
         now = datetime.utcnow()
-        doc = {"n": template, "u": user, "c": now, "s": slugify(template), 'q': 'draft', 'i': items}
+        doc = {
+            "n": template,
+            "u": user,
+            "c": now,
+            "s": slugify(template),
+            'q': 'draft', 'i': items}
         newId = objects.insert(doc)
         return str(newId)
 
@@ -71,7 +83,8 @@ class ControlTemplate(object):
     @classmethod
     def get_templates(self, filter, fields, page=1):
         PER_PAGE = 20
-        docs = objects.find(filter, fields).sort("c", -1).skip(PER_PAGE * (page - 1)).limit(PER_PAGE)
+        docs = objects.find(filter, fields).sort("c", -1).skip(
+            PER_PAGE * (page - 1)).limit(PER_PAGE)
         return docs
 
     @classmethod
@@ -121,12 +134,11 @@ class ControlTemplate(object):
             return None
 
     @classmethod
-    def get_templates_by_user(self, username, page=0):
+    def get_templates_flat(self, filter, fields):
+        docs = objects.find(filter, fields)
         templates = []
-        docs = self.get_templates({'u': username}, {'i': 0})
         for doc in docs:
             templates.append(self.flat_object(doc))
-
         return templates
 
     @classmethod
@@ -149,7 +161,8 @@ class ControlTemplate(object):
                     table_head += '<th>' + c['name'] + '</th>'
                     row += '<td>{{{' + c['slug'] + '}}}</td>'
 
-                html_table = html_table.replace('<blibb:entry value="labels"/>', table_head)
+                html_table = html_table.replace(
+                    '<blibb:entry value="labels"/>', table_head)
                 html_table = html_table.replace('<blibb:entry/>', row)
                 res = dict()
                 data = dict()
@@ -172,11 +185,15 @@ class ControlTemplate(object):
             name: name of the view
             view: dict that contains
                 ri: read item, html to render the item when accessing as RO
-                rb: read blibb, html to render the whole blibb when accessing as RO
+                rb: read blibb, html to render the whole blibb when a
+                    ccessing as RO
                 wb: write blibbb, html to create/edit new items
         '''
         # current_app.logger.info(str(object))
-        objects.update({'_id': ObjectId(template_id)}, {"$set": {'v.' + object.get('name'): object.get('view'), 'q': 'active'}}, True)
+        objects.update({'_id': ObjectId(template_id)}, {
+            "$set": {
+                'v.' + object.get('name'): object.get('view'),
+                'q': 'active'}}, True)
         return True
 
     @classmethod
@@ -187,18 +204,7 @@ class ControlTemplate(object):
     @classmethod
     def get_html(self, control):
         view = Control.get_view_by_id(control['control_id'])
-        # current_app.logger.info('view html: ' + str(view) + ' ' + str(control))
         read = pystache.render('{{=<% %>=}}' + view['read'], control)
         write = pystache.render('{{=<% %>=}}' + view['write'], control)
         # current_app.logger.info('write html: ' + write)
         return {'read': read, 'write': write}
-
-    @classmethod
-    def get_active_templates(self, string_filter, fields):
-        current_app.logger.error(string_filter)
-        filter = string_to_filter(string_filter)
-        docs = objects.find(filter, fields)
-        templates = []
-        for doc in docs:
-            templates.append(self.flat_object(doc))
-        return templates

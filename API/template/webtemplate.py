@@ -20,7 +20,7 @@ def get_all_templates(login_key=None):
 @template.route('/templates', methods=['GET'])
 @parse_args
 def getTemplates(filters, fields, page, num):
-    return json.dumps(ControlTemplate.get_active_templates(filters, fields))
+    return json.dumps(ControlTemplate.get_templates_flat(filters, fields))
 
 
 @template.route('/template', methods=['POST'])
@@ -82,4 +82,3 @@ def getTemplate(template_id=None):
         return res
     else:
         abort(404)
-
