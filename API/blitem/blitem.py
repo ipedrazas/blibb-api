@@ -114,7 +114,7 @@ class Blitem(object):
 
     @classmethod
     def get_item(self, filter, fields={}):
-        doc = self.get(filter)
+        doc = self.get(filter, fields)
         doc['_id'] = str(doc['_id'])
         doc['b'] = str(doc['b'])
         date = doc['c']

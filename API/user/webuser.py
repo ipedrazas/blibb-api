@@ -14,7 +14,8 @@ from API.event.event import Event
 from API.comment.comment import Comment
 from API.utils import is_valid_id, get_key
 from bson.objectid import ObjectId
-from flask import Blueprint, request, abort, current_app, jsonify, make_response, g
+from flask import Blueprint, request, abort, current_app
+from flask import jsonify, make_response, g
 from API.decorators import crossdomain
 from API.decorators import support_jsonp
 from API.user.blibb2rss import blibb2rss
@@ -133,14 +134,16 @@ def addItemtoBlibb(username=None, slug=None):
         key = request.form['login_key']
         user = get_key(key)
     else:
-        app_token = request.form['app_token'] if 'app_token' in request.form else ''
+        app_token = request.form['app_token'] if \
+            'app_token' in request.form else ''
 
     tags = request.form['tags'] if 'tags' in request.form else ''
     blibb = Blibb.get_object({'u': username, 's': slug}, {'_id': 1, 't.i': 1})
     if blibb:
         blibb_id = blibb['_id']
         controls = Blibb.get_controls_as_dict(blibb.get('t'))
-        current_app.logger.info(str(user) + ' - ' + str(app_token) + ' - ' + str(blibb_id) + ' - ' + username + ' - ' + slug)
+        # current_app.logger.info(str(user) + ' - ' + str(app_token) + ' - '
+        #    + str(blibb_id) + ' - ' + username + ' - ' + slug)
         if Blibb.can_write(user, app_token, blibb_id):
             bitems = Blitem.get_items_from_request(controls, request)
             if len(bitems) > 0:
@@ -250,6 +253,7 @@ def get_items_by_tag(username=None, slug=None, tag=None):
         return jsonify(items)
     return jsonify({'results': '0'})
 
+
 @mod.route('/<username>/<slug>/<id>', methods=['GET'])
 @crossdomain(origin='*')
 @support_jsonp
@@ -260,8 +264,11 @@ def get_item_by_id(username=None, slug=None, id=None):
     blibb = Blibb.get_object({'u': username, 's': slug})
     if blibb and is_valid_id(id):
         blibb_id = blibb['_id']
-        items = Blitem.get_item({'_id': ObjectId(id), 'b': ObjectId(blibb_id)})
-        return jsonify(Blitem.flat_object(items, {}))
+        items = Blitem.get_item({'_id': ObjectId(id), 'b': ObjectId(blibb_id)},
+                                {'i': 1, 'tg': 1, 'b': 1, 'c': 1}
+                                )
+        attributes = {'tags': True, 'comments': True}
+        return jsonify(Blitem.flat_object(items, attributes))
     else:
         return jsonify(Message.get('id_not_valid'))
 
@@ -274,4 +281,3 @@ def getComments(username=None, slug=None, item_id=None):
         cs = Comment.get_comments_by_id(item_id)
         return jsonify({'comments': cs})
     abort(404)
-
