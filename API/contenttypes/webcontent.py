@@ -10,6 +10,7 @@ from API.blitem.blitem import Blitem
 from API.blibb.blibb import Blibb
 from API.contenttypes.bookmark import Bookmark
 from API.contenttypes.picture import Picture
+from API.contenttypes.attachment import Attachment
 from API.event.event import Event
 from API.utils import get_user_name, allowed_file,  is_valid_id
 from API.utils import is_image, is_attachment, get_config_value
@@ -44,7 +45,11 @@ def upload():
 
     if 'file' in request.files:
         file = request.files['file']
-        object_id = Picture.create(user, {}, file.filename)
+        if is_image(file.filename):
+            object_id = Picture.create(user, {}, file.filename)
+        elif is_attachment(file.filename):
+            object_id = Attachment.create(user, {}, file.filename)
+
         filename = secure_filename(object_id + '-' + file.filename)
         c = connect_s3()
         bucket_name = get_config_value('BUCKET')
@@ -73,7 +78,7 @@ def upload():
         if is_image(file.filename):
             Picture.add_url(object_id, url)
         elif is_attachment(file.filename):
-            object_id = Picture.add_url(file.filename)
+            object_id = Attachment.add_url(object_id, file.filename)
 
         return jsonify({'upload': url})
     return jsonify({'upload': 'error'})
