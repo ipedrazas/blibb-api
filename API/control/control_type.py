@@ -23,7 +23,7 @@ class ControlType(object):
             return cls.autoP(value)
         elif cls.is_image(control_type):
             return ObjectId(value)
-        elif cls.isMp3(control_type):
+        elif cls.is_mp3(control_type):
             song = Song()
             song.load(value)
             return song.dumpSong()
@@ -33,6 +33,8 @@ class ControlType(object):
             return value
         elif cls.is_twitter(control_type):
             return re.sub('[!@#$]', '', value)
+
+        return value
 
 
 
