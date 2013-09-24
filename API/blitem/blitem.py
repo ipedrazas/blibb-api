@@ -120,11 +120,6 @@ class Blitem(object):
         doc['c'] = date.strftime("%d/%m/%y")
         return doc
 
-    def getById(self, obj_id):
-        if is_valid_id(obj_id):
-            return self.getItem({'_id': ObjectId(obj_id)})
-        return Message.get('id_not_valid')
-
     @classmethod
     def flat_object(self, doc, attributes={}):
         blitem = dict()
