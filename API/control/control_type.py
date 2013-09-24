@@ -20,7 +20,7 @@ class ControlType(object):
     @classmethod
     def get_value(cls, control_type, value):
         if cls.is_multitext(control_type):
-            return cls.autoP(value)
+            return cls.auto_paragraph(value)
         elif cls.is_image(control_type):
             return ObjectId(value)
         elif cls.is_mp3(control_type):
@@ -83,7 +83,7 @@ class ControlType(object):
         return typex == self.get_type(self.LIST)
 
     @staticmethod
-    def autoP(text):
+    def auto_paragraph(text):
         res = ''
         buf = ''
         for line in text.split('\n'):
