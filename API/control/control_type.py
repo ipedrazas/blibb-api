@@ -1,9 +1,12 @@
-
+import re
+from bson.objectid import ObjectId
+from API.contenttypes.song import Song
 
 class ControlType(object):
 
     TEXT = 1
     MULTITEXT = 2
+    MARKDOWN = 22
     DATE = 3
     LIST = 4
     IMAGE = 21
@@ -13,6 +16,30 @@ class ControlType(object):
     TWITTER = 61
     LIST = 69
 
+
+    @classmethod
+    def get_value(cls, control_type, value):
+        if cls.is_multitext(control_type):
+            return cls.autoP(value)
+        elif cls.is_image(control_type):
+            return ObjectId(value)
+        elif cls.isMp3(control_type):
+            song = Song()
+            song.load(value)
+            return song.dumpSong()
+        elif cls.is_date(control_type):
+            # TODO: convert dates to MongoDates
+            # and back
+            return value
+        elif cls.is_twitter(control_type):
+            return re.sub('[!@#$]', '', value)
+
+
+
+    @classmethod
+    def get_post_process_controls(cls):
+        return [cls.MARKDOWN, cls.TWITTER, cls.URL]
+
     @classmethod
     def get_type(self, typex):
         try:
@@ -20,6 +47,10 @@ class ControlType(object):
             return res[2:]
         except Exception:
             return typex
+
+    @classmethod
+    def is_markdown(self, typex):
+        return typex == self.get_type(self.MARKDOWN)
 
     @classmethod
     def is_multitext(self, typex):

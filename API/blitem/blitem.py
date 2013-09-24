@@ -13,12 +13,11 @@ from pymongo import Connection
 from API.control.control_type import ControlType
 from API.blibb.blibb import Blibb
 from API.comment.comment import Comment
-from API.contenttypes.song import Song
 
 from API.error import Message
 from API.utils import is_valid_id, send_url, queue_twitter_resolution
 from API.utils import get_config_value, date_to_str
-import re
+
 from blinker import signal
 from random import sample
 from string import digits, ascii_letters
@@ -215,22 +214,7 @@ class Blitem(object):
         blitem = {}
         blitem['t'] = typex
         blitem['s'] = slug
-        if ControlType.is_multitext(typex):
-            value = ControlType.autoP(value)
-        elif ControlType.isMp3(typex):
-            song = Song()
-            song.load(value)
-            value = song.dumpSong()
-        elif ControlType.is_image(typex):
-            value = ObjectId(value)
-        elif ControlType.is_date(typex):
-            # TODO: convert dates to MongoDates
-            # and back
-            value = value
-        elif ControlType.is_twitter(typex):
-            value = re.sub('[!@#$]', '', value)
-
-        blitem['v'] = value
+        blitem['v'] = ControlType.get_value(typex, value)
         blitem['l'] = labels.get(slug)
         return blitem
 
@@ -268,16 +252,7 @@ class Blitem(object):
         blitem['t'] = control['type']
         blitem['s'] = control['slug']
 
-        if ControlType.is_multitext(control['type']):
-            value = ControlType.autoP(value)
-        elif ControlType.is_image(control['type']):
-            value = ObjectId(value)
-        elif ControlType.is_date(control['type']):
-            # TODO: convert dates to MongoDates
-            # and back
-            value = value
-        elif ControlType.is_twitter(control['type']):
-            value = re.sub('[!@#$]', '', value)
+        value = ControlType.get_value(control['type'], value)
 
         blitem['v'] = value
         blitem['l'] = control['name']
@@ -294,6 +269,15 @@ class Blitem(object):
                 elem = self.get_blitem_from_request(key, value, control)
                 bitems.append(elem)
         return bitems
+
+    @staticmethod
+    def has_post_process(item):
+        elements = item.get('i', [])
+        post_process = ControlType.get_post_process_controls()
+        for elem in elements:
+            if elem['t'] in post_process:
+                return True
+        return False
 
     @classmethod
     def post_process(self, obj_id, items):

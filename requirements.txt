@@ -13,8 +13,9 @@ pymongo==2.6.1
 redis==2.8.0
 
 Flask==0.10.1
+Flask-Misaka==0.1.1
+html2text==3.200.3
 
-Markdown==2.3.1
 requests==1.2.3
 
 sendgrid-python==0.1.1
