@@ -48,9 +48,10 @@ def add_controls():
     key = request.form['login_key']
     user = utils.get_user_name(key)
     res = 'Something went wrong'
+    current_app.logger.info('template: ' + template)
     current_app.logger.info('controls' + str(controls))
     # if utils.is_valid_id(template):
-    res = ControlTemplate.add_controls(template, controls, user)
+    res = ControlTemplate.add_controls(template.strip(), controls, user)
     # else:
     #     jsonify(Message.get('id_not_valid'))
     return jsonify({'result': res})

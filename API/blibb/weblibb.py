@@ -263,7 +263,7 @@ def add_user_to_group():
 def getWebhooks(bid=None):
     if is_valid_id(bid):
         b = Blibb()
-        fields = b.getWebhooks(bid)
+        fields = b.get_webhooks(bid)
         return jsonify({'webhooks': fields})
     else:
         return jsonify({'error': 'Object id not valid'})

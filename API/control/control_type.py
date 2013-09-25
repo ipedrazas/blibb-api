@@ -37,7 +37,6 @@ class ControlType(object):
         return value
 
 
-
     @classmethod
     def get_post_process_controls(cls):
         return [cls.MARKDOWN, cls.TWITTER, cls.URL]

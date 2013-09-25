@@ -212,15 +212,6 @@ class Blibb(object):
         resp['results'] = rs
         return resp
 
-    def getStats(self, doc):
-        stats = []
-        if 'st' in doc:
-            stts = doc.get('st')
-            stats.append({'num_views': stts.get('v', 0)})
-            stats.append({'num_writes': stts.get('nw', 0)})
-            stats.append({'num_items': stts.get('ni', 0)})
-
-        return stats
 
     @classmethod
     def get_fields(self, obj_id):
@@ -234,7 +225,7 @@ class Blibb(object):
             return fields
 
     @classmethod
-    def getWebhooks(self, obj_id):
+    def get_webhooks(self, obj_id):
         if is_valid_id(obj_id):
             doc = self.get_object({u'_id': ObjectId(obj_id)}, {'wh': 1})
             whs = doc.get('wh', [])
