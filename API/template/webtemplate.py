@@ -48,7 +48,7 @@ def add_controls():
     key = request.form['login_key']
     user = utils.get_user_name(key)
     res = 'Something went wrong'
-    current_app.logger.info('template: ' + template)
+    current_app.logger.info('template: ' + utils.cleanup(template))
     current_app.logger.info('controls' + str(controls))
     # if utils.is_valid_id(template):
     res = ControlTemplate.add_controls(utils.cleanup(template), controls, user)

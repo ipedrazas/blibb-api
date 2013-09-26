@@ -14,8 +14,8 @@ import datetime
 
 
 def cleanup(entry):
-    if '<br>' in entry.lower():
-        entry.replace('<br>','')
+    if '<br>' in entry:
+        entry = entry.replace('<br>','')
     return entry.strip()
 
 def string_to_filter(buffer):
