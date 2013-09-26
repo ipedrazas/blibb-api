@@ -51,7 +51,7 @@ def add_controls():
     current_app.logger.info('template: ' + template)
     current_app.logger.info('controls' + str(controls))
     # if utils.is_valid_id(template):
-    res = ControlTemplate.add_controls(template.strip(), controls, user)
+    res = ControlTemplate.add_controls(utils.cleanup(template), controls, user)
     # else:
     #     jsonify(Message.get('id_not_valid'))
     return jsonify({'result': res})

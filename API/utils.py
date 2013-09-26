@@ -13,6 +13,11 @@ import json
 import datetime
 
 
+def cleanup(entry):
+    if '<br>' in entry.lower():
+        entry.replace('<br>','')
+    return entry.strip()
+
 def string_to_filter(buffer):
     if isinstance(buffer, basestring):
         params = buffer.split(',')
