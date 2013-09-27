@@ -28,6 +28,9 @@ NUM_CHARS = get_config_value('NUM_CHARS')
 
 class Blibb(object):
 
+    '''
+        Updates view generated from template
+    '''
     @classmethod
     def update_view(cls, objectid, user, view, html):
         field = 't.v.%s.rb' % (view)
