@@ -21,44 +21,44 @@ objects = db['pictures']
 
 class Picture(BaseObject):
 
-    def __init__(self):
-        super(Picture, self).__init__('blibb', 'pictures')
-        self.__owner = None
-        self.__created = None
-        self.__items = []
-        self.__blibb = None
+    # def __init__(self):
+    #     super(Picture, self).__init__('blibb', 'pictures')
+    #     self.__owner = None
+    #     self.__created = None
+    #     self.__items = []
+    #     self.__blibb = None
 
-    def insert(self, blibb, owner, items):
-        now = datetime.utcnow()
-        doc = {"b": blibb, "u": owner, "c": now, "i": items}
-        newId = self.objects.insert(doc)
-        return str(newId)
+    # def insert(self, blibb, owner, items):
+    #     now = datetime.utcnow()
+    #     doc = {"b": blibb, "u": owner, "c": now, "i": items}
+    #     newId = self.objects.insert(doc)
+    #     return str(newId)
 
-    def insertJson(self, jsonData):
-        data = json.loads(jsonData)
-        newId = self.objects.insert(data)
-        sId = dict()
-        sId['id'] = str(newId)
-        return json.dumps(sId)
+    # def insertJson(self, jsonData):
+    #     data = json.loads(jsonData)
+    #     newId = self.objects.insert(data)
+    #     sId = dict()
+    #     sId['id'] = str(newId)
+    #     return json.dumps(sId)
 
-    def updateJson(self, jsonData):
-        data = json.loads(jsonData)
-        pictId = data['id']
-        del data['id']
-        self.objects.update(
-                {"_id": ObjectId(pictId)},
-                data,
-                False)
-        sId = dict()
-        sId['id'] = str(pictId)
+    # def updateJson(self, jsonData):
+    #     data = json.loads(jsonData)
+    #     pictId = data['id']
+    #     del data['id']
+    #     self.objects.update(
+    #             {"_id": ObjectId(pictId)},
+    #             data,
+    #             False)
+    #     sId = dict()
+    #     sId['id'] = str(pictId)
 
-        return json.dumps(sId)
+    #     return json.dumps(sId)
 
-    def getFlat(self, pict_id=None):
-        if pict_id is None:
-            return
-        pict = self.objects.find_one({'_id': ObjectId(pict_id)})
-        return json.dumps(pict, default=json_util.default)
+    # def getFlat(self, pict_id=None):
+    #     if pict_id is None:
+    #         return
+    #     pict = self.objects.find_one({'_id': ObjectId(pict_id)})
+    #     return json.dumps(pict, default=json_util.default)
 
     @classmethod
     def create(cls, owner, items={}, blibb_id=None):
