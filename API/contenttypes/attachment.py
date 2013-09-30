@@ -19,7 +19,7 @@ db = conn['blibb']
 objects = db['attachments']
 
 
-class Attachment(BaseObject):
+class Attachment(object):
 
     @classmethod
     def create(cls, owner, items={}, blibb_id=None):

@@ -5,9 +5,9 @@
 #
 
 from datetime import datetime
-from API.base import BaseObject
-import json
-from bson import json_util
+# from API.base import BaseObject
+# import json
+# from bson import json_util
 from pymongo import Connection
 from bson.objectid import ObjectId
 
@@ -19,7 +19,7 @@ db = conn['blibb']
 objects = db['pictures']
 
 
-class Picture(BaseObject):
+class Picture(object):
 
     # def __init__(self):
     #     super(Picture, self).__init__('blibb', 'pictures')
