@@ -312,6 +312,7 @@ class Blibb(object):
             current_app.logger.info(str(blibb))
             # atoken = blibb.get('at', 0)
             atoken = hashlib.sha1(blibb['n'] + blibb['d']).hexdigest()
+            current_app.logger.debug(str(atoken))
             owner = blibb['u']
             acl = blibb.get('a', {})
             if atoken == app_token:

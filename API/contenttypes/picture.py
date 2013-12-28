@@ -6,7 +6,7 @@
 
 from datetime import datetime
 # from API.base import BaseObject
-# import json
+import json
 # from bson import json_util
 from pymongo import Connection
 from bson.objectid import ObjectId
@@ -41,24 +41,27 @@ class Picture(object):
     #     sId['id'] = str(newId)
     #     return json.dumps(sId)
 
-    # def updateJson(self, jsonData):
-    #     data = json.loads(jsonData)
-    #     pictId = data['id']
-    #     del data['id']
-    #     self.objects.update(
-    #             {"_id": ObjectId(pictId)},
-    #             data,
-    #             False)
-    #     sId = dict()
-    #     sId['id'] = str(pictId)
 
-    #     return json.dumps(sId)
 
     # def getFlat(self, pict_id=None):
     #     if pict_id is None:
     #         return
     #     pict = self.objects.find_one({'_id': ObjectId(pict_id)})
     #     return json.dumps(pict, default=json_util.default)
+
+    @classmethod
+    def updateJson(self, jsonData):
+        data = json.loads(jsonData)
+        pictId = data['id']
+        del data['id']
+        objects.update(
+                {"_id": ObjectId(pictId)},
+                data,
+                False)
+        sId = dict()
+        sId['id'] = str(pictId)
+
+        return json.dumps(sId)
 
     @classmethod
     def create(cls, owner, items={}, blibb_id=None):
@@ -123,4 +126,5 @@ class Picture(object):
 
     @classmethod
     def get_image_by_size(self, image, size):
-        return image['path'] + size + '/' + image['id'] + '.' + image['format']
+        return image.get('path', '') + size + '/' + image.get('id','') + '.' + image.get('format','')
+

@@ -17,7 +17,7 @@ sys.path.append(parentpath)
 from API.utils import get_config_value
 
 
-print "URL Worker running at port 5558"
+print "MAIL Worker running at port 5558"
 
 context = zmq.Context()
 socket = context.socket(zmq.REP)

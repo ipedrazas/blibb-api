@@ -88,9 +88,8 @@ def upload():
 @crossdomain(origin='*')
 def set_picture_data():
     e = Event('getImage.set_picture_data')
-    pict = Picture()
     jsonData = request.form['p']
-    r = pict.updateJson(jsonData)
+    r = Picture.updateJson(jsonData)
     e.save()
     if r != 'null':
         return r
@@ -122,7 +121,7 @@ def newPicture():
     key = request.form['k']
     user = get_user_name(key)
     items = dict()
-    r = pict.insert(blibb, user, items)
+    r = pict.create(user, items, blibb)
     e.save()
     if r != 'null':
         return r

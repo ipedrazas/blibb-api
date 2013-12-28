@@ -1,5 +1,4 @@
 
-from bs4 import BeautifulSoup
 import urllib2
 from os.path import join, abspath, dirname
 from bson.objectid import ObjectId
@@ -45,15 +44,6 @@ def is_attachment(filename):
 
 def allowed_file(filename, allowed_extensions):
     return '.' in filename and filename.rsplit('.', 1)[1] in allowed_extensions
-
-
-def getTitle(url):
-        page = urllib2.urlopen(url)
-        soup = BeautifulSoup(page)
-        if hasattr(soup, 'head') and hasattr(soup, 'title'):
-            return soup.head.title.string.encode('utf-8')
-
-        return ''
 
 
 def send_url(obj_id, url):
@@ -108,23 +98,6 @@ def queue_twitter_resolution(obj_id, twiter_screen_name):
     if obj_id is not None:
         socket.send(str(obj_id + '##' + twiter_screen_name))
 
-
-def queue_ducksboard_delta(widget_id, value=1, timestamp=False):
-    if widget_id is not None:
-
-        if timestamp:
-            msg = widget_id + '##' + str(value) + '##td'
-        else:
-            msg = widget_id + '##' + str(value) + '##d'
-        queue_ducksboard(widget_id, msg)
-
-
-def queue_ducksboard_value(widget_id, value):
-    if widget_id is not None:
-        msg = '%s##%s##v' % (widget_id, value)
-        queue_ducksboard(widget_id, msg)
-
-
 def queue_mail(oiid, full_name, name, email, comments, template):
     print 'Queuing to mail worker ' + str(oiid)
     context = zmq.Context()
@@ -144,13 +117,17 @@ def queue_mail(oiid, full_name, name, email, comments, template):
         socket.send_json(msg)
 
 
-def queue_ducksboard(widget_id, msg):
-    print 'Queuing to ducksboard worker ' + str(widget_id)
+def queue_bookmarks(oiid, url, owner):
+    print 'Queuing to mail worker ' + str(oiid)
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
-    socket.connect("tcp://localhost:5557")
-    if widget_id is not None:
-        socket.send(msg)
+    socket.connect("tcp://localhost:5559")
+    if oiid is not None:
+        msg = {
+            'oid': oiid,
+            'url': url,
+            'owner': owner}
+        socket.send_json(msg)
 
 
 def is_valid_id(obj_id):

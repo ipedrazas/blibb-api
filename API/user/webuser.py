@@ -142,8 +142,8 @@ def addItemtoBlibb(username=None, slug=None):
     if blibb:
         blibb_id = blibb['_id']
         controls = Blibb.get_controls_as_dict(blibb.get('t'))
-        # current_app.logger.info(str(user) + ' - ' + str(app_token) + ' - '
-        #    + str(blibb_id) + ' - ' + username + ' - ' + slug)
+        current_app.logger.info(str(user) + ' - ' + str(app_token) + ' - '
+           + str(blibb_id) + ' - ' + username + ' - ' + slug)
         if Blibb.can_write(user, app_token, blibb_id):
             bitems = Blitem.get_items_from_request(controls, request)
             if len(bitems) > 0:
