@@ -10,7 +10,7 @@ from datetime import datetime
 from pymongo import Connection
 from bson.objectid import ObjectId
 from API.oiapp.base import Base
-from API.utils import get_config_value, is_valid_id, queue_ducksboard_delta, queue_mail
+from API.utils import get_config_value, is_valid_id, queue_mail
 from hashlib import sha1
 import redis
 import json
@@ -25,11 +25,6 @@ class AcraError(Base):
     db = conn['oime']
     objects = db['acra']
 
-    @classmethod
-    def add(cls, acra_object):
-        cls.objects.insert(acra_object)
-        queue_ducksboard_delta('105506')
-
 class Audit(Base):
 
     conn = Connection(get_config_value('MONGO_URL'))
@@ -42,94 +37,72 @@ class Audit(Base):
         if is_valid_id(oiid):
             now = datetime.now()
             cls.objects.insert({'t': now, 'o': ObjectId(oiid), 'u': user, 'a': 'p', 's': subscribers, 'd': device})
-            # Ois sent
-            queue_ducksboard_delta('80399')
-            # Ois per day
-            queue_ducksboard_delta('81014')
-            num_push = len(subscribers)
-            # Ois received
-            queue_ducksboard_delta('90195', num_push)
 
 
     @classmethod
     def login(cls, user, device):
         now = datetime.now()
         cls.objects.insert({'t': now, 'u': user, 'a': 'l', 'd': device})
-        queue_ducksboard_delta('81209')
 
     @classmethod
     def login_facebook(cls, user, device):
         now = datetime.now()
         cls.objects.insert({'t': now, 'u': user, 'a': 'fl', 'd': device})
-        queue_ducksboard_delta('99437')
 
     @classmethod
     def new_oi(cls, user, oiid, device):
         if is_valid_id(oiid):
             now = datetime.now()
             cls.objects.insert({'t': now, 'u': user, 'o': oiid, 'a': 'n', 'd': device})
-            queue_ducksboard_delta('81176')
 
     @classmethod
     def subscribe(cls, user, device, oiid):
         if is_valid_id(oiid):
             now = datetime.now()
             cls.objects.insert({'t': now, 'u': user, 'o': ObjectId(oiid), 'a': 's', 'd': device})
-            queue_ducksboard_delta('81296')
 
     @classmethod
     def reject(cls, user, device, oiid):
         if is_valid_id(oiid):
             now = datetime.now()
             cls.objects.insert({'t': now, 'u': user, 'o': ObjectId(oiid), 'a': 'r', 'r': device})
-            queue_ducksboard_delta('81296')
-
 
     @classmethod
     def unsubscribe(cls, user, device, oiid):
         if is_valid_id(oiid):
             now = datetime.now()
             cls.objects.insert({'t': now, 'u': user, 'o': ObjectId(oiid), 'a': 'u'})
-            queue_ducksboard_delta('92094')
 
     @classmethod
     def delete(cls, user, device, oiid):
         if is_valid_id(oiid):
             now = datetime.now()
             cls.objects.insert({'t': now, 'u': user, 'o': ObjectId(oiid), 'a': 'd'})
-            queue_ducksboard_delta('92093')
 
     @classmethod
     def signup(cls, user, device):
         now = datetime.now()
         cls.objects.insert({'t': now, 'u': user, 'a': 'sp', 'd': device})
 
-        queue_ducksboard_delta('80347')
-
     @classmethod
     def facebook_signup(cls, user, device):
         now = datetime.now()
         cls.objects.insert({'t': now, 'u': user, 'a': 'spf', 'd': device})
 
-        queue_ducksboard_delta('80347')
-
     @classmethod
     def fav(cls, user, device, oiid):
         now = datetime.now()
         cls.objects.insert({'t': now, 'u': user, 'o': ObjectId(oiid), 'a': 'f', 'd': device})
-        queue_ducksboard_delta('93345')
 
     @classmethod
     def unfav(cls, user, device, oiid):
         now = datetime.now()
         cls.objects.insert({'t': now, 'u': user, 'o': ObjectId(oiid),'a': 'uf', 'd': device})
-        queue_ducksboard_delta('93346')
 
     @classmethod
     def logout(cls, user, device):
         now = datetime.now()
         cls.objects.insert({'t': now, 'u': user, 'a': 'lo', 'd': device})
-        queue_ducksboard_delta('99716')
 
 class Oi(Base):
 
