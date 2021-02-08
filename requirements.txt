@@ -2,7 +2,7 @@ gunicorn==18.0
 
 pytz==2013b
 beautifulsoup4==4.3.1
-httplib2==0.8
+httplib2==0.19.0
 boto==2.11.0
 xlrd==0.9.2
 pystache==0.5.3
